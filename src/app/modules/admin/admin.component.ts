@@ -14,14 +14,14 @@ export class AdminComponent implements OnInit {
   model: NgbDateStruct;
   date: { year: number, month: number };
 
-  cartItems$: Observable<Article>;
+  article$: Observable<Article>;
 
 
   constructor(private calendar: NgbCalendar, private modalService: ModalService, private articleService: ArticleService) {
   }
 
   ngOnInit(): void {
-    this.cartItems$ = this.articleService.article;
+    this.article$ = this.articleService.article;
     this.model = this.calendar.getToday();
   }
 

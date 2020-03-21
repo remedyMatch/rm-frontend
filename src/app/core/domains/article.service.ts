@@ -18,14 +18,13 @@ export class ArticleService {
   }
 
   initArticle() {
-    console.log('test');
     this.rs
       .get('artikel/suche')
       .subscribe((res) => {
-        const article = res || null;
+        const article = res || new Article();
         this.articleSubject.next(article);
       }, (err) => {
-        this.articleSubject.next(null);
+        this.articleSubject.next(new Article());
       });
   }
 }
