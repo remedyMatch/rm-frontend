@@ -1,2 +1,10 @@
 <p>admin works!</p>
 <ngb-datepicker #dp [(ngModel)]="model" (navigate)="date = $event.next"></ngb-datepicker>
+<div class="btn-group btn-group-toggle">
+  <label class="btn-primary" ngbButtonLabel>
+    <input type="checkbox" (click)="showConfirm()"> confirm
+  </label>
+  <label class="btn-primary" ngbButtonLabel>
+    <input type="checkbox" (click)="showAlert()"> alert
+  </label>
+</div>
