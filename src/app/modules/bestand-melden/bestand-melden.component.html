@@ -1,1 +1,29 @@
-<p>bestand-melden works!</p>
+
+<h3>Bestand Melden</h3>
+
+<form [formGroup]="meldenForm">
+
+  <div>
+    <label for="amount">
+      Menge:
+    </label>
+    <input id="amount" type="number" formControlName="amount">
+  </div>
+
+  <div>
+    <label for="originalverpackt">
+      Originalverpackt:
+    </label>
+    <input id="originalverpackt" type="checkbox" formControlName="originalverpackt">
+  </div>
+
+  <div>
+    <label for="kaufdatum">
+      Kaufdatum
+    </label>
+    <ngb-datepicker #dp id="kaufdatum" [(ngModel)]="meldenForm.kaufdatum" ></ngb-datepicker>
+  </div>
+
+  <button class="button" type="submit">Bestand melden</button>
+
+</form>
