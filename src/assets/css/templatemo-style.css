@@ -325,8 +325,8 @@ html {
 .white-button a {
     display: inline-block;
     padding: 12px 20px;
-    background-color: #fff;
-    color: #a43f49;
+    background-color: rgba(250, 250, 250, 0.1);
+    color: #fff;
     font-size: 13px;
     font-weight: 800;
     letter-spacing: 0.5px;
@@ -442,6 +442,29 @@ button:hover {
     background-image: url(../images/first-main-icon.png);
 }
 
+.service-item  .white-button-service a {
+    display: inline-block;
+    padding: 12px 20px;
+    background-color: rgba(250, 250, 250, 0.1);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    transition: all 0.5s;
+}
+
+.service-item:hover  .white-button-service a:hover {
+    background-color: #a43f49;
+    color: #fff;
+}
+
+.service-item:hover .white-button-service a{
+   
+    background-color: #a43f49;
+    color: #4a4a4a;
+    
+}
 .service-item .second-service-icon {
     background-image: url(../images/second-white-icon.png);
 }
