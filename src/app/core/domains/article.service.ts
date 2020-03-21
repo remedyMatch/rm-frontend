@@ -1,7 +1,8 @@
 import {Injectable} from '@angular/core';
+import {BehaviorSubject} from 'rxjs';
+
 import {ResourceService} from '../common';
 import {Article} from './models/article';
-import {BehaviorSubject} from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -10,14 +11,14 @@ export class ArticleService {
   private articleSubject: BehaviorSubject<Article>;
 
   constructor(private rs: ResourceService) {
-    this.initArticle();
+
   }
 
   get article() {
     return this.articleSubject.asObservable();
   }
 
-  initArticle() {
+  searchArticle() {
     this.rs
       .get('artikel/suche')
       .subscribe((res) => {
@@ -25,6 +26,21 @@ export class ArticleService {
         this.articleSubject.next(article);
       }, (err) => {
         this.articleSubject.next(new Article());
+      });
+  }
+
+  createArticle(article: Article) {
+    this.rs
+      .post(`artikel/${article.key}`, article)
+      .subscribe(res => {
+        console.log(res);
+      });
+  }
+
+  getArticle(articleId: string) {
+    this.rs.get(`artikel/${articleId}`)
+      .subscribe((res) => {
+        console.log(res);
       });
   }
 }
