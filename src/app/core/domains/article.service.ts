@@ -11,7 +11,7 @@ export class ArticleService {
   private articleSubject: BehaviorSubject<Article>;
 
   constructor(private rs: ResourceService) {
-
+    this.searchArticle();
   }
 
   get article() {
@@ -22,10 +22,10 @@ export class ArticleService {
     this.rs
       .get('artikel/suche')
       .subscribe((res) => {
-        const article = res || new Article();
+        const article = res || null;
         this.articleSubject.next(article);
       }, (err) => {
-        this.articleSubject.next(new Article());
+        this.articleSubject.next(null);
       });
   }
 

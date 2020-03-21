@@ -10,7 +10,6 @@ const routes: Routes = [
         path: '', loadChildren: () => import('./modules/admin/admin.module').then(m => m.AdminModule)
       },
     ],
-
   },
   {
     path: 'bestand-melden',
@@ -20,7 +19,6 @@ const routes: Routes = [
         loadChildren: () => import('./modules/bestand-melden/bestand-melden.module').then(m => m.BestandMeldenModule)
       },
     ],
-
   },
   {path: '**', redirectTo: 'bestand-melden'},
 ];

@@ -8,14 +8,13 @@ import {Article} from '../../core/domains/models/article';
 @Component({
   selector: 'app-admin',
   templateUrl: './admin.component.html',
-  styleUrls: ['./admin.component.less']
+  styleUrls: ['./admin.component.scss']
 })
 export class AdminComponent implements OnInit {
   model: NgbDateStruct;
   date: { year: number, month: number };
 
   article$: Observable<Article>;
-
 
   constructor(private calendar: NgbCalendar, private modalService: ModalService, private articleService: ArticleService) {
   }
