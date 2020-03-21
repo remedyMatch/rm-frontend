@@ -2,25 +2,69 @@
   <h3>Bestand Melden</h3>
 
   <form [formGroup]="meldenForm">
+
     <div class="form-group">
-      <label for="menge">
+      <label for="description">
+        Bezeichnung:
+      </label>
+      <input id="description" type="text" formControlName="description">
+    </div>
+    <div class="form-group">
+      <label for="manufacturer">
+        Marke/Hersteller/Ursprung:
+      </label>
+      <input id="manufacturer" type="text" formControlName="manufacturer">
+    </div>
+    <div class="form-group">
+      <label for="quantity">
         Menge:
       </label>
-      <input id="menge" type="number" formControlName="menge">
+      <input id="quantity" type="number" formControlName="quantity">
     </div>
 
     <div class="form-group">
-      <label for="originalverpackt">
+      <label for="originalPackaging">
         Originalverpackt:
       </label>
-      <input id="originalverpackt" type="checkbox" formControlName="originalverpackt">
+      <input id="originalPackaging" type="checkbox" formControlName="originalPackaging">
+    </div>
+    <div class="form-group">
+      <label for="medicalProduct">
+        Medizinprodukt:
+      </label>
+      <input id="medicalProduct" type="checkbox" formControlName="medicalProduct">
     </div>
 
-    <div class="form-group">
-      <label for="kaufdatum">
-        Kaufdatum
+
+
+    <div class="input-group">
+      <label for="bestBefore">
+        Haltbarkeitsdatum:
       </label>
-      <input id="kaufdatum" type="text" ngbDatepicker formControlName="kaufdatum"/>
+      <div class="input-group-prepend">
+         <button class="btn btn-outline-secondary" (click)="d.toggle()" type="button">
+            <i class="fa fa-calendar"></i>
+         </button>
+      </div>
+      <input class="form-control"
+       name="bestBefore" formControlName="bestBefore" ngbDatepicker #d="ngbDatepicker" (ngModelChange)="bestBeforeDateChanged()">
+       </div>
+
+    <div class="form-group">
+      <label for="dateOfPurchase">
+        Kaufdatum:
+      </label>
+      <input id="dateOfPurchase" type="text" ngbDatepicker formControlName="dateOfPurchase"/>
+    </div>
+    <div class="form-group">
+      <label for="itemLocation">Artikelstandort (wenn abweichend von Nutzer-Adresse):
+      </label>
+      <input id="itemLocation" type="text" formControlName="itemLocation">
+    </div>
+    <div class="form-group">
+      <label for="storageConditions">Lagerbedingungen des Artikels:
+      </label>
+      <input id="storageConditions" type="text" formControlName="storageConditions">
     </div>
 
     <button class="btn btn-success" type="submit">Bestand melden</button>
