@@ -10,7 +10,7 @@ RUN npm run ng build -- --prod --output-path=dist
 # Stage 2 - production container
 FROM nginx:alpine
 #COPY docker/entrypoint.sh /usr/local/sbin/entrypoint.sh
-#COPY docker/nginx.conf /etc/nginx/conf.d/default.conf
+COPY docker/nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=builder /ng-app/dist /usr/share/nginx/html
 EXPOSE 80
 #ENTRYPOINT ["/usr/local/sbin/entrypoint.sh"]
