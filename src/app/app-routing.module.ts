@@ -6,7 +6,9 @@ const routes: Routes = [{
   path: '',
   children: [
     {path: '', loadChildren: () => import('./modules/admin/admin.module').then(m => m.AdminModule)},
+    {path: 'bestand-melden/', loadChildren: () => import('./modules/bestand-melden/bestand-melden.module').then(m => m.BestandMeldenModule)},
   ],
+
 }
 ];
 
