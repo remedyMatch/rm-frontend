@@ -8,10 +8,8 @@ import {NgbDateStruct, NgbCalendar} from '@ng-bootstrap/ng-bootstrap';
   styleUrls: ['./bestand-melden.component.scss']
 })
 export class BestandMeldenComponent implements OnInit {
-  meldenForm;
-  bestBeforeModel: NgbDateStruct;
-  date: { year: number, month: number };
-
+   meldenForm;
+  categories = ['Medizin'];
   constructor(private formBuilder: FormBuilder, private calendar: NgbCalendar) {
     this.meldenForm = this.formBuilder.group({
       description: '',
@@ -20,7 +18,7 @@ export class BestandMeldenComponent implements OnInit {
       originalPackaging: false,
       medicalProduct: false,
       bestBefore: [this.calendar.getToday(), null],
-      dateOfPurchase: this.calendar.getToday(),
+      dateOfPurchase: [this.calendar.getToday(), null],
       itemLocation: '',
       storageConditions: ''
     });
@@ -29,10 +27,15 @@ export class BestandMeldenComponent implements OnInit {
     const dateField = this.meldenForm.get('bestBefore');
     console.log('Date field value: ', dateField.value);
   }
+  dateOfPurchaseDateChanged() {
+    const dateField = this.meldenForm.get('bestBefore');
+    console.log('Date field value: ', dateField.value);
+  }
   ngOnInit(): void {
   }
 
   onSubmit(customerData) {
+    console.log(customerData);
   }
 
 }

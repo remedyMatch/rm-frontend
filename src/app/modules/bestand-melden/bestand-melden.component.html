@@ -34,9 +34,6 @@
       </label>
       <input id="medicalProduct" type="checkbox" formControlName="medicalProduct">
     </div>
-
-
-
     <div class="input-group">
       <label for="bestBefore">
         Haltbarkeitsdatum:
@@ -50,12 +47,19 @@
        name="bestBefore" formControlName="bestBefore" ngbDatepicker #d="ngbDatepicker" (ngModelChange)="bestBeforeDateChanged()">
        </div>
 
-    <div class="form-group">
-      <label for="dateOfPurchase">
-        Kaufdatum:
-      </label>
-      <input id="dateOfPurchase" type="text" ngbDatepicker formControlName="dateOfPurchase"/>
-    </div>
+       <div class="input-group">
+        <label for="dateOfPurchase">
+          Kaufdatum:
+        </label>
+      <div class="input-group-prepend">
+        <button class="btn btn-outline-secondary" (click)="d.toggle()" type="button">
+           <i class="fa fa-calendar"></i>
+        </button>
+     </div>
+     <input class="form-control"
+      name="dateOfPurchase" formControlName="dateOfPurchase" ngbDatepicker #d="ngbDatepicker" (ngModelChange)="dateOfPurchaseDateChanged()">
+      </div>
+
     <div class="form-group">
       <label for="itemLocation">Artikelstandort (wenn abweichend von Nutzer-Adresse):
       </label>
@@ -66,8 +70,14 @@
       </label>
       <input id="storageConditions" type="text" formControlName="storageConditions">
     </div>
-
-    <button class="btn btn-success" type="submit">Bestand melden</button>
+    <div class="form-group">
+      Kategorie
+      <select class="custom-select">
+        <option value="" disabled>Choose your city</option>
+        <option *ngFor="let cat in categories" [value]="cat">{{cat}}</option>
+      </select>
+    </div>
+    <button class="btn btn-success" type="submit" (ngSubmit)="onSubmit(meldenForm)">Bestand melden</button>
 
   </form>
 </div>
