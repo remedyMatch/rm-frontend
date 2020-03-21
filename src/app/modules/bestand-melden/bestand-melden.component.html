@@ -1,29 +1,29 @@
+<div class="container">
+  <h3>Bestand Melden</h3>
 
-<h3>Bestand Melden</h3>
+  <form [formGroup]="meldenForm">
+    <div class="form-group">
+      <label for="menge">
+        Menge:
+      </label>
+      <input id="menge" type="number" formControlName="menge">
+    </div>
 
-<form [formGroup]="meldenForm">
+    <div class="form-group">
+      <label for="originalverpackt">
+        Originalverpackt:
+      </label>
+      <input id="originalverpackt" type="checkbox" formControlName="originalverpackt">
+    </div>
 
-  <div>
-    <label for="amount">
-      Menge:
-    </label>
-    <input id="amount" type="number" formControlName="amount">
-  </div>
+    <div class="form-group">
+      <label for="kaufdatum">
+        Kaufdatum
+      </label>
+      <input id="kaufdatum" type="text" ngbDatepicker formControlName="kaufdatum"/>
+    </div>
 
-  <div>
-    <label for="originalverpackt">
-      Originalverpackt:
-    </label>
-    <input id="originalverpackt" type="checkbox" formControlName="originalverpackt">
-  </div>
+    <button class="btn btn-success" type="submit">Bestand melden</button>
 
-  <div>
-    <label for="kaufdatum">
-      Kaufdatum
-    </label>
-    <ngb-datepicker #dp id="kaufdatum" [(ngModel)]="meldenForm.kaufdatum" ></ngb-datepicker>
-  </div>
-
-  <button class="button" type="submit">Bestand melden</button>
-
-</form>
+  </form>
+</div>

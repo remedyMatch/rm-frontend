@@ -10,12 +10,12 @@ import {NgbCalendar} from "@ng-bootstrap/ng-bootstrap";
 export class BestandMeldenComponent implements OnInit {
   meldenForm;
 
+
   constructor(private formBuilder: FormBuilder, private calendar: NgbCalendar) {
     this.meldenForm = this.formBuilder.group({
       menge: 0,
       originalverpackt: false,
       kaufdatum: this.calendar.getToday(),
-      charge: 0,
     });
   }
 
