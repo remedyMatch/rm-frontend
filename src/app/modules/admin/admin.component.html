@@ -8,3 +8,7 @@
     <input type="checkbox" (click)="showAlert()"> alert
   </label>
 </div>
+
+
+<div>{{(cartItems$|async).name}}</div>
+<div>{{(cartItems$|async).beschreibung}}</div>
