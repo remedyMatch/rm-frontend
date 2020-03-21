@@ -4,6 +4,7 @@ import {ModalService} from '../../core/common';
 import {ArticleService} from '../../core/domains';
 import {Observable} from 'rxjs';
 import {Article} from '../../core/domains/models/article';
+import {PersonService} from '../../core/domains/person.service';
 
 @Component({
   selector: 'app-admin',
@@ -16,7 +17,10 @@ export class AdminComponent implements OnInit {
 
   article$: Observable<Article>;
 
-  constructor(private calendar: NgbCalendar, private modalService: ModalService, private articleService: ArticleService) {
+  constructor(private calendar: NgbCalendar,
+              private modalService: ModalService,
+              private articleService: ArticleService,
+              private personService: PersonService) {
   }
 
   ngOnInit(): void {
