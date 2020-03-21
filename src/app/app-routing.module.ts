@@ -1,8 +1,14 @@
-import { NgModule } from '@angular/core';
-import { Routes, RouterModule, ExtraOptions } from '@angular/router';
+import {NgModule} from '@angular/core';
+import {Routes, RouterModule, ExtraOptions} from '@angular/router';
 
 
-const routes: Routes = [];
+const routes: Routes = [{
+  path: 'admin',
+  children: [
+    {path: '', loadChildren: 'app/modules/admin/admin.module#AdminModule'},
+  ],
+}
+];
 
 const config: ExtraOptions = {
   useHash: true
@@ -12,4 +18,5 @@ const config: ExtraOptions = {
   imports: [RouterModule.forRoot(routes, config)],
   exports: [RouterModule]
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {
+}
