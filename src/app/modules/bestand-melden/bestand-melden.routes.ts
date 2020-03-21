@@ -1,6 +1,6 @@
 import {NgModule} from '@angular/core';
 import {Routes, RouterModule} from '@angular/router';
-import {BestandMeldenComponent} from "./bestand-melden.component";
+import {BestandMeldenComponent} from './bestand-melden.component';
 
 
 const routes: Routes = [

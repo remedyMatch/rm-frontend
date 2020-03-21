@@ -5,7 +5,7 @@ import {NgbCalendar} from "@ng-bootstrap/ng-bootstrap";
 @Component({
   selector: 'app-bestand-melden',
   templateUrl: './bestand-melden.component.html',
-  styleUrls: ['./bestand-melden.component.less']
+  styleUrls: ['./bestand-melden.component.scss']
 })
 export class BestandMeldenComponent implements OnInit {
   meldenForm;
