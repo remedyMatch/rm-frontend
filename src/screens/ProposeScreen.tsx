@@ -11,7 +11,7 @@ const ProposeScreen: React.FC<Props> = props => {
     const classes = useStyles();
 
     return (
-        <div>Startseite</div>
+        <div>Propose</div>
     );
 };
 

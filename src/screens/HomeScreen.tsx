@@ -11,7 +11,7 @@ const HomeScreen: React.FC<Props> = props => {
     const classes = useStyles();
 
     return (
-        <div>Startseite</div>
+        <div>Home</div>
     );
 };
 

@@ -3,7 +3,7 @@
 # Edit at https://www.gitignore.io/?templates=git,node,react,linux,macos,windows,typings,intellij,webstorm,visualstudiocode
 
 .idea/
-
+yarn.lock
 ### Git ###
 # Created by git for backups. To disable backups in Git:
 # $ git config --global mergetool.keepBackup false
