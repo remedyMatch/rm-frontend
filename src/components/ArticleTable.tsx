@@ -10,15 +10,15 @@ import Paper from '@material-ui/core/Paper';
 
 const useStyles = makeStyles({
     table: {
-        minWidth: 650,
-    },
+        minWidth: "650px",
+    }
 });
 
 interface Props {
     rows: any[];
 }
 
-const BasicTable: React.FC<Props> = props => {
+const ArticleTable: React.FC<Props> = props => {
     const classes = useStyles();
 
     return (
@@ -27,25 +27,26 @@ const BasicTable: React.FC<Props> = props => {
                 <TableHead>
                     <TableRow>
                         <TableCell>Kategorie</TableCell>
-                        <TableCell align="right">Produkt</TableCell>
-                        <TableCell align="right">Menge</TableCell>
-                        <TableCell align="right">Anbieter</TableCell>
-                        <TableCell align="right">Standort</TableCell>
+                        <TableCell>Produkt</TableCell>
+                        <TableCell>Menge</TableCell>
+                        <TableCell>Anbieter</TableCell>
+                        <TableCell>Standort</TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
                     {props.rows.map(row => (
                         <TableRow key={row.kategorie}>
                             <TableCell component="th" scope="row">{row.kategorie}</TableCell>
-                            <TableCell align="right">{row.produkt}</TableCell>
-                            <TableCell align="right">{row.menge}</TableCell>
-                            <TableCell align="right">{row.anbieter}</TableCell>
-                            <TableCell align="right">{row.standort}</TableCell>
+                            <TableCell>{row.produkt}</TableCell>
+                            <TableCell>{row.menge}</TableCell>
+                            <TableCell>{row.anbieter}</TableCell>
+                            <TableCell>{row.standort}</TableCell>
                         </TableRow>
                     ))}
                 </TableBody>
             </Table>
         </TableContainer>
     );
-}
-export default (BasicTable);
+};
+
+export default (ArticleTable);

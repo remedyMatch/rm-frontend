@@ -2,7 +2,7 @@ import React from 'react';
 import {Theme} from '@material-ui/core';
 import {makeStyles} from '@material-ui/core/styles';
 
-import BasicTable from '../components/BasicTable';
+import BasicTable from '../components/ArticleTable';
 
 interface Props {
 }

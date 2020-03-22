@@ -33,13 +33,13 @@ const Menu: React.FC<Props> = props => {
                     icon={Home}
                     onClick={() => props.history.push("/")}/>
                 <MenuButton
-                    label="Ich suche"
+                    label="Suchen"
                     icon={Search}
-                    onClick={() => props.history.push("/suche")}/>
+                    onClick={() => props.history.push("/suchen")}/>
                 <MenuButton
-                    label="Ich biete"
+                    label="Angebote"
                     icon={LocalOffer}
-                    onClick={() => props.history.push("/biete")}/>
+                    onClick={() => props.history.push("/angebote")}/>
             </div>
         </div>
     );

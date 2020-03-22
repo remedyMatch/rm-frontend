@@ -1,4 +1,5 @@
 import axios, {AxiosError, AxiosResponse} from "axios";
+import LoginService from "./LoginService";
 
 interface ApiResponse<T> {
     result?: T;
@@ -8,7 +9,11 @@ interface ApiResponse<T> {
 
 const apiGet = async <T = {}>(url: string): Promise<ApiResponse<T>> => {
     try {
-        return handleResult(await axios.get<T>(url, {withCredentials: true}));
+        return handleResult(await axios.get<T>(url, {
+            headers: {
+                'Authorization': 'Bearer ' + LoginService.getToken()
+            }
+        }));
     } catch (error) {
         return handleError(error);
     }
@@ -16,7 +21,11 @@ const apiGet = async <T = {}>(url: string): Promise<ApiResponse<T>> => {
 
 const apiPost = async <T = {}>(url: string, data?: any): Promise<ApiResponse<T>> => {
     try {
-        return handleResult(await axios.post<T>(url, data, {withCredentials: true}));
+        return handleResult(await axios.post<T>(url, data, {
+            headers: {
+                'Authorization': 'Bearer ' + LoginService.getToken()
+            }
+        }));
     } catch (error) {
         return handleError(error);
     }
@@ -24,7 +33,11 @@ const apiPost = async <T = {}>(url: string, data?: any): Promise<ApiResponse<T>>
 
 const apiPut = async <T = {}>(url: string, data: any): Promise<ApiResponse<T>> => {
     try {
-        return handleResult(await axios.put<T>(url, data, {withCredentials: true}));
+        return handleResult(await axios.put<T>(url, data, {
+            headers: {
+                'Authorization': 'Bearer ' + LoginService.getToken()
+            }
+        }));
     } catch (error) {
         return handleError(error);
     }
@@ -32,7 +45,11 @@ const apiPut = async <T = {}>(url: string, data: any): Promise<ApiResponse<T>> =
 
 const apiPatch = async <T = {}>(url: string, data: any): Promise<ApiResponse<T>> => {
     try {
-        return handleResult(await axios.patch<T>(url, data, {withCredentials: true}));
+        return handleResult(await axios.patch<T>(url, data, {
+            headers: {
+                'Authorization': 'Bearer ' + LoginService.getToken()
+            }
+        }));
     } catch (error) {
         return handleError(error);
     }
@@ -40,14 +57,18 @@ const apiPatch = async <T = {}>(url: string, data: any): Promise<ApiResponse<T>>
 
 const apiDelete = async <T = {}>(url: string): Promise<ApiResponse<T>> => {
     try {
-        return handleResult(await axios.delete<T>(url, {withCredentials: true}));
+        return handleResult(await axios.delete<T>(url, {
+            headers: {
+                'Authorization': 'Bearer ' + LoginService.getToken()
+            }
+        }));
     } catch (error) {
         return handleError(error);
     }
 };
 
 const handleResult = <T>(result: AxiosResponse<T>) => {
-    if(result.status / 100 === 2) {
+    if (result.status / 100 === 2) {
         return {
             result: result.data,
             status: result.status

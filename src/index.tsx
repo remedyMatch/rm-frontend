@@ -3,9 +3,14 @@ import ReactDOM from "react-dom";
 import App from "./container/App/App";
 import "./index.css";
 import * as serviceWorker from "./serviceWorker";
-import {HashRouter} from "react-router-dom";
+import {BrowserRouter as Router} from "react-router-dom";
+import LoginService from "./util/LoginService";
 
-ReactDOM.render(<HashRouter><App/></HashRouter>, document.getElementById("root"));
+LoginService.initKeycloak(() => ReactDOM.render((
+    <Router>
+        <App/>
+    </Router>
+), document.getElementById("root")));
 
 // If you want your react-ui-common to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.

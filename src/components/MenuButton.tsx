@@ -16,17 +16,13 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
     button: {
         transition: theme.transitions.create("background-color"),
+        backgroundColor: "white",
+        color: "black",
         margin: "4px 8px",
         "&:hover": {
-            backgroundColor: "white"
+            backgroundColor: "rgba(255,255,255,0.8)"
         }
-    },
-    iconButton: {
-        borderRadius: "4px",
-        backgroundColor: theme.palette.primary.main,
-        padding: "6px 16px",
-        color: "black"
-    },
+    }
 }));
 
 const MenuButton: React.FC<Props> = props => {

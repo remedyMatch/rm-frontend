@@ -1,0 +1,12 @@
+{
+  "realm": "master",
+  "auth-server-url": "http://localhost:8080/auth/",
+  "ssl-required": "external",
+  "resource": "spring-cloud-gateway-client",
+  "verify-token-audience": true,
+  "credentials": {
+    "secret": "df3cd648-af5d-4f57-8cfd-cad0439cd83d"
+  },
+  "confidential-port": 0,
+  "policy-enforcer": {}
+}
