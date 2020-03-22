@@ -3,8 +3,7 @@
   "version": "1.0.0",
   "description": "Enthält die App für das RemedyMatch-Frontend",
   "author": "RemedyMatch",
-  "//": "Der Wert '.' für 'homepage' sorgt dafür, dass in der generierten index.html relative Pfade verwendet werden",
-  "homepage": ".",
+  "homepage": "app",
   "private": true,
   "scripts": {
     "start": "BROWSER=none react-scripts start",
