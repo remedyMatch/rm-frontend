@@ -24,7 +24,7 @@ import {FormButton} from "../../components/FormButton";
 interface Props {
     open: boolean;
     item: Bedarf;
-    onContact: () => void;
+    onContact?: () => void;
     onDone: () => void;
 }
 
@@ -114,9 +114,11 @@ const InfoDialog: React.FC<Props> = props => {
                 )}
             </DialogContent>
             <DialogActions>
-                <Button onClick={props.onContact} color="secondary">
-                    Kontaktieren
-                </Button>
+                {props.onContact && (
+                    <Button onClick={props.onContact} color="secondary">
+                        Kontaktieren
+                    </Button>
+                )}
                 <Button onClick={props.onDone} color="secondary">
                     Fertig
                 </Button>

@@ -8,11 +8,14 @@ import {Institution} from "../Model/Institution";
 import Table from "../components/Table";
 import {Bedarf} from "../Model/Bedarf";
 import {Typography} from "@material-ui/core";
+import AddDemandDialog from "./Dialogs/AddDemandDialog";
+import InfoDialog from "./Dialogs/InfoDialog";
 
 interface Props extends WithStylesPublic<typeof styles> {
 }
 
 interface State {
+    infoId?: string;
     artikel?: Artikel[];
     angebote?: Angebot[];
     bedarf?: Bedarf[];
@@ -37,18 +40,40 @@ class HomeScreen extends Component<Props, State> {
         return (
             <>
                 <Typography variant="subtitle1" className={classes.subtitle}>Meine Angebote</Typography>
-                <Table rows={this.filterOffer()} delete={{
-                    onDelete: this.onDeleteOffer,
-                    institutionId: this.state.ownInstitution?.id || ""
-                }}/>
+                <Table
+                    rows={this.filterOffer()}
+                    delete={{
+                        onDelete: this.onDeleteOffer,
+                        institutionId: this.state.ownInstitution?.id || ""
+                    }}
+                    details={{onClick: this.onDetailsClicked}}/>
                 <Typography variant="subtitle1" className={classes.subtitle}>Mein Bedarf</Typography>
-                <Table rows={this.filterDemand()} delete={{
-                    onDelete: this.onDeleteDemand,
-                    institutionId: this.state.ownInstitution?.id || ""
-                }}/>
+                <Table
+                    rows={this.filterDemand()}
+                    delete={{
+                        onDelete: this.onDeleteDemand,
+                        institutionId: this.state.ownInstitution?.id || ""
+                    }}
+                    details={{onClick: this.onDetailsClicked}}/>
+                <InfoDialog
+                    open={!!this.state.infoId}
+                    onDone={this.onDetailsDone}
+                    item={[...this.state.bedarf || [], ...this.state.angebote || []].find(item => item.id === this.state.infoId)!}/>
             </>
         )
     }
+
+    private onDetailsDone = () => {
+        this.setState({
+            infoId: undefined
+        });
+    };
+
+    private onDetailsClicked = (id: string) => {
+        this.setState({
+            infoId: id
+        });
+    };
 
     private onDeleteDemand = async (id: string) => {
         await apiDelete("/remedy/bedarf/" + id);

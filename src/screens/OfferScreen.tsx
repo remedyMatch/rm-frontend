@@ -9,11 +9,14 @@ import {FormTextInput} from "../components/FormTextInput";
 import {FormButton} from "../components/FormButton";
 import AddOfferDialog from "./Dialogs/AddOfferDialog";
 import {apiDelete, apiGet} from "../util/ApiUtils";
+import AddDemandDialog from "./Dialogs/AddDemandDialog";
+import InfoDialog from "./Dialogs/InfoDialog";
 
 interface Props extends WithStylesPublic<typeof styles> {
 }
 
 interface State {
+    infoId?: string;
     addDialogOpen: boolean;
     searchFilter: string;
     artikel?: Artikel[];
@@ -57,15 +60,41 @@ class OfferScreen extends Component<Props, State> {
                         Angebot anlegen
                     </FormButton>
                 </div>
-                <Table rows={this.filter()} delete={{ onDelete: this.onDelete, institutionId: this.state.ownInstitution?.id || ""}} />
+                <Table
+                    rows={this.filter()}
+                    delete={{onDelete: this.onDelete, institutionId: this.state.ownInstitution?.id || ""}}
+                    details={{onClick: this.onDetailsClicked}}/>
                 <AddOfferDialog
                     open={this.state.addDialogOpen}
                     onCancelled={this.onAddCancelled}
                     onSaved={this.onAddSaved}
                     artikel={this.state.artikel || []}/>
+                <InfoDialog
+                    open={!!this.state.infoId}
+                    onDone={this.onDetailsDone}
+                    item={this.state.angebote?.find(item => item.id === this.state.infoId)!}
+                    onContact={this.onDetailsContact}/>
             </>
         )
     }
+
+    private onDetailsDone = () => {
+        this.setState({
+            infoId: undefined
+        });
+    };
+
+    private onDetailsContact = () => {
+        this.setState({
+            infoId: undefined
+        });
+    };
+
+    private onDetailsClicked = (id: string) => {
+        this.setState({
+            infoId: id
+        });
+    };
 
     private onDelete = async (id: string) => {
         await apiDelete("/remedy/angebot/" + id);

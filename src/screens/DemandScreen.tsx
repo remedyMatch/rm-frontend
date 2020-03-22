@@ -68,7 +68,11 @@ class DemandScreen extends Component<Props, State> {
                     onCancelled={this.onAddCancelled}
                     onSaved={this.onAddSaved}
                     artikel={this.state.artikel || []}/>
-                <InfoDialog open={!!this.state.infoId} onDone={this.onDetailsDone} item={this.state.bedarf?.find(item => item.id === this.state.infoId)!} onContact={this.onDetailsContact} />
+                <InfoDialog
+                    open={!!this.state.infoId}
+                    onDone={this.onDetailsDone}
+                    item={this.state.bedarf?.find(item => item.id === this.state.infoId)!}
+                    onContact={this.onDetailsContact}/>
             </>
         )
     }
