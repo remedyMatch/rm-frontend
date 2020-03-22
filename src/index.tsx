@@ -7,7 +7,7 @@ import {BrowserRouter as Router} from "react-router-dom";
 import LoginService from "./util/LoginService";
 
 LoginService.initKeycloak(() => ReactDOM.render((
-    <Router>
+    <Router basename={process.env.REACT_APP_BASE_PATH}>
         <App/>
     </Router>
 ), document.getElementById("root")));

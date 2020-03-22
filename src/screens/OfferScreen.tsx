@@ -1,14 +1,14 @@
 import React, {Component} from "react";
 import {createStyles, Theme, withStyles} from "@material-ui/core/styles";
 import {WithStylesPublic} from "../util/WithStylesPublic";
-import AddStockDialog from "./Dialogs/AddOfferDialog";
 import {Artikel} from "../Model/Artikel";
-import {apiDelete, apiGet} from "../util/ApiUtils";
 import {Angebot} from "../Model/Angebot";
 import {Institution} from "../Model/Institution";
-import OfferTable from "../components/OfferTable";
+import Table from "../components/Table";
 import {FormTextInput} from "../components/FormTextInput";
 import {FormButton} from "../components/FormButton";
+import AddOfferDialog from "./Dialogs/AddOfferDialog";
+import {apiDelete, apiGet} from "../util/ApiUtils";
 
 interface Props extends WithStylesPublic<typeof styles> {
 }
@@ -57,9 +57,8 @@ class OfferScreen extends Component<Props, State> {
                         Angebot anlegen
                     </FormButton>
                 </div>
-                <OfferTable rows={this.filter()} onDelete={this.onDelete}
-                            ownInstitutionId={this.state.ownInstitution?.id || ""}/>
-                <AddStockDialog
+                <Table rows={this.filter()} delete={{ onDelete: this.onDelete, institutionId: this.state.ownInstitution?.id || ""}} />
+                <AddOfferDialog
                     open={this.state.addDialogOpen}
                     onCancelled={this.onAddCancelled}
                     onSaved={this.onAddSaved}

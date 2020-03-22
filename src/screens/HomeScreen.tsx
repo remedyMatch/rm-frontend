@@ -5,8 +5,7 @@ import {Artikel} from "../Model/Artikel";
 import {apiDelete, apiGet} from "../util/ApiUtils";
 import {Angebot} from "../Model/Angebot";
 import {Institution} from "../Model/Institution";
-import OfferTable from "../components/OfferTable";
-import DemandTable from "../components/DemandTable";
+import Table from "../components/Table";
 import {Bedarf} from "../Model/Bedarf";
 import {Typography} from "@material-ui/core";
 
@@ -38,11 +37,15 @@ class HomeScreen extends Component<Props, State> {
         return (
             <>
                 <Typography variant="subtitle1" className={classes.subtitle}>Meine Angebote</Typography>
-                <OfferTable rows={this.filterOffer()} onDelete={this.onDeleteOffer}
-                            ownInstitutionId={this.state.ownInstitution?.id || ""}/>
+                <Table rows={this.filterOffer()} delete={{
+                    onDelete: this.onDeleteOffer,
+                    institutionId: this.state.ownInstitution?.id || ""
+                }}/>
                 <Typography variant="subtitle1" className={classes.subtitle}>Mein Bedarf</Typography>
-                <DemandTable rows={this.filterDemand()} onDelete={this.onDeleteDemand}
-                             ownInstitutionId={this.state.ownInstitution?.id || ""}/>
+                <Table rows={this.filterDemand()} delete={{
+                    onDelete: this.onDeleteDemand,
+                    institutionId: this.state.ownInstitution?.id || ""
+                }}/>
             </>
         )
     }

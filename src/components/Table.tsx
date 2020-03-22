@@ -1,14 +1,15 @@
 import React from 'react';
 import {makeStyles} from '@material-ui/core/styles';
-import Table from '@material-ui/core/Table';
+import MUITable from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import {Angebot} from "../Model/Angebot";
 import {IconButton} from "@material-ui/core";
-import {Delete} from "@material-ui/icons";
+import {Delete, Info} from "@material-ui/icons";
+import {Artikel} from "../Model/Artikel";
+import {Institution} from "../Model/Institution";
 
 const useStyles = makeStyles({
     table: {
@@ -19,9 +20,6 @@ const useStyles = makeStyles({
     },
     columnMedium: {
         width: "15%"
-    },
-    columnLarge: {
-        width: "45%"
     },
     iconButton: {
         margin: "-16px -8px -16px -24px"
@@ -35,25 +33,37 @@ const useStyles = makeStyles({
 });
 
 interface Props {
-    rows: Angebot[];
-    onDelete: (id: string) => void;
-    ownInstitutionId: string;
+    rows: {
+        id: string;
+        artikel: Artikel;
+        anzahl: number;
+        institution: Institution;
+        standort: string;
+    }[];
+    delete?: {
+        institutionId: string;
+        onDelete: (id: string) => void;
+    };
+    details?: {
+        onClick: (id: string) => void;
+    }
 }
 
-const OfferTable: React.FC<Props> = props => {
+const Table: React.FC<Props> = props => {
     const classes = useStyles();
 
     return (
         <TableContainer className={classes.tableContainer}>
-            <Table className={classes.table}>
+            <MUITable className={classes.table}>
                 <TableHead>
                     <TableRow>
                         <TableCell className={classes.columnMedium}>Kategorie</TableCell>
-                        <TableCell className={classes.columnLarge}>Artikel</TableCell>
+                        <TableCell>Artikel</TableCell>
                         <TableCell className={classes.columnSmall}>Anzahl</TableCell>
-                        <TableCell className={classes.columnMedium}>Anbieter</TableCell>
+                        <TableCell className={classes.columnMedium}>Institution</TableCell>
                         <TableCell className={classes.columnMedium}>Standort</TableCell>
-                        <TableCell className={classes.columnSmall}/>
+                        {props.delete && <TableCell className={classes.columnSmall}/>}
+                        {props.details && <TableCell className={classes.columnSmall}/>}
                     </TableRow>
                 </TableHead>
                 <TableBody>
@@ -64,21 +74,32 @@ const OfferTable: React.FC<Props> = props => {
                             <TableCell>{row.anzahl}</TableCell>
                             <TableCell>{row.institution.name}</TableCell>
                             <TableCell>{row.standort}</TableCell>
-                            <TableCell>
-                                {row.institution.id === props.ownInstitutionId && (
+                            {props.delete && (
+                                <TableCell>
+                                    {row.institution.id === props.delete.institutionId && (
+                                        <IconButton
+                                            className={classes.iconButton}
+                                            onClick={() => props.delete!.onDelete(row.id)}>
+                                            <Delete/>
+                                        </IconButton>
+                                    )}
+                                </TableCell>
+                            )}
+                            {props.details && (
+                                <TableCell>
                                     <IconButton
                                         className={classes.iconButton}
-                                        onClick={() => props.onDelete(row.id)}>
-                                        <Delete/>
+                                        onClick={() => props.details!.onClick(row.id)}>
+                                        <Info/>
                                     </IconButton>
-                                )}
-                            </TableCell>
+                                </TableCell>
+                            )}
                         </TableRow>
                     ))}
                 </TableBody>
-            </Table>
+            </MUITable>
         </TableContainer>
     );
 };
 
-export default (OfferTable);
+export default Table;

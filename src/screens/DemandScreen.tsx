@@ -6,15 +6,17 @@ import {apiDelete, apiGet} from "../util/ApiUtils";
 import {Institution} from "../Model/Institution";
 import {FormTextInput} from "../components/FormTextInput";
 import {FormButton} from "../components/FormButton";
-import DemandTable from "../components/DemandTable";
 import AddDemandDialog from "./Dialogs/AddDemandDialog";
 import {Bedarf} from "../Model/Bedarf";
+import Table from "../components/Table";
+import InfoDialog from "./Dialogs/InfoDialog";
 
 interface Props extends WithStylesPublic<typeof styles> {
 }
 
 interface State {
     addDialogOpen: boolean;
+    infoId?: string;
     searchFilter: string;
     artikel?: Artikel[];
     bedarf?: Bedarf[];
@@ -57,15 +59,37 @@ class DemandScreen extends Component<Props, State> {
                         Bedarf anlegen
                     </FormButton>
                 </div>
-                <DemandTable rows={this.filter()} onDelete={this.onDelete} ownInstitutionId={this.state.ownInstitution?.id || ""}/>
+                <Table
+                    rows={this.filter()}
+                    delete={{onDelete: this.onDelete, institutionId: this.state.ownInstitution?.id || ""}}
+                    details={{onClick: this.onDetailsClicked}}/>
                 <AddDemandDialog
                     open={this.state.addDialogOpen}
                     onCancelled={this.onAddCancelled}
                     onSaved={this.onAddSaved}
                     artikel={this.state.artikel || []}/>
+                <InfoDialog open={!!this.state.infoId} onDone={this.onDetailsDone} item={this.state.bedarf?.find(item => item.id === this.state.infoId)!} onContact={this.onDetailsContact} />
             </>
         )
     }
+
+    private onDetailsDone = () => {
+        this.setState({
+            infoId: undefined
+        });
+    };
+
+    private onDetailsContact = () => {
+        this.setState({
+            infoId: undefined
+        });
+    };
+
+    private onDetailsClicked = (id: string) => {
+        this.setState({
+            infoId: id
+        });
+    };
 
     private onDelete = async (id: string) => {
         await apiDelete("/remedy/bedarf/" + id);
