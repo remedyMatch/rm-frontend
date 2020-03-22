@@ -462,7 +462,7 @@ button:hover {
 .service-item:hover .white-button-service a{
    
     background-color: #a43f49;
-    color: #4a4a4a;
+    color: #000;
     
 }
 .service-item .second-service-icon {
