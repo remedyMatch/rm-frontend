@@ -31,33 +31,22 @@ class StockScreen extends Component<Props, State> {
                 </Button>
                 <AddStockDialog
                     open={this.state.addDialogOpen}
-                    onCancelled={this.onAddCancelled}
-                    onSaved={this.onAddSaved}
+                    onCancelled={() => {
+                    }}
+                    onSaved={() => {
+                    }}
                     artikel={this.state.artikel || []}/>
             </>
         )
     }
 
-    private onAddCancelled = () => {
-        this.setState({ addDialogOpen: false });
-    };
-
-    private onAddSaved = () => {
-        this.setState({ addDialogOpen: false });
-        this.loadData();
-    };
-
-    private loadData = async () => {
+    componentDidMount = async () => {
         const result = await apiGet<Artikel[]>("/remedy/artikel/suche");
         if (!result.error) {
             this.setState({
                 artikel: result.result
             });
         }
-    };
-
-    componentDidMount = () => {
-        this.loadData();
     }
 }
 
