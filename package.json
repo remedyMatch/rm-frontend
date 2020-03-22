@@ -33,7 +33,6 @@
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "^4.0.0-alpha.46",
     "@material-ui/pickers": "^3.2.10",
-    "@react-keycloak/web": "^1.0.5",
     "@types/react": "^16.9.25",
     "@types/react-dom": "^16.9.5",
     "@types/react-router-dom": "^5.1.3",
