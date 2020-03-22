@@ -30,10 +30,10 @@ class Layout extends Component<Props, State> {
                 <Menu />
                 <div className={classes.content}>
                     <Switch>
-                        <Route path="/" component={HomeScreen}/>
                         <Route path="/suche" component={SearchScreen}/>
                         <Route path="/biete" component={StockScreen}/>
                         <Route path="/propose" component={ProposeScreen}/>
+                        <Route path="/" component={HomeScreen}/>
                         <Redirect to="/"/>
                     </Switch>
                 </div>
