@@ -4,9 +4,9 @@ import {Redirect, Route, Switch} from "react-router-dom";
 import Menu from "../Menu/Menu";
 import HomeScreen from "../../screens/HomeScreen";
 import {WithStylesPublic} from "../../util/WithStylesPublic";
-import SearchScreen from "../../screens/SearchScreen";
-import StockScreen from "../../screens/StockScreen";
-import ProposeScreen from "../../screens/ProposeScreen";
+import SearchScreen from "../../screens/DemandScreen";
+import OfferScreen from "../../screens/OfferScreen";
+import InstitutionScreen from "../../screens/InstitutionScreen";
 
 interface Props extends WithStylesPublic<typeof styles> {}
 
@@ -18,7 +18,11 @@ const styles = (theme: Theme) =>
             flexGrow: 1,
             display: "flex",
             flexDirection: "column",
-            maxHeight: "calc(100vh - 60px)"
+            maxHeight: "calc(100vh - 60px)",
+            width: "60vw",
+            minWidth: "600px",
+            padding: "16px",
+            alignSelf: "center"
         }
     });
 
@@ -30,10 +34,10 @@ class Layout extends Component<Props, State> {
                 <Menu />
                 <div className={classes.content}>
                     <Switch>
-                        <Route path="/suchen" component={SearchScreen}/>
-                        <Route path="/angebote" component={StockScreen}/>
-                        <Route path="/propose" component={ProposeScreen}/>
-                        <Route path="/" component={HomeScreen}/>
+                        <Route path="/bedarf" component={SearchScreen}/>
+                        <Route path="/angebote" component={OfferScreen}/>
+                        <Route path="/institution" component={InstitutionScreen}/>
+                        <Route path="/" exact component={HomeScreen}/>
                         <Redirect to="/"/>
                     </Switch>
                 </div>

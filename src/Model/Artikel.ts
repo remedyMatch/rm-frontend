@@ -1,7 +1,4 @@
-export interface ArtikelKategorie {
-    id: string;
-    name: string;
-}
+import {ArtikelKategorie} from "./ArtikelKategorie";
 
 export interface Artikel {
     id: string;

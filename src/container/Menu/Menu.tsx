@@ -1,8 +1,9 @@
 import {makeStyles, Theme} from "@material-ui/core/styles";
 import {default as React} from "react";
-import {Home, LocalOffer, Search} from "@material-ui/icons";
+import {Home, HomeOutlined, LocalOffer, Lock, Search} from "@material-ui/icons";
 import {RouteComponentProps, withRouter} from "react-router-dom";
 import MenuButton from "../../components/MenuButton";
+import LoginService from "../../util/LoginService";
 
 interface Props extends RouteComponentProps {
 }
@@ -33,13 +34,24 @@ const Menu: React.FC<Props> = props => {
                     icon={Home}
                     onClick={() => props.history.push("/")}/>
                 <MenuButton
-                    label="Suchen"
+                    label="Bedarf"
                     icon={Search}
-                    onClick={() => props.history.push("/suchen")}/>
+                    onClick={() => props.history.push("/bedarf")}/>
                 <MenuButton
                     label="Angebote"
                     icon={LocalOffer}
                     onClick={() => props.history.push("/angebote")}/>
+                <MenuButton
+                    label="Institution"
+                    icon={HomeOutlined}
+                    onClick={() => props.history.push("/institution")}/>
+                <MenuButton
+                    label="Logout"
+                    icon={Lock}
+                    onClick={async () => {
+                        await LoginService.doLogout();
+                        props.history.push("/");
+                    }}/>
             </div>
         </div>
     );

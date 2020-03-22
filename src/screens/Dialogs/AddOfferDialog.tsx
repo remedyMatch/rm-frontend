@@ -17,7 +17,9 @@ import {WithStylesPublic} from "../../util/WithStylesPublic";
 import ErrorToast from "../../components/ErrorToast";
 import {KeyboardDatePicker, MuiPickersUtilsProvider} from "@material-ui/pickers";
 import DateFnsUtils from '@date-io/date-fns';
-import {Artikel, ArtikelKategorie} from "../../Model/Artikel";
+import {Artikel} from "../../Model/Artikel";
+import {ArtikelKategorie} from "../../Model/ArtikelKategorie";
+import {apiPost} from "../../util/ApiUtils";
 
 interface Props extends WithStylesPublic<typeof styles> {
     open: boolean;
@@ -31,9 +33,7 @@ interface State {
     article: string | null;
     amount: number;
     location: string;
-    storageConditions: string;
     useBefore: Date | null;
-    purchasedAt: Date | null;
     comment: string;
     sterile: boolean;
     sealed: boolean;
@@ -45,7 +45,7 @@ interface State {
 const styles = (theme: Theme) =>
     createStyles({
         content: {
-            width: "40vh",
+            width: "40vw",
             paddingBottom: "16px",
             display: "flex",
             flexDirection: "column"
@@ -75,9 +75,7 @@ class StockScreen extends PureComponent<Props, State> {
         article: null,
         amount: 0,
         location: "",
-        storageConditions: "",
         useBefore: new Date(),
-        purchasedAt: new Date(),
         comment: "",
         sterile: false,
         sealed: false,
@@ -97,7 +95,7 @@ class StockScreen extends PureComponent<Props, State> {
         }
 
         if (this.state.amount <= 0) {
-            this.setState({error: "Die angebotene Menge muss größer 0 sein"});
+            this.setState({error: "Die angebotene Anzahl muss größer 0 sein"});
             return;
         }
 
@@ -106,29 +104,39 @@ class StockScreen extends PureComponent<Props, State> {
             error: undefined
         });
 
-        /*
-        const result = await apiPost("http://localhost:8101/register", {
-            username: this.state.username,
-            password: this.state.password
+        const result = await apiPost("/remedy/angebot", {
+            artikel: {
+                id: this.state.article
+            },
+            anzahl: this.state.amount,
+            standort: this.state.location,
+            haltbarkeit: this.state.useBefore,
+            steril: this.state.sterile,
+            originalverpackt: this.state.sealed,
+            medizinisch: this.state.medical,
+            kommentar: this.state.comment
         });
 
-        if (resultAuth.error) {
+        if (result.error) {
             this.setState({
                 disabled: false,
-                error: "Registrierung bei Authentifizierung fehlgeschlagen: " + resultAuth.error
+                error: "Erstellung des Angebots fehlgeschlagen: " + result.error
             });
             return;
         }
 
         this.setState({
-            disabled: false,
-            username: "",
-            firstName: "",
-            lastName: "",
-            email: "",
-            password: "",
-            repeatPassword: ""
-        });*/
+            category: null,
+            article: null,
+            amount: 0,
+            location: "",
+            useBefore: new Date(),
+            comment: "",
+            sterile: false,
+            sealed: false,
+            medical: false,
+            disabled: false
+        });
 
         this.props.onSaved();
     };
@@ -161,16 +169,8 @@ class StockScreen extends PureComponent<Props, State> {
         this.setState({location: event.target.value});
     };
 
-    private setStorageConditions = (event: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
-        this.setState({storageConditions: event.target.value});
-    };
-
     private setUseBefore = (useBefore: Date | null) => {
         this.setState({useBefore});
-    };
-
-    private setPurchasedAt = (purchasedAt: Date | null) => {
-        this.setState({purchasedAt});
     };
 
     private setComment = (event: ChangeEvent<HTMLTextAreaElement>) => {
@@ -211,7 +211,7 @@ class StockScreen extends PureComponent<Props, State> {
                 maxWidth="lg"
                 open={this.props.open}
                 onClose={this.onCancel}>
-                <DialogTitle>Neuen Bestand erstellen</DialogTitle>
+                <DialogTitle>Neues Angebot erstellen</DialogTitle>
                 <DialogContent>
                     <MuiPickersUtilsProvider utils={DateFnsUtils}>
                         <div className={classes.content}>
@@ -252,7 +252,7 @@ class StockScreen extends PureComponent<Props, State> {
                                 Kategorie oder Name nicht gefunden? <a href="#">Vorschlagen</a>
                             </Typography>
                             <TextField
-                                label="Menge"
+                                label="Anzahl"
                                 type="number"
                                 disabled={this.state.disabled}
                                 onChange={this.setAmount}
@@ -264,12 +264,6 @@ class StockScreen extends PureComponent<Props, State> {
                                 disabled={this.state.disabled}
                                 className={classes.formRow}
                                 value={this.state.location}/>
-                            <TextField
-                                label="Lagerbedingung des Artikels"
-                                onChange={this.setStorageConditions}
-                                disabled={this.state.disabled}
-                                className={classes.formRow}
-                                value={this.state.storageConditions}/>
                             <KeyboardDatePicker
                                 disableToolbar
                                 variant="inline"
@@ -280,17 +274,6 @@ class StockScreen extends PureComponent<Props, State> {
                                 value={this.state.useBefore}
                                 className={classes.formRow}
                                 onChange={this.setUseBefore}
-                            />
-                            <KeyboardDatePicker
-                                disableToolbar
-                                variant="inline"
-                                format="dd.MM.yyyy"
-                                disabled={this.state.disabled}
-                                margin="normal"
-                                label="Kaufdatum"
-                                value={this.state.purchasedAt}
-                                className={classes.formRow}
-                                onChange={this.setPurchasedAt}
                             />
                             <FormControlLabel
                                 className={classes.formRow}
