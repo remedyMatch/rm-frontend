@@ -3,4 +3,5 @@ export interface Institution {
     institutionKey: string;
     name: string;
     typ: string;
+    standort: string;
 }

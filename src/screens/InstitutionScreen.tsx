@@ -5,6 +5,7 @@ import {apiGet} from "../util/ApiUtils";
 import {Institution} from "../Model/Institution";
 import {Typography} from "@material-ui/core";
 import {FormButton} from "../components/FormButton";
+import EditInstitutionDialog from "./Dialogs/EditInstitutionDialog";
 
 interface Props extends WithStylesPublic<typeof styles> {
 }
@@ -12,6 +13,7 @@ interface Props extends WithStylesPublic<typeof styles> {
 interface State {
     editDialogOpen: boolean;
     institution?: Institution;
+    institutionTypes?: string[];
 }
 
 const styles = (theme: Theme) =>
@@ -72,12 +74,16 @@ class OfferScreen extends Component<Props, State> {
                     <span className={classes.right}>{this.state.institution?.institutionKey}</span>
                 </div>
                 <div className={classes.row}>
+                    <span className={classes.left}>Institution-Typ:</span>
+                    <span className={classes.right}>{this.state.institution?.typ}</span>
+                </div>
+                <div className={classes.row}>
                     <span className={classes.left}>Institution-Name:</span>
                     <span className={classes.right}>{this.state.institution?.name}</span>
                 </div>
                 <div className={classes.row}>
-                    <span className={classes.left}>Institution-Typ:</span>
-                    <span className={classes.right}>{this.state.institution?.typ}</span>
+                    <span className={classes.left}>Institution-Standort:</span>
+                    <span className={classes.right}>{this.state.institution?.standort}</span>
                 </div>
                 <div className={classes.footer}>
                     <FormButton
@@ -87,6 +93,12 @@ class OfferScreen extends Component<Props, State> {
                         Institution bearbeiten
                     </FormButton>
                 </div>
+                <EditInstitutionDialog
+                    onSaved={this.onEditSaved}
+                    onCancelled={this.onEditCancelled}
+                    open={this.state.editDialogOpen}
+                    typeOptions={this.state.institutionTypes || []}
+                    institution={this.state.institution} />
             </div>
         )
     }
@@ -106,6 +118,7 @@ class OfferScreen extends Component<Props, State> {
 
     componentDidMount = async () => {
         this.loadInstitution();
+        this.loadInstitutionTypes();
     };
 
     private loadInstitution = async () => {
@@ -113,6 +126,15 @@ class OfferScreen extends Component<Props, State> {
         if (!result.error) {
             this.setState({
                 institution: result.result
+            });
+        }
+    };
+
+    private loadInstitutionTypes = async () => {
+        const result = await apiGet<string[]>("/remedy/institution/typ");
+        if (!result.error) {
+            this.setState({
+                institutionTypes: result.result
             });
         }
     };
