@@ -6,16 +6,18 @@ import {apiDelete, apiGet} from "../util/ApiUtils";
 import {Institution} from "../Model/Institution";
 import {FormTextInput} from "../components/FormTextInput";
 import {FormButton} from "../components/FormButton";
-import AddDemandDialog from "./Dialogs/AddDemandDialog";
+import AddDemandDialog from "./Dialogs/Demand/AddDemandDialog";
 import {Bedarf} from "../Model/Bedarf";
-import Table from "../components/Table";
-import InfoDialog from "./Dialogs/InfoDialog";
+import EntryTable from "../components/EntryTable";
+import DemandDetailsDialog from "./Dialogs/Demand/DemandDetailsDialog";
+import RespondDemandDialog from "./Dialogs/Demand/RespondDemandDialog";
 
 interface Props extends WithStylesPublic<typeof styles> {
 }
 
 interface State {
     addDialogOpen: boolean;
+    contactId?: string;
     infoId?: string;
     searchFilter: string;
     artikel?: Artikel[];
@@ -26,7 +28,7 @@ interface State {
 const styles = (theme: Theme) =>
     createStyles({
         tableHeader: {
-            marginTop: "64px",
+            marginTop: "16px",
             marginBottom: "16px",
             display: "flex",
             justifyContent: "space-between"
@@ -59,7 +61,7 @@ class DemandScreen extends Component<Props, State> {
                         Bedarf anlegen
                     </FormButton>
                 </div>
-                <Table
+                <EntryTable
                     rows={this.filter()}
                     delete={{onDelete: this.onDelete, institutionId: this.state.ownInstitution?.id || ""}}
                     details={{onClick: this.onDetailsClicked}}/>
@@ -68,14 +70,32 @@ class DemandScreen extends Component<Props, State> {
                     onCancelled={this.onAddCancelled}
                     onSaved={this.onAddSaved}
                     artikel={this.state.artikel || []}/>
-                <InfoDialog
+                <DemandDetailsDialog
                     open={!!this.state.infoId}
                     onDone={this.onDetailsDone}
                     item={this.state.bedarf?.find(item => item.id === this.state.infoId)!}
                     onContact={this.onDetailsContact}/>
+                <RespondDemandDialog
+                    open={!!this.state.contactId}
+                    onCancelled={this.onContactCancelled}
+                    onSaved={this.onContactSaved}
+                    demandId={this.state.contactId}
+                    institutionName={this.state.bedarf?.find(d => d.id === this.state.infoId)?.institution.name} />
             </>
         )
     }
+
+    private onContactCancelled = () => {
+        this.setState({
+            contactId: undefined
+        });
+    };
+
+    private onContactSaved = () => {
+        this.setState({
+            contactId: undefined
+        });
+    };
 
     private onDetailsDone = () => {
         this.setState({
@@ -85,7 +105,7 @@ class DemandScreen extends Component<Props, State> {
 
     private onDetailsContact = () => {
         this.setState({
-            infoId: undefined
+            contactId: this.state.infoId
         });
     };
 

@@ -13,11 +13,11 @@ import {
     Typography
 } from "@material-ui/core";
 import {Autocomplete} from "@material-ui/lab";
-import {WithStylesPublic} from "../../util/WithStylesPublic";
-import ErrorToast from "../../components/ErrorToast";
-import {Artikel} from "../../Model/Artikel";
-import {ArtikelKategorie} from "../../Model/ArtikelKategorie";
-import {apiPost} from "../../util/ApiUtils";
+import {WithStylesPublic} from "../../../util/WithStylesPublic";
+import ErrorToast from "../../../components/ErrorToast";
+import {Artikel} from "../../../Model/Artikel";
+import {ArtikelKategorie} from "../../../Model/ArtikelKategorie";
+import {apiPost} from "../../../util/ApiUtils";
 
 interface Props extends WithStylesPublic<typeof styles> {
     open: boolean;
@@ -66,7 +66,7 @@ const styles = (theme: Theme) =>
         }
     });
 
-class StockScreen extends PureComponent<Props, State> {
+class AddDemandDialog extends PureComponent<Props, State> {
     state: State = {
         category: null,
         article: null,
@@ -307,4 +307,4 @@ class StockScreen extends PureComponent<Props, State> {
     };
 }
 
-export default withStyles(styles)(StockScreen);
+export default withStyles(styles)(AddDemandDialog);

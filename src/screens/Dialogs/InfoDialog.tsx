@@ -1,25 +1,7 @@
-import React, {ChangeEvent, PureComponent} from "react";
-import {createStyles, makeStyles, Theme, withStyles} from "@material-ui/core/styles";
-import {
-    Button,
-    Checkbox,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogTitle,
-    FormControlLabel,
-    TextareaAutosize,
-    TextField,
-    Typography
-} from "@material-ui/core";
-import {Autocomplete} from "@material-ui/lab";
-import {WithStylesPublic} from "../../util/WithStylesPublic";
-import ErrorToast from "../../components/ErrorToast";
-import {Artikel} from "../../Model/Artikel";
-import {ArtikelKategorie} from "../../Model/ArtikelKategorie";
-import {apiPost} from "../../util/ApiUtils";
+import React from "react";
+import {makeStyles, Theme} from "@material-ui/core/styles";
+import {Button, Dialog, DialogActions, DialogContent, DialogTitle} from "@material-ui/core";
 import {Bedarf} from "../../Model/Bedarf";
-import {FormButton} from "../../components/FormButton";
 
 interface Props {
     open: boolean;

@@ -4,19 +4,20 @@ import {WithStylesPublic} from "../util/WithStylesPublic";
 import {Artikel} from "../Model/Artikel";
 import {Angebot} from "../Model/Angebot";
 import {Institution} from "../Model/Institution";
-import Table from "../components/Table";
+import EntryTable from "../components/EntryTable";
 import {FormTextInput} from "../components/FormTextInput";
 import {FormButton} from "../components/FormButton";
-import AddOfferDialog from "./Dialogs/AddOfferDialog";
+import AddOfferDialog from "./Dialogs/Offer/AddOfferDialog";
 import {apiDelete, apiGet} from "../util/ApiUtils";
-import AddDemandDialog from "./Dialogs/AddDemandDialog";
-import InfoDialog from "./Dialogs/InfoDialog";
+import OfferDetailsDialog from "./Dialogs/Offer/OfferDetailsDialog";
+import RespondOfferDialog from "./Dialogs/Offer/RespondOfferDialog";
 
 interface Props extends WithStylesPublic<typeof styles> {
 }
 
 interface State {
     infoId?: string;
+    contactId?: string;
     addDialogOpen: boolean;
     searchFilter: string;
     artikel?: Artikel[];
@@ -27,7 +28,7 @@ interface State {
 const styles = (theme: Theme) =>
     createStyles({
         tableHeader: {
-            marginTop: "64px",
+            marginTop: "16px",
             marginBottom: "16px",
             display: "flex",
             justifyContent: "space-between"
@@ -60,7 +61,7 @@ class OfferScreen extends Component<Props, State> {
                         Angebot anlegen
                     </FormButton>
                 </div>
-                <Table
+                <EntryTable
                     rows={this.filter()}
                     delete={{onDelete: this.onDelete, institutionId: this.state.ownInstitution?.id || ""}}
                     details={{onClick: this.onDetailsClicked}}/>
@@ -69,14 +70,32 @@ class OfferScreen extends Component<Props, State> {
                     onCancelled={this.onAddCancelled}
                     onSaved={this.onAddSaved}
                     artikel={this.state.artikel || []}/>
-                <InfoDialog
+                <OfferDetailsDialog
                     open={!!this.state.infoId}
                     onDone={this.onDetailsDone}
                     item={this.state.angebote?.find(item => item.id === this.state.infoId)!}
                     onContact={this.onDetailsContact}/>
+                <RespondOfferDialog
+                    open={!!this.state.contactId}
+                    onCancelled={this.onContactCancelled}
+                    onSaved={this.onContactSaved}
+                    offerId={this.state.contactId}
+                    institutionName={this.state.angebote?.find(d => d.id === this.state.infoId)?.institution.name} />
             </>
         )
     }
+
+    private onContactCancelled = () => {
+        this.setState({
+            contactId: undefined
+        });
+    };
+
+    private onContactSaved = () => {
+        this.setState({
+            contactId: undefined
+        });
+    };
 
     private onDetailsDone = () => {
         this.setState({
@@ -86,7 +105,7 @@ class OfferScreen extends Component<Props, State> {
 
     private onDetailsContact = () => {
         this.setState({
-            infoId: undefined
+            contactId: this.state.infoId
         });
     };
 

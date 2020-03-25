@@ -1,4 +1,4 @@
-import React, {ChangeEvent, Component} from "react";
+import React, {Component} from "react";
 import {createStyles, Theme, withStyles} from "@material-ui/core/styles";
 import {Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField} from "@material-ui/core";
 import {WithStylesPublic} from "../../util/WithStylesPublic";
@@ -37,7 +37,7 @@ const styles = (theme: Theme) =>
         }
     });
 
-class CreateRoleDialog extends Component<Props, State> {
+class EditInstitutionDialog extends Component<Props, State> {
     state: State = {
         name: "",
         location: "",
@@ -193,4 +193,4 @@ class CreateRoleDialog extends Component<Props, State> {
     }
 }
 
-export default withStyles(styles)(CreateRoleDialog);
+export default withStyles(styles)(EditInstitutionDialog);

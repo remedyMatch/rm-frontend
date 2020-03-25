@@ -1,5 +1,5 @@
 import React from 'react';
-import {makeStyles} from '@material-ui/core/styles';
+import {makeStyles, Theme} from '@material-ui/core/styles';
 import MUITable from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -11,7 +11,7 @@ import {Delete, Info} from "@material-ui/icons";
 import {Artikel} from "../Model/Artikel";
 import {Institution} from "../Model/Institution";
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme: Theme) => ({
     table: {
         minWidth: "650px",
     },
@@ -29,8 +29,13 @@ const useStyles = makeStyles({
         backgroundColor: "white",
         border: "1px solid #CCC",
         borderRadius: "4px"
+    },
+    empty: {
+        textAlign: "center",
+        backgroundColor: "rgba(0,0,0,0.1)",
+        padding: "8px"
     }
-});
+}));
 
 interface Props {
     rows: {
@@ -49,7 +54,7 @@ interface Props {
     }
 }
 
-const Table: React.FC<Props> = props => {
+const EntryTable: React.FC<Props> = props => {
     const classes = useStyles();
 
     return (
@@ -96,10 +101,15 @@ const Table: React.FC<Props> = props => {
                             )}
                         </TableRow>
                     ))}
+                    {props.rows.length === 0 && (
+                        <TableRow>
+                            <TableCell className={classes.empty} colSpan={7}>Keine Einträge vorhanden</TableCell>
+                        </TableRow>
+                    )}
                 </TableBody>
             </MUITable>
         </TableContainer>
     );
 };
 
-export default Table;
+export default EntryTable;

@@ -5,11 +5,12 @@ import {Artikel} from "../Model/Artikel";
 import {apiDelete, apiGet} from "../util/ApiUtils";
 import {Angebot} from "../Model/Angebot";
 import {Institution} from "../Model/Institution";
-import Table from "../components/Table";
+import EntryTable from "../components/EntryTable";
 import {Bedarf} from "../Model/Bedarf";
 import {Typography} from "@material-ui/core";
-import AddDemandDialog from "./Dialogs/AddDemandDialog";
 import InfoDialog from "./Dialogs/InfoDialog";
+import {Anfrage} from "../Model/Anfrage";
+import RequestTable from "../components/RequestTable";
 
 interface Props extends WithStylesPublic<typeof styles> {
 }
@@ -20,6 +21,8 @@ interface State {
     angebote?: Angebot[];
     bedarf?: Bedarf[];
     ownInstitution?: Institution;
+    receivedRequests?: Anfrage[];
+    sentRequests?: Anfrage[];
 }
 
 const styles = (theme: Theme) =>
@@ -39,8 +42,20 @@ class HomeScreen extends Component<Props, State> {
 
         return (
             <>
+                <Typography variant="subtitle1" className={classes.subtitle}>Erhaltene Anfragen</Typography>
+                <RequestTable
+                    rows={this.state.receivedRequests || []}
+                    type="received"
+                    demands={this.state.bedarf}
+                    offers={this.state.angebote}/>
+                <Typography variant="subtitle1" className={classes.subtitle}>Gestellte Anfragen</Typography>
+                <RequestTable
+                    rows={this.state.sentRequests || []}
+                    type="sent"
+                    demands={this.state.bedarf}
+                    offers={this.state.angebote}/>
                 <Typography variant="subtitle1" className={classes.subtitle}>Meine Angebote</Typography>
-                <Table
+                <EntryTable
                     rows={this.filterOffer()}
                     delete={{
                         onDelete: this.onDeleteOffer,
@@ -48,7 +63,7 @@ class HomeScreen extends Component<Props, State> {
                     }}
                     details={{onClick: this.onDetailsClicked}}/>
                 <Typography variant="subtitle1" className={classes.subtitle}>Mein Bedarf</Typography>
-                <Table
+                <EntryTable
                     rows={this.filterDemand()}
                     delete={{
                         onDelete: this.onDeleteDemand,
@@ -99,6 +114,8 @@ class HomeScreen extends Component<Props, State> {
         this.loadArtikel();
         this.loadAngebote();
         this.loadBedarf();
+        this.loadReceivedRequests();
+        this.loadSentRequests();
         this.loadInstitution();
     };
 
@@ -134,6 +151,24 @@ class HomeScreen extends Component<Props, State> {
         if (!result.error) {
             this.setState({
                 ownInstitution: result.result
+            });
+        }
+    };
+
+    private loadReceivedRequests = async () => {
+        const result = await apiGet<Anfrage[]>("/remedy/institution/anfragen/erhalten");
+        if (!result.error) {
+            this.setState({
+                receivedRequests: result.result
+            });
+        }
+    };
+
+    private loadSentRequests = async () => {
+        const result = await apiGet<Anfrage[]>("/remedy/institution/anfragen/gestellt");
+        if (!result.error) {
+            this.setState({
+                sentRequests: result.result
             });
         }
     };

@@ -11,7 +11,6 @@ const initKeycloak = async (onAuthenticatedCallback: () => void) => {
     try {
         const authenticated = await _kc.init({
             onLoad: 'login-required',
-            promiseType: 'native',
             silentCheckSsoRedirectUri: window.location.origin + '/silent-check-sso.html',
             pkceMethod: 'S256',
             checkLoginIframe: false

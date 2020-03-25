@@ -1,6 +1,6 @@
 import {makeStyles, Theme} from "@material-ui/core/styles";
 import {default as React} from "react";
-import {Home, HomeOutlined, LocalOffer, Lock, Search} from "@material-ui/icons";
+import {AssignmentTurnedIn, Home, HomeOutlined, LocalOffer, Lock, Search} from "@material-ui/icons";
 import {RouteComponentProps, withRouter} from "react-router-dom";
 import MenuButton from "../../components/MenuButton";
 import LoginService from "../../util/LoginService";
@@ -41,6 +41,10 @@ const Menu: React.FC<Props> = props => {
                     label="Angebote"
                     icon={LocalOffer}
                     onClick={() => props.history.push("/angebote")}/>
+                <MenuButton
+                    label="Aufgaben"
+                    icon={AssignmentTurnedIn}
+                    onClick={() => props.history.push("/aufgaben")}/>
                 <MenuButton
                     label="Institution"
                     icon={HomeOutlined}

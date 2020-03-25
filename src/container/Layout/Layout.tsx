@@ -7,6 +7,7 @@ import {WithStylesPublic} from "../../util/WithStylesPublic";
 import SearchScreen from "../../screens/DemandScreen";
 import OfferScreen from "../../screens/OfferScreen";
 import InstitutionScreen from "../../screens/InstitutionScreen";
+import TaskScreen from "../../screens/TaskScreen";
 
 interface Props extends WithStylesPublic<typeof styles> {}
 
@@ -19,8 +20,9 @@ const styles = (theme: Theme) =>
             display: "flex",
             flexDirection: "column",
             maxHeight: "calc(100vh - 60px)",
-            width: "60vw",
+            width: "100vw",
             minWidth: "600px",
+            maxWidth: "1200px",
             padding: "16px",
             alignSelf: "center"
         }
@@ -36,6 +38,7 @@ class Layout extends Component<Props, State> {
                     <Switch>
                         <Route path="/bedarf" component={SearchScreen}/>
                         <Route path="/angebote" component={OfferScreen}/>
+                        <Route path="/aufgaben" component={TaskScreen}/>
                         <Route path="/institution" component={InstitutionScreen}/>
                         <Route path="/" exact component={HomeScreen}/>
                         <Redirect to="/"/>
