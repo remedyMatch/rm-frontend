@@ -11,11 +11,13 @@ import {Typography} from "@material-ui/core";
 import InfoDialog from "./Dialogs/InfoDialog";
 import {Anfrage} from "../Model/Anfrage";
 import RequestTable from "../components/RequestTable";
+import CancelReceivedRequestDialog from "./Dialogs/CancelReceivedRequestDialog";
 
 interface Props extends WithStylesPublic<typeof styles> {
 }
 
 interface State {
+    cancelId?: string;
     infoId?: string;
     artikel?: Artikel[];
     angebote?: Angebot[];
@@ -53,7 +55,8 @@ class HomeScreen extends Component<Props, State> {
                     rows={this.state.sentRequests || []}
                     type="sent"
                     demands={this.state.bedarf}
-                    offers={this.state.angebote}/>
+                    offers={this.state.angebote}
+                    onCancel={this.onCancelOffer}/>
                 <Typography variant="subtitle1" className={classes.subtitle}>Meine Angebote</Typography>
                 <EntryTable
                     rows={this.filterOffer()}
@@ -74,9 +77,36 @@ class HomeScreen extends Component<Props, State> {
                     open={!!this.state.infoId}
                     onDone={this.onDetailsDone}
                     item={[...this.state.bedarf || [], ...this.state.angebote || []].find(item => item.id === this.state.infoId)!}/>
+                <CancelReceivedRequestDialog
+                    open={!!this.state.cancelId}
+                    request={this.state.sentRequests?.find(sr => (sr.angebotId || sr.bedarfId) === this.state.cancelId)}
+                    onNo={this.onCancelNo}
+                    onYes={this.onCancelYes}
+                />
             </>
         )
     }
+
+    private onCancelOffer = (id?: string) => {
+        if (id) {
+            this.setState({
+                cancelId: id
+            });
+        }
+    };
+
+    private onCancelNo = () => {
+        this.setState({
+            cancelId: undefined
+        });
+    };
+
+    private onCancelYes = () => {
+        this.setState({
+            cancelId: undefined
+        });
+        this.loadSentRequests();
+    };
 
     private onDetailsDone = () => {
         this.setState({

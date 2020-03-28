@@ -9,6 +9,8 @@ import TableRow from '@material-ui/core/TableRow';
 import {Anfrage} from "../Model/Anfrage";
 import {Bedarf} from "../Model/Bedarf";
 import {Angebot} from "../Model/Angebot";
+import {Button, IconButton} from "@material-ui/core";
+import {Cancel, Info} from "@material-ui/icons";
 
 const useStyles = makeStyles({
     table: {
@@ -16,6 +18,9 @@ const useStyles = makeStyles({
     },
     columnLarge: {
         width: "30%"
+    },
+    columnSmall: {
+        width: "5%"
     },
     iconButton: {
         margin: "-16px -8px -16px -24px"
@@ -38,6 +43,7 @@ interface Props {
     type: "sent" | "received";
     demands?: Bedarf[];
     offers?: Angebot[];
+    onCancel?: (id?: string) => void;
 }
 
 const RequestTable: React.FC<Props> = props => {
@@ -50,17 +56,28 @@ const RequestTable: React.FC<Props> = props => {
                     <TableRow>
                         <TableCell className={classes.columnLarge}>{props.type === "sent" ? "Empfänger" : "Absender"}</TableCell>
                         <TableCell>Anzeige</TableCell>
+                        {props.onCancel && (<TableCell className={classes.columnSmall} />)}
                     </TableRow>
                 </TableHead>
                 <TableBody>
                     {props.rows.map(row => {
                         const institution = props.type === "sent" ? row.institutionAn : row.institutionVon;
                         const item = (row.bedarfId ? props.demands : props.offers)?.find(item => item.id === (row.bedarfId || row.angebotId));
+                        const onCancel = props.onCancel;
 
                         return (
                             <TableRow key={row.id}>
                                 <TableCell component="th" scope="row">{institution.name}</TableCell>
                                 <TableCell>{(row.bedarfId ? "Bedarf: " : "Angebot: ") + item?.anzahl + " " + item?.artikel.name}</TableCell>
+                                {onCancel && (
+                                    <TableCell>
+                                        <IconButton
+                                            className={classes.iconButton}
+                                            onClick={() => onCancel(item?.id)}>
+                                            <Cancel/>
+                                        </IconButton>
+                                    </TableCell>
+                                )}
                             </TableRow>
                         )
                     })}
