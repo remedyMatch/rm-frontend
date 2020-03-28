@@ -97,7 +97,7 @@ class HomeScreen extends Component<Props, State> {
 
     private filterDemand = () => {
         return (this.state.bedarf || [])
-            .filter(bedarf => bedarf.institution.id === this.state.ownInstitution?.id);
+            .filter(bedarf => bedarf.institutionId === this.state.ownInstitution?.id);
     };
 
     private onDeleteOffer = async (id: string) => {
@@ -107,7 +107,7 @@ class HomeScreen extends Component<Props, State> {
 
     private filterOffer = () => {
         return (this.state.angebote || [])
-            .filter(angebot => angebot.institution.id === this.state.ownInstitution?.id);
+            .filter(angebot => angebot.institutionId === this.state.ownInstitution?.id);
     };
 
     componentDidMount = async () => {

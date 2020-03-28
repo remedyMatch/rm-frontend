@@ -73,10 +73,6 @@ const InfoDialog: React.FC<Props> = props => {
                             <span className={classes.right}>{props.item.standort}</span>
                         </div>
                         <div className={classes.row}>
-                            <span className={classes.left}>Anbieter</span>
-                            <span className={classes.right}>{props.item.institution.name}</span>
-                        </div>
-                        <div className={classes.row}>
                             <span className={classes.left}>Medizinisch</span>
                             <span className={classes.right}>{props.item.medizinisch ? "Ja" : "Nein"}</span>
                         </div>

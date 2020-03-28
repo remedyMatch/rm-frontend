@@ -91,20 +91,11 @@ const OfferDetailsDialog: React.FC<Props> = props => {
                         <span className={classes.left}>Hersteller</span>
                         <span className={classes.right}>{props.item?.artikel.hersteller}</span>
                     </div>
-                    <Typography variant="subtitle1" className={classes.subtitle}>Institution</Typography>
-                    <div className={classes.row}>
-                        <span className={classes.left}>Name</span>
-                        <span className={classes.right}>{props.item?.institution.name}</span>
-                    </div>
-                    <div className={classes.row}>
-                        <span className={classes.left}>Typ</span>
-                        <span className={classes.right}>{props.item?.institution.typ}</span>
-                    </div>
+                    <Typography variant="subtitle1" className={classes.subtitle}>Weitere Details</Typography>
                     <div className={classes.row}>
                         <span className={classes.left}>Standort</span>
-                        <span className={classes.right}>{props.item?.institution.standort}</span>
+                        <span className={classes.right}>{props.item?.standort}</span>
                     </div>
-                    <Typography variant="subtitle1" className={classes.subtitle}>Weitere Details</Typography>
                     <div className={classes.row}>
                         <span className={classes.left}>Anzahl</span>
                         <span className={classes.right}>{props.item?.anzahl}</span>
@@ -124,10 +115,6 @@ const OfferDetailsDialog: React.FC<Props> = props => {
                     <div className={classes.row}>
                         <span className={classes.left}>Originalverpackt</span>
                         <span className={classes.right}>{props.item?.originalverpackt ? "Ja" : "Nein"}</span>
-                    </div>
-                    <div className={classes.row}>
-                        <span className={classes.left}>Abweichender Standort</span>
-                        <span className={classes.right}>{props.item?.standort}</span>
                     </div>
                     <div className={classes.row}>
                         <span className={classes.left}>Kommentar</span>

@@ -80,7 +80,7 @@ class DemandScreen extends Component<Props, State> {
                     onCancelled={this.onContactCancelled}
                     onSaved={this.onContactSaved}
                     demandId={this.state.contactId}
-                    institutionName={this.state.bedarf?.find(d => d.id === this.state.infoId)?.institution.name} />
+                    standort={this.state.bedarf?.find(d => d.id === this.state.infoId)?.standort} />
             </>
         )
     }

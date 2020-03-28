@@ -11,13 +11,14 @@ interface Props extends WithStylesPublic<typeof styles> {
     onCancelled: () => void;
     onSaved: () => void;
     demandId?: string;
-    institutionName?: string;
+    standort?: string;
 }
 
 interface State {
     comment: string;
     location: string;
     disabled: boolean;
+    amount: number;
     error?: string;
 }
 
@@ -50,6 +51,7 @@ class RespondDemandDialog extends PureComponent<Props, State> {
     state: State = {
         comment: "",
         location: "",
+        amount: 1,
         disabled: false
     };
 
@@ -69,7 +71,8 @@ class RespondDemandDialog extends PureComponent<Props, State> {
         const result = await apiPost("/remedy/bedarf/bedienen", {
             bedarfId: this.props.demandId,
             kommentar: this.state.comment,
-            standort: this.state.location
+            standort: this.state.location,
+            anzahl: this.state.amount
         });
 
         if (result.error) {
@@ -116,7 +119,7 @@ class RespondDemandDialog extends PureComponent<Props, State> {
                 maxWidth="lg"
                 open={this.props.open}
                 onClose={this.onCancel}>
-                <DialogTitle>{this.props.institutionName} kontaktieren</DialogTitle>
+                <DialogTitle>{this.props.standort} kontaktieren</DialogTitle>
                 <DialogContent>
                     <div className={classes.content}>
                         <ErrorToast error={this.state.error} onClose={this.onCloseError}/>
@@ -124,6 +127,13 @@ class RespondDemandDialog extends PureComponent<Props, State> {
                             label="Standort des Artikels"
                             changeListener={this.setLocation}
                             value={this.state.location}
+                            disabled={this.state.disabled} />
+                        <FormTextInput
+                            min= {1}
+                            label="Anzahl"
+                            type="number"
+                            changeListener={(value: string) =>  this.setState({amount: +value})}
+                            value={""+this.state.amount}
                             disabled={this.state.disabled} />
                         <TextareaAutosize
                             rowsMin={3}

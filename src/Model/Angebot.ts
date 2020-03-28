@@ -11,5 +11,5 @@ export interface Angebot {
     steril: boolean;
     originalverpackt: boolean;
     medizinisch: boolean;
-    institution: Institution;
+    institutionId: string;
 }

@@ -42,7 +42,7 @@ interface Props {
         id: string;
         artikel: Artikel;
         anzahl: number;
-        institution: Institution;
+        institutionId: string;
         standort: string;
     }[];
     delete?: {
@@ -65,7 +65,6 @@ const EntryTable: React.FC<Props> = props => {
                         <TableCell className={classes.columnMedium}>Kategorie</TableCell>
                         <TableCell>Artikel</TableCell>
                         <TableCell className={classes.columnSmall}>Anzahl</TableCell>
-                        <TableCell className={classes.columnMedium}>Institution</TableCell>
                         <TableCell className={classes.columnMedium}>Standort</TableCell>
                         {props.delete && <TableCell className={classes.columnSmall}/>}
                         {props.details && <TableCell className={classes.columnSmall}/>}
@@ -77,11 +76,10 @@ const EntryTable: React.FC<Props> = props => {
                             <TableCell component="th" scope="row">{row.artikel.artikelKategorie.name}</TableCell>
                             <TableCell>{row.artikel.name}</TableCell>
                             <TableCell>{row.anzahl}</TableCell>
-                            <TableCell>{row.institution.name}</TableCell>
                             <TableCell>{row.standort}</TableCell>
                             {props.delete && (
                                 <TableCell>
-                                    {row.institution.id === props.delete.institutionId && (
+                                    {row.institutionId === props.delete.institutionId && (
                                         <IconButton
                                             className={classes.iconButton}
                                             onClick={() => props.delete!.onDelete(row.id)}>

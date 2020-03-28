@@ -10,6 +10,7 @@ interface Props {
     changeListener: (newValue: string) => void;
     disabled?: boolean;
     type?: string;
+    min?: number;
 }
 
 export const FormTextInput: React.FC<Props> = props => {
@@ -59,6 +60,7 @@ export const FormTextInput: React.FC<Props> = props => {
 
     return (
         <TextField
+        style={{margin: "5px 0px"}}
             size="small"
             variant="filled"
             type={props.type || "text"}
@@ -70,7 +72,10 @@ export const FormTextInput: React.FC<Props> = props => {
             disabled={props.disabled || false}
             InputProps={{
                 classes: inputClasses,
-                disableUnderline: true
+                disableUnderline: true,
+                inputProps: {
+                    min: props.min
+                }
             }}
         />
     );
