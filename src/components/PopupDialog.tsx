@@ -51,11 +51,9 @@ const getMaxWidth = (width: Width) => {
 
 const useStyles = makeStyles({
     content: (props: Props) => ({
-        width: getCSSWidth(props.width),
-        paddingBottom: "16px"
+        width: getCSSWidth(props.width)
     }),
     children: {
-        marginTop: "16px",
         display: "flex",
         flexDirection: "column"
     }

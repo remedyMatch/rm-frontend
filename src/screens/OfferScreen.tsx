@@ -27,17 +27,12 @@ interface State {
 const styles = (theme: Theme) =>
     createStyles({
         tableHeader: {
-            marginTop: "16px",
-            marginBottom: "16px",
             display: "flex",
             justifyContent: "space-between"
         },
         searchInput: {
             width: "40%",
             minWidth: "200px"
-        },
-        button: {
-            margin: "8px 0px"
         }
     });
 
@@ -59,7 +54,6 @@ class OfferScreen extends Component<Props, State> {
                         changeListener={this.setFilter}
                         value={this.state.searchFilter}/>
                     <FormButton
-                        className={classes.button}
                         onClick={() => this.setState(state => ({addDialogOpen: !state.addDialogOpen}))}>
                         Angebot anlegen
                     </FormButton>
@@ -72,6 +66,7 @@ class OfferScreen extends Component<Props, State> {
                     open={this.state.addDialogOpen}
                     onCancelled={this.onAddCancelled}
                     onSaved={this.onAddSaved}
+                    institution={this.props.eigeneInstitution}
                     artikel={this.props.artikel || []}/>
                 <OfferDetailsDialog
                     open={!!this.state.infoId}

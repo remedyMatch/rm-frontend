@@ -54,7 +54,7 @@ class RespondOfferDialog extends PureComponent<Props, State> {
 
     private onSave = () => {
         handleDialogButton(
-            this.setState,
+            this.setState.bind(this),
             this.props.onSaved,
             () => validate(
                 defined(this.props.offerId, "Angebot nicht gesetzt!")

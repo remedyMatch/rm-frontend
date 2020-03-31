@@ -36,7 +36,7 @@ class ConfirmReceiptTaskDialog extends PureComponent<Props, State> {
 
     private onSave = () => {
         handleDialogButton(
-            this.setState,
+            this.setState.bind(this),
             this.props.onFinished,
             () => validate(
                 defined(this.props.task, "Aufgabe nicht gesetzt!")

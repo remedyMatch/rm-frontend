@@ -55,7 +55,7 @@ class RespondDemandDialog extends PureComponent<Props, State> {
 
     private onSave = async () => {
         handleDialogButton(
-            this.setState,
+            this.setState.bind(this),
             this.props.onSaved,
             () => validate(
                 defined(this.props.demandId, "Bedarf nicht gesetzt!")

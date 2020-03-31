@@ -22,8 +22,6 @@ interface State {
 const styles = (theme: Theme) =>
     createStyles({
         tableHeader: {
-            marginTop: "16px",
-            marginBottom: "16px",
             display: "flex",
             justifyContent: "space-between"
         },

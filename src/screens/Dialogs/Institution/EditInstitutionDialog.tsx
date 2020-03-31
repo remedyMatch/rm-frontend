@@ -1,14 +1,14 @@
 import React, {Component} from "react";
 import {createStyles, Theme, withStyles} from "@material-ui/core/styles";
 import {TextField} from "@material-ui/core";
-import {WithStylesPublic} from "../../util/WithStylesPublic";
-import {apiPut} from "../../util/ApiUtils";
+import {WithStylesPublic} from "../../../util/WithStylesPublic";
+import {apiPut} from "../../../util/ApiUtils";
 import {Autocomplete} from "@material-ui/lab";
-import {Institution} from "../../Domain/Institution";
-import {FormTextInput} from "../../components/FormTextInput";
-import PopupDialog from "../../components/PopupDialog";
-import {defined, stringLength, validate} from "../../util/ValidationUtils";
-import {handleDialogButton} from "../../util/DialogUtils";
+import {Institution} from "../../../Domain/Institution";
+import {FormTextInput} from "../../../components/FormTextInput";
+import PopupDialog from "../../../components/PopupDialog";
+import {defined, stringLength, validate} from "../../../util/ValidationUtils";
+import {handleDialogButton} from "../../../util/DialogUtils";
 
 interface Props extends WithStylesPublic<typeof styles> {
     open: boolean;
@@ -21,7 +21,6 @@ interface Props extends WithStylesPublic<typeof styles> {
 interface State {
     name: string;
     type?: string;
-    location: string;
     disabled: boolean;
     error?: string;
 }
@@ -29,14 +28,13 @@ interface State {
 const styles = (theme: Theme) =>
     createStyles({
         formRow: {
-            marginTop: "16px"
+            marginTop: "8px"
         }
     });
 
 const initialState = {
     name: "",
     type: undefined,
-    location: "",
     disabled: false,
     error: undefined
 };
@@ -46,16 +44,14 @@ class EditInstitutionDialog extends Component<Props, State> {
 
     private onSave = () => {
         handleDialogButton(
-            this.setState,
+            this.setState.bind(this),
             this.props.onSaved,
             () => validate(
                 defined(this.props.institution, "Institution nicht gesetzt!"),
                 stringLength(this.state.name, "Der Name", 1),
-                stringLength(this.state.location, "Der Standort", 1),
                 defined(this.state.type, "Der Typ muss gesetzt sein!")
             ),
             () => apiPut("/remedy/institution", {
-                standort: this.state.location,
                 name: this.state.name,
                 typ: this.state.type,
                 id: this.props.institution!.id
@@ -77,13 +73,6 @@ class EditInstitutionDialog extends Component<Props, State> {
         this.setState({
             error: undefined,
             name: name
-        });
-    };
-
-    private setLocation = (location: string) => {
-        this.setState({
-            error: undefined,
-            location: location
         });
     };
 
@@ -127,12 +116,6 @@ class EditInstitutionDialog extends Component<Props, State> {
                     value={this.state.name}
                     className={classes.formRow}
                     disabled={this.state.disabled}/>
-                <FormTextInput
-                    label="Standort"
-                    changeListener={this.setLocation}
-                    value={this.state.location}
-                    className={classes.formRow}
-                    disabled={this.state.disabled}/>
             </PopupDialog>
         );
     };
@@ -140,9 +123,8 @@ class EditInstitutionDialog extends Component<Props, State> {
     componentDidUpdate(prevProps: Readonly<Props>, prevState: Readonly<State>, snapshot?: any): void {
         if (!prevProps.institution && this.props.institution) {
             this.setState({
-                name: this.props.institution.name,
-                location: this.props.institution.standort,
-                type: this.props.institution.typ,
+                name: this.props.institution.name || "",
+                type: this.props.institution.typ
             })
         }
     }

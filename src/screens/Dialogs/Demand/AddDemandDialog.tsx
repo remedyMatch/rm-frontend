@@ -1,20 +1,8 @@
 import React, {ChangeEvent, PureComponent} from "react";
 import {createStyles, Theme, withStyles} from "@material-ui/core/styles";
-import {
-    Button,
-    Checkbox,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogTitle,
-    FormControlLabel,
-    TextareaAutosize,
-    TextField,
-    Typography
-} from "@material-ui/core";
+import {Checkbox, FormControlLabel, TextareaAutosize, TextField, Typography} from "@material-ui/core";
 import {Autocomplete} from "@material-ui/lab";
 import {WithStylesPublic} from "../../../util/WithStylesPublic";
-import ErrorToast from "../../../components/ErrorToast";
 import {Artikel} from "../../../Domain/Artikel";
 import {ArtikelKategorie} from "../../../Domain/ArtikelKategorie";
 import {apiPost} from "../../../util/ApiUtils";
@@ -81,7 +69,7 @@ class AddDemandDialog extends PureComponent<Props, State> {
 
     private onSave = async () => {
         handleDialogButton(
-            this.setState,
+            this.setState.bind(this),
             this.props.onSaved,
             () => validate(
                 defined(this.state.category, "Es muss eine Kategorie gewählt werden!"),

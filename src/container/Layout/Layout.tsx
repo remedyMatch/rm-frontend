@@ -19,7 +19,7 @@ const styles = (theme: Theme) =>
             flexGrow: 1,
             display: "flex",
             flexDirection: "column",
-            maxHeight: "calc(100vh - 60px)",
+            minHeight: "calc(100vh - 60px)",
             width: "100vw",
             minWidth: "600px",
             maxWidth: "1200px",

@@ -49,7 +49,7 @@ class CancelReceivedOfferDialog extends Component<Props, State> {
 
     private onYes = () => {
         handleDialogButton(
-            this.setState,
+            this.setState.bind(this),
             this.props.onYes,
             () => validate(
                 defined(this.props.request, "Anfrage nicht gesetzt!")

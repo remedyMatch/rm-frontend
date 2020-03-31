@@ -8,6 +8,7 @@ interface Props {
     onClick?: () => void;
     type?: "button" | "submit" | "reset";
     size?: "small" | "medium" | "large";
+    variant?: "text" | "outlined" | "contained";
 }
 
 export const FormButton: React.FC<Props> = props => {
@@ -26,7 +27,7 @@ export const FormButton: React.FC<Props> = props => {
     return (
         <Button className={[inputClasses.root, props.className || ""].join(" ")}
                 disabled={props.disabled || false}
-                variant={"contained"}
+                variant={props.variant || "contained"}
                 color="secondary"
                 disableElevation
                 onClick={props.onClick}

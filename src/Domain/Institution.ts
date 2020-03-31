@@ -1,7 +1,10 @@
+import {InstitutionStandort} from "./InstitutionStandort";
+
 export interface Institution {
     id: string;
     institutionKey: string;
     name: string;
     typ: string;
-    standort: string;
+    hauptstandort?: InstitutionStandort;
+    standorte: InstitutionStandort[];
 }

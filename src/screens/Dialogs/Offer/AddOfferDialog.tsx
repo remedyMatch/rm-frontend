@@ -1,7 +1,7 @@
 import React, {ChangeEvent, PureComponent} from "react";
 import {createStyles, Theme, withStyles} from "@material-ui/core/styles";
-import {Checkbox, FormControlLabel, TextareaAutosize, TextField, Typography} from "@material-ui/core";
-import {Autocomplete} from "@material-ui/lab";
+import {Checkbox, FormControlLabel, Grid, TextareaAutosize, TextField, Typography} from "@material-ui/core";
+import {Autocomplete, createFilterOptions} from "@material-ui/lab";
 import {WithStylesPublic} from "../../../util/WithStylesPublic";
 import {KeyboardDatePicker, MuiPickersUtilsProvider} from "@material-ui/pickers";
 import DateFnsUtils from '@date-io/date-fns';
@@ -11,19 +11,24 @@ import {apiPost} from "../../../util/ApiUtils";
 import PopupDialog from "../../../components/PopupDialog";
 import {handleDialogButton} from "../../../util/DialogUtils";
 import {defined, numberSize, validate} from "../../../util/ValidationUtils";
+import {LocationOn} from "@material-ui/icons";
+import {Institution} from "../../../Domain/Institution";
+import {InstitutionStandort} from "../../../Domain/InstitutionStandort";
+import InstitutionScreen from "../../InstitutionScreen";
 
 interface Props extends WithStylesPublic<typeof styles> {
     open: boolean;
     onCancelled: () => void;
     onSaved: () => void;
     artikel: Artikel[];
+    institution?: Institution;
 }
 
 interface State {
     category?: string;
     article?: string;
     amount: number;
-    location: string;
+    location?: string;
     useBefore?: Date;
     comment: string;
     sterile: boolean;
@@ -37,7 +42,7 @@ const initialState = {
     category: undefined,
     article: undefined,
     amount: 0,
-    location: "",
+    location: undefined,
     useBefore: new Date(),
     comment: "",
     sterile: false,
@@ -65,6 +70,20 @@ const styles = (theme: Theme) =>
         caption: {
             textAlign: "right",
             marginTop: "8px"
+        },
+        icon: {
+            color: theme.palette.text.secondary,
+            marginRight: "16px",
+        },
+        address: {
+            "& > p": {
+                margin: "0px"
+            }
+        },
+        popup: {
+            border: "1px solid #CCC",
+            borderRadius: "4px",
+            backgroundColor: "#EEE"
         }
     });
 
@@ -73,11 +92,12 @@ class AddOfferDialog extends PureComponent<Props, State> {
 
     private onSave = async () => {
         handleDialogButton(
-            this.setState,
+            this.setState.bind(this),
             this.props.onSaved,
             () => validate(
                 defined(this.state.category, "Es muss eine Kategorie gewählt werden!"),
                 defined(this.state.article, "Es muss ein Artikel gewählt werden!"),
+                defined(this.state.location, "Es muss ein Standort gewählt werden!"),
                 numberSize(this.state.amount, "Die Anzahl", 1)
             ),
             () => apiPost("/remedy/angebot", {
@@ -120,8 +140,8 @@ class AddOfferDialog extends PureComponent<Props, State> {
         this.setState({amount: parseInt(event.target.value)});
     };
 
-    private setLocation = (event: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
-        this.setState({location: event.target.value});
+    private setLocation = (event: any, location: InstitutionStandort | null) => {
+        this.setState({location: location === null ? undefined : location.id});
     };
 
     private setUseBefore = (useBefore: Date | null) => {
@@ -158,8 +178,17 @@ class AddOfferDialog extends PureComponent<Props, State> {
         return this.props.artikel.filter(artikel => artikel.artikelKategorie.id === this.state.category);
     };
 
+    private getLocationOptions = () => {
+        return ([] as InstitutionStandort[])
+            .concat(this.props.institution?.hauptstandort || [])
+            .concat(this.props.institution?.standorte || []);
+    };
+
     public render = () => {
         const classes = this.props.classes!;
+        const filterOptions = createFilterOptions<InstitutionStandort>({
+            stringify: (option) => Object.values(option).join(" ")
+        });
 
         return (
             <PopupDialog
@@ -182,6 +211,7 @@ class AddOfferDialog extends PureComponent<Props, State> {
                         disabled={this.state.disabled}
                         getOptionLabel={c => c.name}
                         className={classes.formRow}
+                        classes={{listbox: classes.popup}}
                         disableClearable
                         renderInput={params => (
                             <TextField
@@ -198,6 +228,7 @@ class AddOfferDialog extends PureComponent<Props, State> {
                         disabled={this.state.disabled || !this.state.category}
                         disableClearable
                         getOptionLabel={a => a.name}
+                        classes={{listbox: classes.popup}}
                         className={classes.formRow}
                         renderInput={params => (
                             <TextField
@@ -212,16 +243,47 @@ class AddOfferDialog extends PureComponent<Props, State> {
                     <TextField
                         label="Anzahl"
                         type="number"
+                        variant="outlined"
+                        size="small"
                         disabled={this.state.disabled}
                         onChange={this.setAmount}
                         className={classes.formRow}
                         value={this.state.amount}/>
-                    <TextField
-                        label="Standort"
+                    <Autocomplete
+                        size="small"
                         onChange={this.setLocation}
+                        options={this.getLocationOptions()}
+                        classes={{listbox: classes.popup}}
+                        value={this.getLocationOptions().find(l => l.id === this.state.location) || null}
                         disabled={this.state.disabled}
+                        disableClearable
+                        getOptionLabel={standort => standort.name}
+                        filterOptions={filterOptions}
                         className={classes.formRow}
-                        value={this.state.location}/>
+                        renderOption={(standort) => {
+                            return (
+                                <Grid container alignItems="center">
+                                    <Grid item>
+                                        <LocationOn className={classes.icon}/>
+                                    </Grid>
+                                    <Grid item xs>
+                                        <div className={classes.address}>
+                                            <p>{standort.name}</p>
+                                            <p>{standort.strasse}</p>
+                                            <p>{standort.plz} {standort.ort}</p>
+                                            <p>{standort.land}</p>
+                                        </div>
+                                    </Grid>
+                                </Grid>
+                            );
+                        }}
+                        renderInput={params => (
+                            <TextField
+                                {...params}
+                                label="Standort"
+                                variant="outlined"/>
+                        )}
+                    />
                     <KeyboardDatePicker
                         disableToolbar
                         variant="inline"
@@ -276,6 +338,14 @@ class AddOfferDialog extends PureComponent<Props, State> {
             </PopupDialog>
         );
     };
+
+    componentDidUpdate(prevProps: Readonly<Props>, prevState: Readonly<State>, snapshot?: any): void {
+        if(!this.state.location && this.props.institution?.hauptstandort) {
+            this.setState({
+                location: this.props.institution!.hauptstandort!.id
+            })
+        }
+    }
 }
 
 export default withStyles(styles)(AddOfferDialog);

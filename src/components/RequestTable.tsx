@@ -9,8 +9,8 @@ import TableRow from '@material-ui/core/TableRow';
 import {Anfrage} from "../Domain/Anfrage";
 import {Bedarf} from "../Domain/Bedarf";
 import {Angebot} from "../Domain/Angebot";
-import {Button, IconButton} from "@material-ui/core";
-import {Cancel, Info} from "@material-ui/icons";
+import {IconButton} from "@material-ui/core";
+import {Cancel} from "@material-ui/icons";
 
 const useStyles = makeStyles({
     table: {
