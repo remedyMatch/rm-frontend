@@ -2,7 +2,7 @@ import React, {Component} from "react";
 import {DialogContentText} from "@material-ui/core";
 import {Anfrage} from "../../Domain/Anfrage";
 import {apiDelete} from "../../util/ApiUtils";
-import PopupDialog from "../../components/PopupDialog";
+import PopupDialog from "../../components/Dialog/PopupDialog";
 import {defined, validate} from "../../util/ValidationUtils";
 import {handleDialogButton} from "../../util/DialogUtils";
 

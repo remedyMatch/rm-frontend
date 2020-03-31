@@ -1,6 +1,6 @@
 import React, {ChangeEvent, PureComponent} from "react";
 import {createStyles, Theme, withStyles} from "@material-ui/core/styles";
-import {Checkbox, FormControlLabel, TextareaAutosize, TextField, Typography} from "@material-ui/core";
+import {TextareaAutosize, TextField, Typography} from "@material-ui/core";
 import {Autocomplete} from "@material-ui/lab";
 import {WithStylesPublic} from "../../../util/WithStylesPublic";
 import {Artikel} from "../../../Domain/Artikel";
@@ -8,20 +8,25 @@ import {ArtikelKategorie} from "../../../Domain/ArtikelKategorie";
 import {apiPost} from "../../../util/ApiUtils";
 import {handleDialogButton} from "../../../util/DialogUtils";
 import {defined, numberSize, validate} from "../../../util/ValidationUtils";
-import PopupDialog from "../../../components/PopupDialog";
+import PopupDialog from "../../../components/Dialog/PopupDialog";
+import {FormLocationPicker} from "../../../components/Form/FormLocationPicker";
+import {FormCheckbox} from "../../../components/Form/FormCheckbox";
+import {InstitutionStandort} from "../../../Domain/InstitutionStandort";
+import {Institution} from "../../../Domain/Institution";
 
 interface Props extends WithStylesPublic<typeof styles> {
     open: boolean;
     onCancelled: () => void;
     onSaved: () => void;
     artikel: Artikel[];
+    institution?: Institution;
 }
 
 interface State {
     category?: string;
     article?: string;
     amount: number;
-    location: string;
+    location?: string;
     comment: string;
     sterile: boolean;
     sealed: boolean;
@@ -34,7 +39,7 @@ const initialState = {
     category: undefined,
     article: undefined,
     amount: 0,
-    location: "",
+    location: undefined,
     comment: "",
     sterile: false,
     sealed: false,
@@ -61,6 +66,11 @@ const styles = (theme: Theme) =>
         caption: {
             textAlign: "right",
             marginTop: "8px"
+        },
+        popup: {
+            border: "1px solid #CCC",
+            borderRadius: "4px",
+            backgroundColor: "#FCFCFC"
         }
     });
 
@@ -81,7 +91,9 @@ class AddDemandDialog extends PureComponent<Props, State> {
                     id: this.state.article
                 },
                 anzahl: this.state.amount,
-                standort: this.state.location,
+                standort: {
+                    id: this.state.location
+                },
                 steril: this.state.sterile,
                 originalverpackt: this.state.sealed,
                 medizinisch: this.state.medical,
@@ -95,7 +107,6 @@ class AddDemandDialog extends PureComponent<Props, State> {
         this.setState({
             error: undefined
         });
-
         this.props.onCancelled();
     };
 
@@ -115,23 +126,23 @@ class AddDemandDialog extends PureComponent<Props, State> {
         this.setState({amount: parseInt(event.target.value)});
     };
 
-    private setLocation = (event: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
-        this.setState({location: event.target.value});
+    private setLocation = (location: InstitutionStandort | null) => {
+        this.setState({location: location === null ? undefined : location.id});
     };
 
     private setComment = (event: ChangeEvent<HTMLTextAreaElement>) => {
         this.setState({comment: event.target.value});
     };
 
-    private setSterile = (event: any, sterile: boolean) => {
+    private setSterile = (sterile: boolean) => {
         this.setState({sterile});
     };
 
-    private setSealed = (event: any, sealed: boolean) => {
+    private setSealed = (sealed: boolean) => {
         this.setState({sealed});
     };
 
-    private setMedical = (event: any, medical: boolean) => {
+    private setMedical = (medical: boolean) => {
         this.setState({medical});
     };
 
@@ -147,6 +158,12 @@ class AddDemandDialog extends PureComponent<Props, State> {
 
     private getArticleOptions = () => {
         return this.props.artikel.filter(artikel => artikel.artikelKategorie.id === this.state.category);
+    };
+
+    private getLocationOptions = () => {
+        return ([] as InstitutionStandort[])
+            .concat(this.props.institution?.hauptstandort || [])
+            .concat(this.props.institution?.standorte || []);
     };
 
     public render = () => {
@@ -172,6 +189,7 @@ class AddDemandDialog extends PureComponent<Props, State> {
                     disabled={this.state.disabled}
                     getOptionLabel={c => c.name}
                     className={classes.formRow}
+                    classes={{listbox: classes.popup}}
                     disableClearable
                     renderInput={params => (
                         <TextField
@@ -185,9 +203,10 @@ class AddDemandDialog extends PureComponent<Props, State> {
                     onChange={this.setArticle}
                     options={this.getArticleOptions()}
                     value={this.getArticleOptions().find(n => n.id === this.state.article) || null}
-                    disabled={this.state.disabled || this.state.category === null}
+                    disabled={this.state.disabled || !this.state.category}
                     disableClearable
                     getOptionLabel={a => a.name}
+                    classes={{listbox: classes.popup}}
                     className={classes.formRow}
                     renderInput={params => (
                         <TextField
@@ -197,50 +216,39 @@ class AddDemandDialog extends PureComponent<Props, State> {
                     )}
                 />
                 <Typography variant="caption" className={classes.caption}>
-                    Kategorie oder Name nicht gefunden? <a href="#">Vorschlagen</a>
+                    Kategorie oder Artikel nicht gefunden? Schreib uns eine E-Mail!
                 </Typography>
                 <TextField
                     label="Anzahl"
                     type="number"
+                    variant="outlined"
+                    size="small"
                     disabled={this.state.disabled}
                     onChange={this.setAmount}
                     className={classes.formRow}
                     value={this.state.amount}/>
-                <TextField
-                    label="Standort"
-                    onChange={this.setLocation}
+                <FormLocationPicker
+                    options={this.getLocationOptions()}
+                    onSelect={this.setLocation}
+                    className={classes.formRow}
                     disabled={this.state.disabled}
-                    className={classes.formRow}
-                    value={this.state.location}/>
-                <FormControlLabel
-                    className={classes.formRow}
-                    control={(
-                        <Checkbox
-                            disabled={this.state.disabled}
-                            checked={this.state.sterile}
-                            onChange={this.setSterile}
-                        />
-                    )}
+                    valueId={this.state.location}/>
+                <FormCheckbox
+                    disabled={this.state.disabled}
+                    checked={this.state.sterile}
+                    onChange={this.setSterile}
                     label="Produkt ist steril"
                 />
-                <FormControlLabel
-                    control={(
-                        <Checkbox
-                            disabled={this.state.disabled}
-                            checked={this.state.sealed}
-                            onChange={this.setSealed}
-                        />
-                    )}
+                <FormCheckbox
+                    disabled={this.state.disabled}
+                    checked={this.state.sealed}
+                    onChange={this.setSealed}
                     label="Produkt ist originalverpackt"
                 />
-                <FormControlLabel
-                    control={(
-                        <Checkbox
-                            disabled={this.state.disabled}
-                            checked={this.state.medical}
-                            onChange={this.setMedical}
-                        />
-                    )}
+                <FormCheckbox
+                    disabled={this.state.disabled}
+                    checked={this.state.medical}
+                    onChange={this.setMedical}
                     label="Produkt ist medizinisch"
                 />
                 <TextareaAutosize

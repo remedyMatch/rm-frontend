@@ -3,8 +3,8 @@ import {createStyles, Theme, withStyles} from "@material-ui/core/styles";
 import {WithStylesPublic} from "../../../util/WithStylesPublic";
 import {apiPut} from "../../../util/ApiUtils";
 import {Institution} from "../../../Domain/Institution";
-import {FormTextInput} from "../../../components/FormTextInput";
-import PopupDialog from "../../../components/PopupDialog";
+import {FormTextInput} from "../../../components/Form/FormTextInput";
+import PopupDialog from "../../../components/Dialog/PopupDialog";
 import {stringLength, validate} from "../../../util/ValidationUtils";
 import {handleDialogButton} from "../../../util/DialogUtils";
 
@@ -63,8 +63,7 @@ class EditLocationDialog extends Component<Props, State> {
                 plz: this.state.plz,
                 ort: this.state.ort,
                 land: this.state.land
-            }),
-            initialState
+            })
         );
     };
 
@@ -117,6 +116,7 @@ class EditLocationDialog extends Component<Props, State> {
 
         return (
             <PopupDialog
+                fullWidth={false}
                 open={this.props.open}
                 error={this.state.error}
                 title="Hauptstandort bearbeiten"
@@ -160,15 +160,25 @@ class EditLocationDialog extends Component<Props, State> {
         );
     };
 
+    private setData = () => {
+        this.setState({
+            name: this.props.institution!.hauptstandort?.name || "",
+            strasse: this.props.institution!.hauptstandort?.strasse || "",
+            plz: this.props.institution!.hauptstandort?.plz || "",
+            ort: this.props.institution!.hauptstandort?.ort || "",
+            land: this.props.institution!.hauptstandort?.land || ""
+        });
+    };
+
+    componentDidMount(): void {
+        if(this.props.institution) {
+            this.setData();
+        }
+    }
+
     componentDidUpdate(prevProps: Readonly<Props>, prevState: Readonly<State>, snapshot?: any): void {
         if (!prevProps.institution && this.props.institution) {
-            this.setState({
-                name: this.props.institution.hauptstandort?.name || "",
-                strasse: this.props.institution.hauptstandort?.strasse || "",
-                plz: this.props.institution.hauptstandort?.plz || "",
-                ort: this.props.institution.hauptstandort?.ort || "",
-                land: this.props.institution.hauptstandort?.land || ""
-            })
+            this.setData();
         }
     }
 }

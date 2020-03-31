@@ -1,14 +1,17 @@
 import {Artikel} from "./Artikel";
-import {Institution} from "./Institution";
+import {InstitutionStandort} from "./InstitutionStandort";
 
 export interface Bedarf {
     id: string;
     artikel: Artikel;
     anzahl: number;
+    standort: InstitutionStandort;
     kommentar: string;
-    standort: string;
+    rest: number;
+    institutionId: string;
     steril: boolean;
     originalverpackt: boolean;
     medizinisch: boolean;
-    institutionId: string;
+    bedient: boolean;
+    entfernung: number;
 }

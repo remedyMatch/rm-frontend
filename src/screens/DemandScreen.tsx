@@ -2,10 +2,10 @@ import React, {Component} from "react";
 import {createStyles, Theme, withStyles} from "@material-ui/core/styles";
 import {WithStylesPublic} from "../util/WithStylesPublic";
 import {apiDelete} from "../util/ApiUtils";
-import {FormTextInput} from "../components/FormTextInput";
-import {FormButton} from "../components/FormButton";
+import {FormTextInput} from "../components/Form/FormTextInput";
+import {FormButton} from "../components/Form/FormButton";
 import AddDemandDialog from "./Dialogs/Demand/AddDemandDialog";
-import EntryTable from "../components/EntryTable";
+import EntryTable from "../components/Table/EntryTable";
 import DemandDetailsDialog from "./Dialogs/Demand/DemandDetailsDialog";
 import RespondDemandDialog from "./Dialogs/Demand/RespondDemandDialog";
 import {RootDispatch, RootState} from "../State/Store";
@@ -27,17 +27,12 @@ interface State {
 const styles = (theme: Theme) =>
     createStyles({
         tableHeader: {
-            marginTop: "16px",
-            marginBottom: "16px",
             display: "flex",
             justifyContent: "space-between"
         },
         searchInput: {
             width: "40%",
             minWidth: "200px"
-        },
-        button: {
-            margin: "8px 0px"
         }
     });
 
@@ -59,7 +54,6 @@ class DemandScreen extends Component<Props, State> {
                         changeListener={this.setFilter}
                         value={this.state.searchFilter}/>
                     <FormButton
-                        className={classes.button}
                         onClick={() => this.setState(state => ({addDialogOpen: !state.addDialogOpen}))}>
                         Bedarf anlegen
                     </FormButton>
@@ -72,7 +66,8 @@ class DemandScreen extends Component<Props, State> {
                     open={this.state.addDialogOpen}
                     onCancelled={this.onAddCancelled}
                     onSaved={this.onAddSaved}
-                    artikel={this.props.artikel || []}/>
+                    artikel={this.props.artikel || []}
+                    institution={this.props.eigeneInstitution}/>
                 <DemandDetailsDialog
                     open={!!this.state.infoId}
                     onDone={this.onDetailsDone}
@@ -82,8 +77,8 @@ class DemandScreen extends Component<Props, State> {
                     open={!!this.state.contactId}
                     onCancelled={this.onContactCancelled}
                     onSaved={this.onContactSaved}
-                    demandId={this.state.contactId}
-                    standort={this.props.bedarfe?.find(d => d.id === this.state.infoId)?.standort} />
+                    bedarf={this.props.bedarfe?.find(d => d.id === this.state.contactId)}
+                    eigeneInstitution={this.props.eigeneInstitution}/>
             </>
         )
     }

@@ -3,8 +3,8 @@ import {createStyles, Theme, withStyles} from "@material-ui/core/styles";
 import {WithStylesPublic} from "../../../util/WithStylesPublic";
 import {apiPost} from "../../../util/ApiUtils";
 import {Institution} from "../../../Domain/Institution";
-import {FormTextInput} from "../../../components/FormTextInput";
-import PopupDialog from "../../../components/PopupDialog";
+import {FormTextInput} from "../../../components/Form/FormTextInput";
+import PopupDialog from "../../../components/Dialog/PopupDialog";
 import {stringLength, validate} from "../../../util/ValidationUtils";
 import {handleDialogButton} from "../../../util/DialogUtils";
 
@@ -116,6 +116,7 @@ class AddLocationDialog extends Component<Props, State> {
 
         return (
             <PopupDialog
+                fullWidth={false}
                 open={this.props.open}
                 error={this.state.error}
                 title="Weiteren Standort hinzufügen"

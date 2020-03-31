@@ -2,8 +2,8 @@ import React from "react";
 import {makeStyles, Theme} from "@material-ui/core/styles";
 import {Typography} from "@material-ui/core";
 import {Bedarf} from "../../../Domain/Bedarf";
-import {FormButton} from "../../../components/FormButton";
-import PopupDialog from "../../../components/PopupDialog";
+import {FormButton} from "../../../components/Form/FormButton";
+import PopupDialog from "../../../components/Dialog/PopupDialog";
 
 interface Props {
     open: boolean;
@@ -76,11 +76,11 @@ const DemandDetailsDialog: React.FC<Props> = props => {
             <Typography variant="subtitle1" className={classes.subtitle}>Weitere Details</Typography>
             <div className={classes.row}>
                 <span className={classes.left}>Standort</span>
-                <span className={classes.right}>{props.item?.standort}</span>
+                <span className={classes.right}>{props.item?.standort.ort}</span>
             </div>
             <div className={classes.row}>
                 <span className={classes.left}>Anzahl</span>
-                <span className={classes.right}>{props.item?.anzahl}</span>
+                <span className={classes.right}>{props.item?.rest}</span>
             </div>
             <div className={classes.row}>
                 <span className={classes.left}>Medizinisch</span>

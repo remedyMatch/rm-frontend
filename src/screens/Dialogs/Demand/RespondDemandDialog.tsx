@@ -3,22 +3,26 @@ import {createStyles, Theme, withStyles} from "@material-ui/core/styles";
 import {TextareaAutosize} from "@material-ui/core";
 import {WithStylesPublic} from "../../../util/WithStylesPublic";
 import {apiPost} from "../../../util/ApiUtils";
-import {FormTextInput} from "../../../components/FormTextInput";
+import {FormTextInput} from "../../../components/Form/FormTextInput";
 import {handleDialogButton} from "../../../util/DialogUtils";
-import {defined, validate} from "../../../util/ValidationUtils";
-import PopupDialog from "../../../components/PopupDialog";
+import {defined, numberSize, validate} from "../../../util/ValidationUtils";
+import PopupDialog from "../../../components/Dialog/PopupDialog";
+import {InstitutionStandort} from "../../../Domain/InstitutionStandort";
+import {Bedarf} from "../../../Domain/Bedarf";
+import {Institution} from "../../../Domain/Institution";
+import {FormLocationPicker} from "../../../components/Form/FormLocationPicker";
 
 interface Props extends WithStylesPublic<typeof styles> {
     open: boolean;
     onCancelled: () => void;
     onSaved: () => void;
-    demandId?: string;
-    standort?: string;
+    bedarf?: Bedarf;
+    eigeneInstitution?: Institution;
 }
 
 interface State {
     comment: string;
-    location: string;
+    location?: string;
     disabled: boolean;
     amount: number;
     error?: string;
@@ -26,7 +30,7 @@ interface State {
 
 const initialState = {
     comment: "",
-    location: "",
+    location: undefined,
     disabled: false,
     amount: 0,
     error: undefined
@@ -34,6 +38,13 @@ const initialState = {
 
 const styles = (theme: Theme) =>
     createStyles({
+        caption: {
+            textAlign: "right",
+            marginTop: "8px"
+        },
+        formRow: {
+            marginTop: "16px"
+        },
         comment: {
             marginTop: "16px",
             resize: "none",
@@ -43,10 +54,6 @@ const styles = (theme: Theme) =>
                 outline: "none",
                 border: "2px solid " + theme.palette.primary.main
             }
-        },
-        caption: {
-            textAlign: "right",
-            marginTop: "8px"
         }
     });
 
@@ -58,12 +65,15 @@ class RespondDemandDialog extends PureComponent<Props, State> {
             this.setState.bind(this),
             this.props.onSaved,
             () => validate(
-                defined(this.props.demandId, "Bedarf nicht gesetzt!")
+                defined(this.props.bedarf, "Bedarf nicht gesetzt!"),
+                defined(this.props.eigeneInstitution, "Eigene Institution nicht gesetzt!"),
+                defined(this.state.location, "Es muss ein Standort gesetzt werden!"),
+                numberSize(this.state.amount, "Die Anzahl", 1)
             ),
             () => apiPost("/remedy/bedarf/bedienen", {
-                bedarfId: this.props.demandId,
+                bedarfId: this.props.bedarf!.id,
                 kommentar: this.state.comment,
-                standort: this.state.location,
+                standortId: this.state.location,
                 anzahl: this.state.amount
             }),
             initialState
@@ -82,12 +92,18 @@ class RespondDemandDialog extends PureComponent<Props, State> {
         this.setState({error: undefined});
     };
 
-    private setLocation = (location: string) => {
-        this.setState({location: location});
-    };
-
     private setComment = (event: ChangeEvent<HTMLTextAreaElement>) => {
         this.setState({comment: event.target.value});
+    };
+
+    private setLocation = (location: InstitutionStandort | null) => {
+        this.setState({location: location === null ? undefined : location.id});
+    };
+
+    private getLocationOptions = () => {
+        return ([] as InstitutionStandort[])
+            .concat(this.props.eigeneInstitution?.hauptstandort || [])
+            .concat(this.props.eigeneInstitution?.standorte || []);
     };
 
     public render = () => {
@@ -105,17 +121,19 @@ class RespondDemandDialog extends PureComponent<Props, State> {
                 onFirst={this.onCancel}
                 onSecond={this.onSave}
                 onCloseError={this.onCloseError}>
-                <FormTextInput
-                    label="Standort des Artikels"
-                    changeListener={this.setLocation}
-                    value={this.state.location}
-                    disabled={this.state.disabled}/>
+                <FormLocationPicker
+                    label="Artikel-Standort"
+                    options={this.getLocationOptions()}
+                    onSelect={this.setLocation}
+                    disabled={this.state.disabled}
+                    valueId={this.state.location}/>
                 <FormTextInput
                     min={1}
                     label="Anzahl"
                     type="number"
                     changeListener={(value: string) => this.setState({amount: +value})}
                     value={"" + this.state.amount}
+                    className={classes.formRow}
                     disabled={this.state.disabled}/>
                 <TextareaAutosize
                     rowsMin={3}

@@ -1,29 +1,21 @@
-import {blueGrey, deepOrange, grey, indigo} from "@material-ui/core/colors";
-import {createMuiTheme, responsiveFontSizes, Theme} from "@material-ui/core/styles";
-import {PaletteType} from "@material-ui/core";
+import {createMuiTheme, responsiveFontSizes} from "@material-ui/core/styles";
 
-const lightTheme = responsiveFontSizes(
+const defaultTheme = responsiveFontSizes(
     createMuiTheme({
         palette: {
-            primary: {main: deepOrange[500]},
-            secondary: {main: indigo[500]},
+            primary: {
+                main: "#09425A",
+                light: "#3F6D87",
+                dark: "#001C31"
+            },
+            secondary: {
+                main: "#0099BA",
+                light: "#5ACAEC",
+                dark: "#006B8A"
+            },
             type: "light"
         }
     })
 );
-const darkTheme = responsiveFontSizes(
-    createMuiTheme({
-        palette: {
-            primary: {main: blueGrey[700]},
-            secondary: {main: grey[200]},
-            type: "dark"
-        }
-    })
-);
 
-const themes: { [key in PaletteType]: Theme } = {
-    light: lightTheme,
-    dark: darkTheme
-};
-
-export default themes;
+export default defaultTheme;

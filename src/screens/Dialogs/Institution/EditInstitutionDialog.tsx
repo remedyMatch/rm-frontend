@@ -5,8 +5,8 @@ import {WithStylesPublic} from "../../../util/WithStylesPublic";
 import {apiPut} from "../../../util/ApiUtils";
 import {Autocomplete} from "@material-ui/lab";
 import {Institution} from "../../../Domain/Institution";
-import {FormTextInput} from "../../../components/FormTextInput";
-import PopupDialog from "../../../components/PopupDialog";
+import {FormTextInput} from "../../../components/Form/FormTextInput";
+import PopupDialog from "../../../components/Dialog/PopupDialog";
 import {defined, stringLength, validate} from "../../../util/ValidationUtils";
 import {handleDialogButton} from "../../../util/DialogUtils";
 
@@ -88,6 +88,7 @@ class EditInstitutionDialog extends Component<Props, State> {
 
         return (
             <PopupDialog
+                fullWidth={false}
                 open={this.props.open}
                 error={this.state.error}
                 title="Institution bearbeiten"

@@ -1,9 +1,9 @@
 import React, {Component} from "react";
 import {createStyles, Theme, withStyles} from "@material-ui/core/styles";
 import {WithStylesPublic} from "../util/WithStylesPublic";
-import EntryTable from "../components/EntryTable";
-import {FormTextInput} from "../components/FormTextInput";
-import {FormButton} from "../components/FormButton";
+import EntryTable from "../components/Table/EntryTable";
+import {FormTextInput} from "../components/Form/FormTextInput";
+import {FormButton} from "../components/Form/FormButton";
 import AddOfferDialog from "./Dialogs/Offer/AddOfferDialog";
 import {apiDelete} from "../util/ApiUtils";
 import OfferDetailsDialog from "./Dialogs/Offer/OfferDetailsDialog";
@@ -77,7 +77,8 @@ class OfferScreen extends Component<Props, State> {
                     open={!!this.state.contactId}
                     onCancelled={this.onContactCancelled}
                     onSaved={this.onContactSaved}
-                    offerId={this.state.contactId}
+                    angebot={this.props.angebote?.find(item => item.id === this.state.contactId)}
+                    eigeneInstitution={this.props.eigeneInstitution}
                     />
             </>
         )

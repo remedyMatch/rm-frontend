@@ -1,9 +1,9 @@
 export interface Aufgabe {
     taskId: string;
-    processInstanceId: string;
+    prozessInstanceId: string;
     institution: string;
     objektId: string;
+    displayName: string;
     taskKey: string;
     taskName: string;
-    displayName: string;
 }

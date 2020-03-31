@@ -2,7 +2,7 @@ import {makeStyles, Theme} from "@material-ui/core/styles";
 import {default as React} from "react";
 import {AssignmentTurnedIn, Home, HomeOutlined, LocalOffer, Lock, Search} from "@material-ui/icons";
 import {RouteComponentProps, withRouter} from "react-router-dom";
-import MenuButton from "../../components/MenuButton";
+import MenuButton from "../../components/Navigation/MenuButton";
 import LoginService from "../../util/LoginService";
 
 interface Props extends RouteComponentProps {
@@ -12,7 +12,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     root: {
         position: "sticky",
         top: 0,
-        backgroundColor: theme.palette.primary.dark,
+        backgroundColor: theme.palette.primary.main,
         zIndex: theme.zIndex.appBar
     },
     header: {

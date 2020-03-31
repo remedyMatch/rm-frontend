@@ -7,7 +7,7 @@ import {RootDispatch, RootState} from "../State/Store";
 import {loadEigeneInstitution} from "../State/EigeneInstitutionState";
 import {connect, ConnectedProps} from "react-redux";
 import {loadInstitutionTypen} from "../State/InstitutionTypenState";
-import {FormButton} from "../components/FormButton";
+import {FormButton} from "../components/Form/FormButton";
 import clsx from "clsx";
 import EditLocationDialog from "./Dialogs/Institution/EditLocationDialog";
 import AddLocationDialog from "./Dialogs/Institution/AddLocationDialog";
@@ -158,7 +158,7 @@ class OfferScreen extends Component<Props, State> {
                         Weitere Standorte
                     </Typography>
                     {standorte?.map(standort => (
-                        <div className={clsx(classes.address, classes.additionalAddress)}>
+                        <div className={clsx(classes.address, classes.additionalAddress)} key={standort.id}>
                             <p>{standort.name}</p>
                             <p>{standort.strasse}</p>
                             <p>{standort.plz} {standort.ort}</p>

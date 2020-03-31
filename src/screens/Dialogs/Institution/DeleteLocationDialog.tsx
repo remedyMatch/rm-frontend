@@ -1,7 +1,7 @@
 import React, {Component} from "react";
 import {DialogContentText} from "@material-ui/core";
 import {apiDelete} from "../../../util/ApiUtils";
-import PopupDialog from "../../../components/PopupDialog";
+import PopupDialog from "../../../components/Dialog/PopupDialog";
 import {defined, validate} from "../../../util/ValidationUtils";
 import {handleDialogButton} from "../../../util/DialogUtils";
 
@@ -48,6 +48,7 @@ class DeleteLocationDialog extends Component<Props, State> {
     public render = () => {
         return (
             <PopupDialog
+                fullWidth={false}
                 open={this.props.open}
                 error={this.state.error}
                 title="Weiteren Standort löschen"

@@ -8,7 +8,8 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import {IconButton} from "@material-ui/core";
 import {Delete, Info} from "@material-ui/icons";
-import {Artikel} from "../Domain/Artikel";
+import {Bedarf} from "../../Domain/Bedarf";
+import {Angebot} from "../../Domain/Angebot";
 
 const useStyles = makeStyles((theme: Theme) => ({
     table: {
@@ -33,17 +34,14 @@ const useStyles = makeStyles((theme: Theme) => ({
         textAlign: "center",
         backgroundColor: "rgba(0,0,0,0.1)",
         padding: "8px"
+    },
+    distance: {
+        whiteSpace: "nowrap"
     }
 }));
 
 interface Props {
-    rows: {
-        id: string;
-        artikel: Artikel;
-        anzahl: number;
-        institutionId: string;
-        standort: string;
-    }[];
+    rows: (Angebot | Bedarf)[];
     delete?: {
         institutionId: string;
         onDelete: (id: string) => void;
@@ -65,17 +63,19 @@ const EntryTable: React.FC<Props> = props => {
                         <TableCell>Artikel</TableCell>
                         <TableCell className={classes.columnSmall}>Anzahl</TableCell>
                         <TableCell className={classes.columnMedium}>Standort</TableCell>
+                        <TableCell className={classes.columnSmall}>Entfernung</TableCell>
                         {props.delete && <TableCell className={classes.columnSmall}/>}
                         {props.details && <TableCell className={classes.columnSmall}/>}
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {props.rows.map(row => (
+                    {props.rows.sort((a, b) => a.entfernung - b.entfernung).map(row => (
                         <TableRow key={row.id}>
                             <TableCell component="th" scope="row">{row.artikel.artikelKategorie.name}</TableCell>
                             <TableCell>{row.artikel.name}</TableCell>
-                            <TableCell>{row.anzahl}</TableCell>
-                            <TableCell>{row.standort}</TableCell>
+                            <TableCell>{row.rest}</TableCell>
+                            <TableCell>{row.standort?.ort}</TableCell>
+                            <TableCell className={classes.distance}>{row.entfernung.toFixed(1)} km</TableCell>
                             {props.delete && (
                                 <TableCell>
                                     {row.institutionId === props.delete.institutionId && (

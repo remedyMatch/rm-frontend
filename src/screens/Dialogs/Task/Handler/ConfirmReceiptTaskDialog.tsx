@@ -6,7 +6,7 @@ import {Typography} from "@material-ui/core";
 import {apiPost} from "../../../../util/ApiUtils";
 import {handleDialogButton} from "../../../../util/DialogUtils";
 import {defined, validate} from "../../../../util/ValidationUtils";
-import PopupDialog from "../../../../components/PopupDialog";
+import PopupDialog from "../../../../components/Dialog/PopupDialog";
 
 interface Props extends WithStylesPublic<typeof styles> {
     onCancelled: () => void;

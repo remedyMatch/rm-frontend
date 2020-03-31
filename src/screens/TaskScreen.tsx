@@ -1,9 +1,9 @@
 import React, {Component} from "react";
 import {createStyles, Theme, withStyles} from "@material-ui/core/styles";
 import {WithStylesPublic} from "../util/WithStylesPublic";
-import {FormTextInput} from "../components/FormTextInput";
+import {FormTextInput} from "../components/Form/FormTextInput";
 import {Aufgabe} from "../Domain/Aufgabe";
-import TaskTable from "../components/TaskTable";
+import TaskTable from "../components/Table/TaskTable";
 import EditTaskDialog from "./Dialogs/Task/EditTaskDialog";
 import {RootDispatch, RootState} from "../State/Store";
 import {loadAngebote} from "../State/AngeboteState";

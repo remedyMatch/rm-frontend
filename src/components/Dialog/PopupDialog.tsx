@@ -12,6 +12,7 @@ interface Props {
     error?: string;
     disabled?: boolean;
     className?: string;
+    fullWidth?: boolean;
     onFirst?: () => void;
     onSecond?: () => void;
     firstTitle?: string;
@@ -51,7 +52,7 @@ const getMaxWidth = (width: Width) => {
 
 const useStyles = makeStyles({
     content: (props: Props) => ({
-        width: getCSSWidth(props.width)
+        width: getCSSWidth(props.width),
     }),
     children: {
         display: "flex",
@@ -63,6 +64,7 @@ const PopupDialog: React.FC<Props> = props => {
     const classes = useStyles(props);
     return (
         <Dialog
+            fullWidth={props.fullWidth === undefined ? true : props.fullWidth}
             open={props.open}
             maxWidth={getMaxWidth(props.width)}
             disableBackdropClick>

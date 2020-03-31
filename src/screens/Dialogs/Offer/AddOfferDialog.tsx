@@ -1,20 +1,21 @@
 import React, {ChangeEvent, PureComponent} from "react";
 import {createStyles, Theme, withStyles} from "@material-ui/core/styles";
-import {Checkbox, FormControlLabel, Grid, TextareaAutosize, TextField, Typography} from "@material-ui/core";
-import {Autocomplete, createFilterOptions} from "@material-ui/lab";
+import {TextareaAutosize, TextField, Typography} from "@material-ui/core";
+import {Autocomplete} from "@material-ui/lab";
 import {WithStylesPublic} from "../../../util/WithStylesPublic";
-import {KeyboardDatePicker, MuiPickersUtilsProvider} from "@material-ui/pickers";
+import {DatePicker, MuiPickersUtilsProvider} from "@material-ui/pickers";
 import DateFnsUtils from '@date-io/date-fns';
 import {Artikel} from "../../../Domain/Artikel";
 import {ArtikelKategorie} from "../../../Domain/ArtikelKategorie";
 import {apiPost} from "../../../util/ApiUtils";
-import PopupDialog from "../../../components/PopupDialog";
+import PopupDialog from "../../../components/Dialog/PopupDialog";
 import {handleDialogButton} from "../../../util/DialogUtils";
 import {defined, numberSize, validate} from "../../../util/ValidationUtils";
-import {LocationOn} from "@material-ui/icons";
 import {Institution} from "../../../Domain/Institution";
 import {InstitutionStandort} from "../../../Domain/InstitutionStandort";
-import InstitutionScreen from "../../InstitutionScreen";
+import {de} from "date-fns/locale";
+import {FormLocationPicker} from "../../../components/Form/FormLocationPicker";
+import {FormCheckbox} from "../../../components/Form/FormCheckbox";
 
 interface Props extends WithStylesPublic<typeof styles> {
     open: boolean;
@@ -55,13 +56,19 @@ const initialState = {
 const styles = (theme: Theme) =>
     createStyles({
         formRow: {
-            marginTop: "16px"
+            marginTop: "16px",
+            transitions: theme.transitions.create(["border-color"])
         },
         comment: {
             marginTop: "16px",
             resize: "none",
             fontSize: "14px",
             padding: "16px",
+            borderRadius: "4px",
+            border: "1px solid rgba(0,0,0,0.23)",
+            "&:hover": {
+                border: "1px solid black"
+            },
             "&:focus": {
                 outline: "none",
                 border: "2px solid " + theme.palette.primary.main
@@ -71,19 +78,10 @@ const styles = (theme: Theme) =>
             textAlign: "right",
             marginTop: "8px"
         },
-        icon: {
-            color: theme.palette.text.secondary,
-            marginRight: "16px",
-        },
-        address: {
-            "& > p": {
-                margin: "0px"
-            }
-        },
         popup: {
             border: "1px solid #CCC",
             borderRadius: "4px",
-            backgroundColor: "#EEE"
+            backgroundColor: "#FCFCFC"
         }
     });
 
@@ -105,7 +103,9 @@ class AddOfferDialog extends PureComponent<Props, State> {
                     id: this.state.article
                 },
                 anzahl: this.state.amount,
-                standort: this.state.location,
+                standort: {
+                    id: this.state.location
+                },
                 haltbarkeit: this.state.useBefore,
                 steril: this.state.sterile,
                 originalverpackt: this.state.sealed,
@@ -140,7 +140,7 @@ class AddOfferDialog extends PureComponent<Props, State> {
         this.setState({amount: parseInt(event.target.value)});
     };
 
-    private setLocation = (event: any, location: InstitutionStandort | null) => {
+    private setLocation = (location: InstitutionStandort | null) => {
         this.setState({location: location === null ? undefined : location.id});
     };
 
@@ -152,15 +152,15 @@ class AddOfferDialog extends PureComponent<Props, State> {
         this.setState({comment: event.target.value});
     };
 
-    private setSterile = (event: any, sterile: boolean) => {
+    private setSterile = (sterile: boolean) => {
         this.setState({sterile});
     };
 
-    private setSealed = (event: any, sealed: boolean) => {
+    private setSealed = (sealed: boolean) => {
         this.setState({sealed});
     };
 
-    private setMedical = (event: any, medical: boolean) => {
+    private setMedical = (medical: boolean) => {
         this.setState({medical});
     };
 
@@ -186,10 +186,6 @@ class AddOfferDialog extends PureComponent<Props, State> {
 
     public render = () => {
         const classes = this.props.classes!;
-        const filterOptions = createFilterOptions<InstitutionStandort>({
-            stringify: (option) => Object.values(option).join(" ")
-        });
-
         return (
             <PopupDialog
                 width="lg"
@@ -202,7 +198,7 @@ class AddOfferDialog extends PureComponent<Props, State> {
                 disabled={this.state.disabled}
                 error={this.state.error}
                 onCloseError={this.onCloseError}>
-                <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                <MuiPickersUtilsProvider utils={DateFnsUtils} locale={de}>
                     <Autocomplete
                         size="small"
                         onChange={this.setCategory}
@@ -238,7 +234,7 @@ class AddOfferDialog extends PureComponent<Props, State> {
                         )}
                     />
                     <Typography variant="caption" className={classes.caption}>
-                        Kategorie oder Name nicht gefunden? <a href="#">Vorschlagen</a>
+                        Kategorie oder Artikel nicht gefunden? Schreib uns eine E-Mail!
                     </Typography>
                     <TextField
                         label="Anzahl"
@@ -249,81 +245,40 @@ class AddOfferDialog extends PureComponent<Props, State> {
                         onChange={this.setAmount}
                         className={classes.formRow}
                         value={this.state.amount}/>
-                    <Autocomplete
-                        size="small"
-                        onChange={this.setLocation}
+                    <FormLocationPicker
                         options={this.getLocationOptions()}
-                        classes={{listbox: classes.popup}}
-                        value={this.getLocationOptions().find(l => l.id === this.state.location) || null}
-                        disabled={this.state.disabled}
-                        disableClearable
-                        getOptionLabel={standort => standort.name}
-                        filterOptions={filterOptions}
+                        onSelect={this.setLocation}
                         className={classes.formRow}
-                        renderOption={(standort) => {
-                            return (
-                                <Grid container alignItems="center">
-                                    <Grid item>
-                                        <LocationOn className={classes.icon}/>
-                                    </Grid>
-                                    <Grid item xs>
-                                        <div className={classes.address}>
-                                            <p>{standort.name}</p>
-                                            <p>{standort.strasse}</p>
-                                            <p>{standort.plz} {standort.ort}</p>
-                                            <p>{standort.land}</p>
-                                        </div>
-                                    </Grid>
-                                </Grid>
-                            );
-                        }}
-                        renderInput={params => (
-                            <TextField
-                                {...params}
-                                label="Standort"
-                                variant="outlined"/>
-                        )}
-                    />
-                    <KeyboardDatePicker
-                        disableToolbar
+                        disabled={this.state.disabled}
+                        valueId={this.state.location}/>
+                    <DatePicker
                         variant="inline"
                         format="dd.MM.yyyy"
                         disabled={this.state.disabled}
                         margin="normal"
                         label="Haltbarkeitsdatum"
+                        inputVariant="outlined"
                         value={this.state.useBefore}
+                        size="small"
                         className={classes.formRow}
                         onChange={this.setUseBefore}
                     />
-                    <FormControlLabel
-                        className={classes.formRow}
-                        control={(
-                            <Checkbox
-                                disabled={this.state.disabled}
-                                checked={this.state.sterile}
-                                onChange={this.setSterile}
-                            />
-                        )}
+                    <FormCheckbox
+                        disabled={this.state.disabled}
+                        checked={this.state.sterile}
+                        onChange={this.setSterile}
                         label="Produkt ist steril"
                     />
-                    <FormControlLabel
-                        control={(
-                            <Checkbox
-                                disabled={this.state.disabled}
-                                checked={this.state.sealed}
-                                onChange={this.setSealed}
-                            />
-                        )}
+                    <FormCheckbox
+                        disabled={this.state.disabled}
+                        checked={this.state.sealed}
+                        onChange={this.setSealed}
                         label="Produkt ist originalverpackt"
                     />
-                    <FormControlLabel
-                        control={(
-                            <Checkbox
-                                disabled={this.state.disabled}
-                                checked={this.state.medical}
-                                onChange={this.setMedical}
-                            />
-                        )}
+                    <FormCheckbox
+                        disabled={this.state.disabled}
+                        checked={this.state.medical}
+                        onChange={this.setMedical}
                         label="Produkt ist medizinisch"
                     />
                     <TextareaAutosize
@@ -340,7 +295,7 @@ class AddOfferDialog extends PureComponent<Props, State> {
     };
 
     componentDidUpdate(prevProps: Readonly<Props>, prevState: Readonly<State>, snapshot?: any): void {
-        if(!this.state.location && this.props.institution?.hauptstandort) {
+        if (!this.state.location && this.props.institution?.hauptstandort) {
             this.setState({
                 location: this.props.institution!.hauptstandort!.id
             })
