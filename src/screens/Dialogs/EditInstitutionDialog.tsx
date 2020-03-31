@@ -1,12 +1,14 @@
 import React, {Component} from "react";
 import {createStyles, Theme, withStyles} from "@material-ui/core/styles";
-import {Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField} from "@material-ui/core";
+import {TextField} from "@material-ui/core";
 import {WithStylesPublic} from "../../util/WithStylesPublic";
 import {apiPut} from "../../util/ApiUtils";
-import ErrorToast from "../../components/ErrorToast";
 import {Autocomplete} from "@material-ui/lab";
-import {Institution} from "../../Model/Institution";
+import {Institution} from "../../Domain/Institution";
 import {FormTextInput} from "../../components/FormTextInput";
+import PopupDialog from "../../components/PopupDialog";
+import {defined, stringLength, validate} from "../../util/ValidationUtils";
+import {handleDialogButton} from "../../util/DialogUtils";
 
 interface Props extends WithStylesPublic<typeof styles> {
     open: boolean;
@@ -26,83 +28,44 @@ interface State {
 
 const styles = (theme: Theme) =>
     createStyles({
-        content: {
-            width: "40vh",
-            paddingBottom: "16px",
-            display: "flex",
-            flexDirection: "column"
-        },
         formRow: {
             marginTop: "16px"
         }
     });
 
+const initialState = {
+    name: "",
+    type: undefined,
+    location: "",
+    disabled: false,
+    error: undefined
+};
+
 class EditInstitutionDialog extends Component<Props, State> {
-    state: State = {
-        name: "",
-        location: "",
-        disabled: false
-    };
+    state: State = {...initialState};
 
-    private onSave = async () => {
-        if(!this.props.institution) {
-            this.setState({
-                error: "Institution nicht gesetzt!"
-            });
-            return;
-        }
-
-        if (this.state.name.length === 0) {
-            this.setState({
-                error: "Der Name darf nicht leer sein!"
-            });
-            return;
-        }
-
-        if (this.state.location.length === 0) {
-            this.setState({
-                error: "Der Standort darf nicht leer sein!"
-            });
-            return;
-        }
-
-        if (!this.state.type) {
-            this.setState({
-                error: "Der Typ muss gesetzt sein!"
-            });
-            return;
-        }
-
-        this.setState({
-            disabled: true,
-            error: undefined
-        });
-
-        const result = await apiPut("/remedy/institution", {
-            standort: this.state.location,
-            name: this.state.name,
-            typ: this.state.type,
-            id: this.props.institution.id
-        });
-
-        if (result.error) {
-            this.setState({
-                disabled: false,
-                error: result.error
-            });
-        } else {
-            this.setState({
-                disabled: false
-            });
-            this.props.onSaved();
-        }
+    private onSave = () => {
+        handleDialogButton(
+            this.setState,
+            this.props.onSaved,
+            () => validate(
+                defined(this.props.institution, "Institution nicht gesetzt!"),
+                stringLength(this.state.name, "Der Name", 1),
+                stringLength(this.state.location, "Der Standort", 1),
+                defined(this.state.type, "Der Typ muss gesetzt sein!")
+            ),
+            () => apiPut("/remedy/institution", {
+                standort: this.state.location,
+                name: this.state.name,
+                typ: this.state.type,
+                id: this.props.institution!.id
+            }),
+            initialState
+        );
     };
 
     private onCancel = () => {
-        this.setState({
-            error: undefined
-        });
-
+        this.onCloseError();
         this.props.onCancelled();
     };
 
@@ -135,55 +98,47 @@ class EditInstitutionDialog extends Component<Props, State> {
         const classes = this.props.classes!;
 
         return (
-            <Dialog
-                maxWidth="lg"
+            <PopupDialog
                 open={this.props.open}
-                onClose={this.onCancel}>
-                <DialogTitle>Institution bearbeiten</DialogTitle>
-                <DialogContent>
-                    <div className={classes.content}>
-                        <ErrorToast error={this.state.error} onClose={this.onCloseError}/>
-                        <Autocomplete
-                            size="small"
-                            onChange={this.setType}
-                            options={this.props.typeOptions}
-                            value={this.state.type || null}
-                            disableClearable
-                            renderInput={params => (
-                                <TextField
-                                    {...params}
-                                    label="Typ"
-                                    variant="outlined"/>
-                            )}
-                        />
-                        <FormTextInput
-                            label="Name"
-                            changeListener={this.setName}
-                            value={this.state.name}
-                            className={classes.formRow}
-                            disabled={this.state.disabled} />
-                        <FormTextInput
-                            label="Standort"
-                            changeListener={this.setLocation}
-                            value={this.state.location}
-                            className={classes.formRow}
-                            disabled={this.state.disabled} />
-                    </div>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={this.onCancel} color="secondary">
-                        Abbrechen
-                    </Button>
-                    <Button onClick={this.onSave} color="secondary">
-                        Speichern
-                    </Button>
-                </DialogActions>
-            </Dialog>
+                error={this.state.error}
+                title="Institution bearbeiten"
+                disabled={this.state.disabled}
+                firstTitle="Abbrechen"
+                secondTitle="Speichern"
+                onFirst={this.onCancel}
+                onSecond={this.onSave}
+                onCloseError={this.onCloseError}>
+                <Autocomplete
+                    size="small"
+                    onChange={this.setType}
+                    options={this.props.typeOptions}
+                    value={this.state.type || null}
+                    disableClearable
+                    renderInput={params => (
+                        <TextField
+                            {...params}
+                            label="Typ"
+                            variant="outlined"/>
+                    )}
+                />
+                <FormTextInput
+                    label="Name"
+                    changeListener={this.setName}
+                    value={this.state.name}
+                    className={classes.formRow}
+                    disabled={this.state.disabled}/>
+                <FormTextInput
+                    label="Standort"
+                    changeListener={this.setLocation}
+                    value={this.state.location}
+                    className={classes.formRow}
+                    disabled={this.state.disabled}/>
+            </PopupDialog>
         );
     };
 
     componentDidUpdate(prevProps: Readonly<Props>, prevState: Readonly<State>, snapshot?: any): void {
-        if(!prevProps.institution && this.props.institution) {
+        if (!prevProps.institution && this.props.institution) {
             this.setState({
                 name: this.props.institution.name,
                 location: this.props.institution.standort,

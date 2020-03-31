@@ -1,19 +1,19 @@
 import React, {Component} from "react";
 import {createStyles, Theme, withStyles} from "@material-ui/core/styles";
 import {WithStylesPublic} from "../util/WithStylesPublic";
-import {apiGet} from "../util/ApiUtils";
-import {Institution} from "../Model/Institution";
 import {Typography} from "@material-ui/core";
 import {FormButton} from "../components/FormButton";
 import EditInstitutionDialog from "./Dialogs/EditInstitutionDialog";
+import {RootDispatch, RootState} from "../State/Store";
+import {loadEigeneInstitution} from "../State/EigeneInstitutionState";
+import {connect, ConnectedProps} from "react-redux";
+import {loadInstitutionTypen} from "../State/InstitutionTypenState";
 
-interface Props extends WithStylesPublic<typeof styles> {
+interface Props extends WithStylesPublic<typeof styles>, PropsFromRedux {
 }
 
 interface State {
     editDialogOpen: boolean;
-    institution?: Institution;
-    institutionTypes?: string[];
 }
 
 const styles = (theme: Theme) =>
@@ -67,23 +67,23 @@ class OfferScreen extends Component<Props, State> {
                 <Typography variant="subtitle1" className={classes.subtitle}>Meine Institution</Typography>
                 <div className={classes.row}>
                     <span className={classes.left}>Institution-ID:</span>
-                    <span className={classes.right}>{this.state.institution?.id}</span>
+                    <span className={classes.right}>{this.props.eigeneInstitution?.id}</span>
                 </div>
                 <div className={classes.row}>
                     <span className={classes.left}>Institution-Key:</span>
-                    <span className={classes.right}>{this.state.institution?.institutionKey}</span>
+                    <span className={classes.right}>{this.props.eigeneInstitution?.institutionKey}</span>
                 </div>
                 <div className={classes.row}>
                     <span className={classes.left}>Institution-Typ:</span>
-                    <span className={classes.right}>{this.state.institution?.typ}</span>
+                    <span className={classes.right}>{this.props.eigeneInstitution?.typ}</span>
                 </div>
                 <div className={classes.row}>
                     <span className={classes.left}>Institution-Name:</span>
-                    <span className={classes.right}>{this.state.institution?.name}</span>
+                    <span className={classes.right}>{this.props.eigeneInstitution?.name}</span>
                 </div>
                 <div className={classes.row}>
                     <span className={classes.left}>Institution-Standort:</span>
-                    <span className={classes.right}>{this.state.institution?.standort}</span>
+                    <span className={classes.right}>{this.props.eigeneInstitution?.standort}</span>
                 </div>
                 <div className={classes.footer}>
                     <FormButton
@@ -97,8 +97,8 @@ class OfferScreen extends Component<Props, State> {
                     onSaved={this.onEditSaved}
                     onCancelled={this.onEditCancelled}
                     open={this.state.editDialogOpen}
-                    typeOptions={this.state.institutionTypes || []}
-                    institution={this.state.institution} />
+                    typeOptions={this.props.institutionTypen || []}
+                    institution={this.props.eigeneInstitution} />
             </div>
         )
     }
@@ -113,31 +113,26 @@ class OfferScreen extends Component<Props, State> {
 
     private onEditSaved = () => {
         this.setState({editDialogOpen: false});
-        this.loadInstitution();
+        this.props.loadEigeneInstitution();
     };
 
     componentDidMount = async () => {
-        this.loadInstitution();
-        this.loadInstitutionTypes();
-    };
-
-    private loadInstitution = async () => {
-        const result = await apiGet<Institution>("/remedy/institution/assigned");
-        if (!result.error) {
-            this.setState({
-                institution: result.result
-            });
-        }
-    };
-
-    private loadInstitutionTypes = async () => {
-        const result = await apiGet<string[]>("/remedy/institution/typ");
-        if (!result.error) {
-            this.setState({
-                institutionTypes: result.result
-            });
-        }
+        this.props.loadEigeneInstitution();
+        this.props.loadInstitutionTypen();
     };
 }
 
-export default withStyles(styles)(OfferScreen);
+const mapStateToProps = (state: RootState) => ({
+    eigeneInstitution: state.eigeneInstitution.value,
+    institutionTypen: state.institutionTypen.value
+});
+
+const mapDispatchToProps = (dispatch: RootDispatch) => ({
+    loadEigeneInstitution: () => dispatch(loadEigeneInstitution()),
+    loadInstitutionTypen: () => dispatch(loadInstitutionTypen())
+});
+
+const connector = connect(mapStateToProps, mapDispatchToProps);
+type PropsFromRedux = ConnectedProps<typeof connector>;
+
+export default connector(withStyles(styles)(OfferScreen));

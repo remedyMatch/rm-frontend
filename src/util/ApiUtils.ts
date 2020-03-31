@@ -1,7 +1,7 @@
 import axios, {AxiosError, AxiosResponse} from "axios";
 import LoginService from "./LoginService";
 
-interface ApiResponse<T> {
+export interface ApiResponse<T> {
     result?: T;
     error?: string;
     status: number;

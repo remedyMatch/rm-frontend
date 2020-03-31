@@ -1,10 +1,11 @@
 import React from "react";
 import {makeStyles, Theme} from "@material-ui/core/styles";
-import {Button, Dialog, DialogActions, DialogContent, DialogTitle, Typography} from "@material-ui/core";
+import {Typography} from "@material-ui/core";
 import {FormButton} from "../../../components/FormButton";
-import {Angebot} from "../../../Model/Angebot";
+import {Angebot} from "../../../Domain/Angebot";
 import {format} from "date-fns";
 import {de} from "date-fns/locale";
+import PopupDialog from "../../../components/PopupDialog";
 
 interface Props {
     open: boolean;
@@ -14,13 +15,6 @@ interface Props {
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
-    content: {
-        width: "80vw",
-        maxWidth: "600px",
-        paddingBottom: "16px",
-        display: "flex",
-        flexDirection: "column"
-    },
     row: {
         display: "flex"
     },
@@ -63,79 +57,71 @@ const OfferDetailsDialog: React.FC<Props> = props => {
     const classes = useStyles();
 
     return (
-        <Dialog
-            maxWidth="lg"
+        <PopupDialog
+            width="lg"
             open={props.open}
-            onClose={props.onDone}>
-            <DialogTitle className={classes.title}>Angebotsdetails</DialogTitle>
-            <DialogContent>
-                <div className={classes.content}>
-                    <Typography variant="subtitle1" className={classes.subtitle}>Angebotener Artikel</Typography>
-                    <div className={classes.row}>
-                        <span className={classes.left}>Kategorie</span>
-                        <span className={classes.right}>{props.item?.artikel.artikelKategorie.name}</span>
-                    </div>
-                    <div className={classes.row}>
-                        <span className={classes.left}>Artikel</span>
-                        <span className={classes.right}>{props.item?.artikel.name}</span>
-                    </div>
-                    <div className={classes.row}>
-                        <span className={classes.left}>Beschreibung</span>
-                        <span className={classes.right}>{props.item?.artikel.beschreibung}</span>
-                    </div>
-                    <div className={classes.row}>
-                        <span className={classes.left}>EAN</span>
-                        <span className={classes.right}>{props.item?.artikel.ean}</span>
-                    </div>
-                    <div className={classes.row}>
-                        <span className={classes.left}>Hersteller</span>
-                        <span className={classes.right}>{props.item?.artikel.hersteller}</span>
-                    </div>
-                    <Typography variant="subtitle1" className={classes.subtitle}>Weitere Details</Typography>
-                    <div className={classes.row}>
-                        <span className={classes.left}>Standort</span>
-                        <span className={classes.right}>{props.item?.standort}</span>
-                    </div>
-                    <div className={classes.row}>
-                        <span className={classes.left}>Anzahl</span>
-                        <span className={classes.right}>{props.item?.anzahl}</span>
-                    </div>
-                    <div className={classes.row}>
-                        <span className={classes.left}>Haltbar bis</span>
-                        <span className={classes.right}>{formatDate(props.item?.haltbarkeit)}</span>
-                    </div>
-                    <div className={classes.row}>
-                        <span className={classes.left}>Medizinisch</span>
-                        <span className={classes.right}>{props.item?.medizinisch ? "Ja" : "Nein"}</span>
-                    </div>
-                    <div className={classes.row}>
-                        <span className={classes.left}>Steril</span>
-                        <span className={classes.right}>{props.item?.steril ? "Ja" : "Nein"}</span>
-                    </div>
-                    <div className={classes.row}>
-                        <span className={classes.left}>Originalverpackt</span>
-                        <span className={classes.right}>{props.item?.originalverpackt ? "Ja" : "Nein"}</span>
-                    </div>
-                    <div className={classes.row}>
-                        <span className={classes.left}>Kommentar</span>
-                        <span className={classes.right}>{props.item?.kommentar}</span>
-                    </div>
-                    {props.onContact && (<div className={classes.footer}>
-                            <FormButton
-                                onClick={props.onContact}
-                                size="small">
-                                Institution kontaktieren
-                            </FormButton>
-                        </div>
-                    )}
+            title="Angebotsdetails"
+            firstTitle="Fertig"
+            onFirst={props.onDone}>
+            <Typography variant="subtitle1" className={classes.subtitle}>Angebotener Artikel</Typography>
+            <div className={classes.row}>
+                <span className={classes.left}>Kategorie</span>
+                <span className={classes.right}>{props.item?.artikel.artikelKategorie.name}</span>
+            </div>
+            <div className={classes.row}>
+                <span className={classes.left}>Artikel</span>
+                <span className={classes.right}>{props.item?.artikel.name}</span>
+            </div>
+            <div className={classes.row}>
+                <span className={classes.left}>Beschreibung</span>
+                <span className={classes.right}>{props.item?.artikel.beschreibung}</span>
+            </div>
+            <div className={classes.row}>
+                <span className={classes.left}>EAN</span>
+                <span className={classes.right}>{props.item?.artikel.ean}</span>
+            </div>
+            <div className={classes.row}>
+                <span className={classes.left}>Hersteller</span>
+                <span className={classes.right}>{props.item?.artikel.hersteller}</span>
+            </div>
+            <Typography variant="subtitle1" className={classes.subtitle}>Weitere Details</Typography>
+            <div className={classes.row}>
+                <span className={classes.left}>Standort</span>
+                <span className={classes.right}>{props.item?.standort}</span>
+            </div>
+            <div className={classes.row}>
+                <span className={classes.left}>Anzahl</span>
+                <span className={classes.right}>{props.item?.anzahl}</span>
+            </div>
+            <div className={classes.row}>
+                <span className={classes.left}>Haltbar bis</span>
+                <span className={classes.right}>{formatDate(props.item?.haltbarkeit)}</span>
+            </div>
+            <div className={classes.row}>
+                <span className={classes.left}>Medizinisch</span>
+                <span className={classes.right}>{props.item?.medizinisch ? "Ja" : "Nein"}</span>
+            </div>
+            <div className={classes.row}>
+                <span className={classes.left}>Steril</span>
+                <span className={classes.right}>{props.item?.steril ? "Ja" : "Nein"}</span>
+            </div>
+            <div className={classes.row}>
+                <span className={classes.left}>Originalverpackt</span>
+                <span className={classes.right}>{props.item?.originalverpackt ? "Ja" : "Nein"}</span>
+            </div>
+            <div className={classes.row}>
+                <span className={classes.left}>Kommentar</span>
+                <span className={classes.right}>{props.item?.kommentar}</span>
+            </div>
+            {props.onContact && (<div className={classes.footer}>
+                    <FormButton
+                        onClick={props.onContact}
+                        size="small">
+                        Institution kontaktieren
+                    </FormButton>
                 </div>
-            </DialogContent>
-            <DialogActions>
-                <Button onClick={props.onDone} color="secondary">
-                    Schließen
-                </Button>
-            </DialogActions>
-        </Dialog>
+            )}
+        </PopupDialog>
     );
 };
 

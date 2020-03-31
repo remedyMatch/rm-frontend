@@ -8,8 +8,7 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import {IconButton} from "@material-ui/core";
 import {Delete, Info} from "@material-ui/icons";
-import {Artikel} from "../Model/Artikel";
-import {Institution} from "../Model/Institution";
+import {Artikel} from "../Domain/Artikel";
 
 const useStyles = makeStyles((theme: Theme) => ({
     table: {

@@ -15,9 +15,12 @@ import {
 import {Autocomplete} from "@material-ui/lab";
 import {WithStylesPublic} from "../../../util/WithStylesPublic";
 import ErrorToast from "../../../components/ErrorToast";
-import {Artikel} from "../../../Model/Artikel";
-import {ArtikelKategorie} from "../../../Model/ArtikelKategorie";
+import {Artikel} from "../../../Domain/Artikel";
+import {ArtikelKategorie} from "../../../Domain/ArtikelKategorie";
 import {apiPost} from "../../../util/ApiUtils";
+import {handleDialogButton} from "../../../util/DialogUtils";
+import {defined, numberSize, validate} from "../../../util/ValidationUtils";
+import PopupDialog from "../../../components/PopupDialog";
 
 interface Props extends WithStylesPublic<typeof styles> {
     open: boolean;
@@ -27,8 +30,8 @@ interface Props extends WithStylesPublic<typeof styles> {
 }
 
 interface State {
-    category: string | null;
-    article: string | null;
+    category?: string;
+    article?: string;
     amount: number;
     location: string;
     comment: string;
@@ -39,14 +42,21 @@ interface State {
     error?: string;
 }
 
+const initialState = {
+    category: undefined,
+    article: undefined,
+    amount: 0,
+    location: "",
+    comment: "",
+    sterile: false,
+    sealed: false,
+    medical: false,
+    disabled: false,
+    error: undefined
+};
+
 const styles = (theme: Theme) =>
     createStyles({
-        content: {
-            width: "40vw",
-            paddingBottom: "16px",
-            display: "flex",
-            flexDirection: "column"
-        },
         formRow: {
             marginTop: "16px"
         },
@@ -67,72 +77,30 @@ const styles = (theme: Theme) =>
     });
 
 class AddDemandDialog extends PureComponent<Props, State> {
-    state: State = {
-        category: null,
-        article: null,
-        amount: 0,
-        location: "",
-        comment: "",
-        sterile: false,
-        sealed: false,
-        medical: false,
-        disabled: false
-    };
+    state: State = {...initialState};
 
     private onSave = async () => {
-        if (this.state.category === null) {
-            this.setState({error: "Es muss eine Kategorie gewählt werden"});
-            return;
-        }
-
-        if (this.state.article === null) {
-            this.setState({error: "Es muss ein Artikel gewählt werden"});
-            return;
-        }
-
-        if (this.state.amount <= 0) {
-            this.setState({error: "Die benötigte Anzahl muss größer 0 sein"});
-            return;
-        }
-
-        this.setState({
-            disabled: true,
-            error: undefined
-        });
-
-        const result = await apiPost("/remedy/bedarf", {
-            artikel: {
-                id: this.state.article
-            },
-            anzahl: this.state.amount,
-            standort: this.state.location,
-            steril: this.state.sterile,
-            originalverpackt: this.state.sealed,
-            medizinisch: this.state.medical,
-            kommentar: this.state.comment
-        });
-
-        if (result.error) {
-            this.setState({
-                disabled: false,
-                error: "Erstellung des Bedarfs fehlgeschlagen: " + result.error
-            });
-            return;
-        }
-
-        this.setState({
-            category: null,
-            article: null,
-            amount: 0,
-            location: "",
-            comment: "",
-            sterile: false,
-            sealed: false,
-            medical: false,
-            disabled: false
-        });
-
-        this.props.onSaved();
+        handleDialogButton(
+            this.setState,
+            this.props.onSaved,
+            () => validate(
+                defined(this.state.category, "Es muss eine Kategorie gewählt werden!"),
+                defined(this.state.article, "Es muss ein Artikel gewählt werden!"),
+                numberSize(this.state.amount, "Die Anzahl", 1)
+            ),
+            () => apiPost("/remedy/bedarf", {
+                artikel: {
+                    id: this.state.article
+                },
+                anzahl: this.state.amount,
+                standort: this.state.location,
+                steril: this.state.sterile,
+                originalverpackt: this.state.sealed,
+                medizinisch: this.state.medical,
+                kommentar: this.state.comment
+            }),
+            initialState
+        );
     };
 
     private onCancel = () => {
@@ -148,11 +116,11 @@ class AddDemandDialog extends PureComponent<Props, State> {
     };
 
     private setCategory = (event: any, category: ArtikelKategorie | null) => {
-        this.setState({category: category === null ? null : category.id});
+        this.setState({category: category === null ? undefined : category.id});
     };
 
     private setArticle = (event: any, article: Artikel | null) => {
-        this.setState({article: article === null ? null : article.id});
+        this.setState({article: article === null ? undefined : article.id});
     };
 
     private setAmount = (event: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
@@ -197,112 +165,105 @@ class AddDemandDialog extends PureComponent<Props, State> {
         const classes = this.props.classes!;
 
         return (
-            <Dialog
-                maxWidth="lg"
+            <PopupDialog
+                width="lg"
                 open={this.props.open}
-                onClose={this.onCancel}>
-                <DialogTitle>Neuen Bedarf erstellen</DialogTitle>
-                <DialogContent>
-                    <div className={classes.content}>
-                        <ErrorToast error={this.state.error} onClose={this.onCloseError}/>
-                        <Autocomplete
-                            size="small"
-                            onChange={this.setCategory}
-                            options={this.getCategoryOptions()}
-                            value={this.getCategoryOptions().find(c => c.id === this.state.category) || null}
-                            disabled={this.state.disabled}
-                            getOptionLabel={c => c.name}
-                            className={classes.formRow}
-                            disableClearable
-                            renderInput={params => (
-                                <TextField
-                                    {...params}
-                                    label="Kategorie"
-                                    variant="outlined"/>
-                            )}
-                        />
-                        <Autocomplete
-                            size="small"
-                            onChange={this.setArticle}
-                            options={this.getArticleOptions()}
-                            value={this.getArticleOptions().find(n => n.id === this.state.article) || null}
-                            disabled={this.state.disabled || this.state.category === null}
-                            disableClearable
-                            getOptionLabel={a => a.name}
-                            className={classes.formRow}
-                            renderInput={params => (
-                                <TextField
-                                    {...params}
-                                    label="Artikel"
-                                    variant="outlined"/>
-                            )}
-                        />
-                        <Typography variant="caption" className={classes.caption}>
-                            Kategorie oder Name nicht gefunden? <a href="#">Vorschlagen</a>
-                        </Typography>
+                title="Neuen Bedarf erstellen"
+                firstTitle="Abbrechen"
+                onFirst={this.onCancel}
+                secondTitle="Speichern"
+                onSecond={this.onSave}
+                disabled={this.state.disabled}
+                error={this.state.error}
+                onCloseError={this.onCloseError}>
+                <Autocomplete
+                    size="small"
+                    onChange={this.setCategory}
+                    options={this.getCategoryOptions()}
+                    value={this.getCategoryOptions().find(c => c.id === this.state.category) || null}
+                    disabled={this.state.disabled}
+                    getOptionLabel={c => c.name}
+                    className={classes.formRow}
+                    disableClearable
+                    renderInput={params => (
                         <TextField
-                            label="Anzahl"
-                            type="number"
-                            disabled={this.state.disabled}
-                            onChange={this.setAmount}
-                            className={classes.formRow}
-                            value={this.state.amount}/>
+                            {...params}
+                            label="Kategorie"
+                            variant="outlined"/>
+                    )}
+                />
+                <Autocomplete
+                    size="small"
+                    onChange={this.setArticle}
+                    options={this.getArticleOptions()}
+                    value={this.getArticleOptions().find(n => n.id === this.state.article) || null}
+                    disabled={this.state.disabled || this.state.category === null}
+                    disableClearable
+                    getOptionLabel={a => a.name}
+                    className={classes.formRow}
+                    renderInput={params => (
                         <TextField
-                            label="Standort"
-                            onChange={this.setLocation}
+                            {...params}
+                            label="Artikel"
+                            variant="outlined"/>
+                    )}
+                />
+                <Typography variant="caption" className={classes.caption}>
+                    Kategorie oder Name nicht gefunden? <a href="#">Vorschlagen</a>
+                </Typography>
+                <TextField
+                    label="Anzahl"
+                    type="number"
+                    disabled={this.state.disabled}
+                    onChange={this.setAmount}
+                    className={classes.formRow}
+                    value={this.state.amount}/>
+                <TextField
+                    label="Standort"
+                    onChange={this.setLocation}
+                    disabled={this.state.disabled}
+                    className={classes.formRow}
+                    value={this.state.location}/>
+                <FormControlLabel
+                    className={classes.formRow}
+                    control={(
+                        <Checkbox
                             disabled={this.state.disabled}
-                            className={classes.formRow}
-                            value={this.state.location}/>
-                        <FormControlLabel
-                            className={classes.formRow}
-                            control={(
-                                <Checkbox
-                                    disabled={this.state.disabled}
-                                    checked={this.state.sterile}
-                                    onChange={this.setSterile}
-                                />
-                            )}
-                            label="Produkt ist steril"
+                            checked={this.state.sterile}
+                            onChange={this.setSterile}
                         />
-                        <FormControlLabel
-                            control={(
-                                <Checkbox
-                                    disabled={this.state.disabled}
-                                    checked={this.state.sealed}
-                                    onChange={this.setSealed}
-                                />
-                            )}
-                            label="Produkt ist originalverpackt"
-                        />
-                        <FormControlLabel
-                            control={(
-                                <Checkbox
-                                    disabled={this.state.disabled}
-                                    checked={this.state.medical}
-                                    onChange={this.setMedical}
-                                />
-                            )}
-                            label="Produkt ist medizinisch"
-                        />
-                        <TextareaAutosize
-                            rowsMin={3}
-                            rowsMax={8}
-                            placeholder="Kommentar"
-                            value={this.state.comment}
+                    )}
+                    label="Produkt ist steril"
+                />
+                <FormControlLabel
+                    control={(
+                        <Checkbox
                             disabled={this.state.disabled}
-                            className={classes.comment}
-                            onChange={this.setComment}/>
-                    </div>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={this.onCancel} color="secondary">
-                        Abbrechen
-                    </Button>
-                    <Button onClick={this.onSave} color="secondary">
-                        Speichern
-                    </Button>
-                </DialogActions>
-            </Dialog>
+                            checked={this.state.sealed}
+                            onChange={this.setSealed}
+                        />
+                    )}
+                    label="Produkt ist originalverpackt"
+                />
+                <FormControlLabel
+                    control={(
+                        <Checkbox
+                            disabled={this.state.disabled}
+                            checked={this.state.medical}
+                            onChange={this.setMedical}
+                        />
+                    )}
+                    label="Produkt ist medizinisch"
+                />
+                <TextareaAutosize
+                    rowsMin={3}
+                    rowsMax={8}
+                    placeholder="Kommentar"
+                    value={this.state.comment}
+                    disabled={this.state.disabled}
+                    className={classes.comment}
+                    onChange={this.setComment}/>
+            </PopupDialog>
         );
     };
 }

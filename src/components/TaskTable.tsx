@@ -6,9 +6,9 @@ import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import {Bedarf} from "../Model/Bedarf";
-import {Angebot} from "../Model/Angebot";
-import {Aufgabe} from "../Model/Aufgabe";
+import {Bedarf} from "../Domain/Bedarf";
+import {Angebot} from "../Domain/Angebot";
+import {Aufgabe} from "../Domain/Aufgabe";
 import {IconButton} from "@material-ui/core";
 import {Edit} from "@material-ui/icons";
 

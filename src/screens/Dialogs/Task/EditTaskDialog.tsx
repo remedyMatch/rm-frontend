@@ -1,5 +1,5 @@
 import React from "react";
-import {Aufgabe} from "../../../Model/Aufgabe";
+import {Aufgabe} from "../../../Domain/Aufgabe";
 import RespondRequestTaskDialog from "./Handler/RespondRequestTaskDialog";
 import PickLogisticsTaskDialog from "./Handler/PickLogisticsTaskDialog";
 import ConfirmReceiptTaskDialog from "./Handler/ConfirmReceiptTaskDialog";

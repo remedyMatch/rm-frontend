@@ -6,9 +6,9 @@ import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import {Anfrage} from "../Model/Anfrage";
-import {Bedarf} from "../Model/Bedarf";
-import {Angebot} from "../Model/Angebot";
+import {Anfrage} from "../Domain/Anfrage";
+import {Bedarf} from "../Domain/Bedarf";
+import {Angebot} from "../Domain/Angebot";
 import {Button, IconButton} from "@material-ui/core";
 import {Cancel, Info} from "@material-ui/icons";
 
@@ -83,7 +83,7 @@ const RequestTable: React.FC<Props> = props => {
                     })}
                     {props.rows.length === 0 && (
                         <TableRow>
-                            <TableCell className={classes.empty} colSpan={2}>Keine Anfragen vorhanden</TableCell>
+                            <TableCell className={classes.empty} colSpan={4}>Keine Anfragen vorhanden</TableCell>
                         </TableRow>
                     )}
                 </TableBody>

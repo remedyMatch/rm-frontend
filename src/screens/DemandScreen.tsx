@@ -1,18 +1,20 @@
 import React, {Component} from "react";
 import {createStyles, Theme, withStyles} from "@material-ui/core/styles";
 import {WithStylesPublic} from "../util/WithStylesPublic";
-import {Artikel} from "../Model/Artikel";
-import {apiDelete, apiGet} from "../util/ApiUtils";
-import {Institution} from "../Model/Institution";
+import {apiDelete} from "../util/ApiUtils";
 import {FormTextInput} from "../components/FormTextInput";
 import {FormButton} from "../components/FormButton";
 import AddDemandDialog from "./Dialogs/Demand/AddDemandDialog";
-import {Bedarf} from "../Model/Bedarf";
 import EntryTable from "../components/EntryTable";
 import DemandDetailsDialog from "./Dialogs/Demand/DemandDetailsDialog";
 import RespondDemandDialog from "./Dialogs/Demand/RespondDemandDialog";
+import {RootDispatch, RootState} from "../State/Store";
+import {loadArtikel} from "../State/ArtikelState";
+import {loadBedarfe} from "../State/BedarfeState";
+import {loadEigeneInstitution} from "../State/EigeneInstitutionState";
+import {connect, ConnectedProps} from "react-redux";
 
-interface Props extends WithStylesPublic<typeof styles> {
+interface Props extends WithStylesPublic<typeof styles>, PropsFromRedux {
 }
 
 interface State {
@@ -20,9 +22,6 @@ interface State {
     contactId?: string;
     infoId?: string;
     searchFilter: string;
-    artikel?: Artikel[];
-    bedarf?: Bedarf[];
-    ownInstitution?: Institution;
 }
 
 const styles = (theme: Theme) =>
@@ -36,6 +35,9 @@ const styles = (theme: Theme) =>
         searchInput: {
             width: "40%",
             minWidth: "200px"
+        },
+        button: {
+            margin: "8px 0px"
         }
     });
 
@@ -57,30 +59,31 @@ class DemandScreen extends Component<Props, State> {
                         changeListener={this.setFilter}
                         value={this.state.searchFilter}/>
                     <FormButton
+                        className={classes.button}
                         onClick={() => this.setState(state => ({addDialogOpen: !state.addDialogOpen}))}>
                         Bedarf anlegen
                     </FormButton>
                 </div>
                 <EntryTable
                     rows={this.filter()}
-                    delete={{onDelete: this.onDelete, institutionId: this.state.ownInstitution?.id || ""}}
+                    delete={{onDelete: this.onDelete, institutionId: this.props.eigeneInstitution?.id || ""}}
                     details={{onClick: this.onDetailsClicked}}/>
                 <AddDemandDialog
                     open={this.state.addDialogOpen}
                     onCancelled={this.onAddCancelled}
                     onSaved={this.onAddSaved}
-                    artikel={this.state.artikel || []}/>
+                    artikel={this.props.artikel || []}/>
                 <DemandDetailsDialog
                     open={!!this.state.infoId}
                     onDone={this.onDetailsDone}
-                    item={this.state.bedarf?.find(item => item.id === this.state.infoId)!}
+                    item={this.props.bedarfe?.find(item => item.id === this.state.infoId)!}
                     onContact={this.onDetailsContact}/>
                 <RespondDemandDialog
                     open={!!this.state.contactId}
                     onCancelled={this.onContactCancelled}
                     onSaved={this.onContactSaved}
                     demandId={this.state.contactId}
-                    standort={this.state.bedarf?.find(d => d.id === this.state.infoId)?.standort} />
+                    standort={this.props.bedarfe?.find(d => d.id === this.state.infoId)?.standort} />
             </>
         )
     }
@@ -117,7 +120,7 @@ class DemandScreen extends Component<Props, State> {
 
     private onDelete = async (id: string) => {
         await apiDelete("/remedy/bedarf/" + id);
-        this.loadBedarf();
+        this.props.loadBedarfe();
     };
 
     private setFilter = (value: string) => {
@@ -125,7 +128,7 @@ class DemandScreen extends Component<Props, State> {
     };
 
     private filter = () => {
-        return (this.state.bedarf || [])
+        return (this.props.bedarfe || [])
             .filter(bedarf => JSON.stringify(Object.values(bedarf)).toLowerCase().indexOf(this.state.searchFilter.toLowerCase()) !== -1);
     };
 
@@ -135,41 +138,29 @@ class DemandScreen extends Component<Props, State> {
 
     private onAddSaved = () => {
         this.setState({addDialogOpen: false});
-        this.loadBedarf();
+        this.props.loadBedarfe();
     };
 
     componentDidMount = async () => {
-        this.loadArtikel();
-        this.loadBedarf();
-        this.loadInstitution();
-    };
-
-    private loadArtikel = async () => {
-        const result = await apiGet<Artikel[]>("/remedy/artikel/suche");
-        if (!result.error) {
-            this.setState({
-                artikel: result.result
-            });
-        }
-    };
-
-    private loadBedarf = async () => {
-        const result = await apiGet<Bedarf[]>("/remedy/bedarf");
-        if (!result.error) {
-            this.setState({
-                bedarf: result.result
-            });
-        }
-    };
-
-    private loadInstitution = async () => {
-        const result = await apiGet<Institution>("/remedy/institution/assigned");
-        if (!result.error) {
-            this.setState({
-                ownInstitution: result.result
-            });
-        }
+        this.props.loadArtikel();
+        this.props.loadBedarfe();
+        this.props.loadEigeneInstitution();
     };
 }
 
-export default withStyles(styles)(DemandScreen);
+const mapStateToProps = (state: RootState) => ({
+    artikel: state.artikel.value,
+    bedarfe: state.bedarfe.value,
+    eigeneInstitution: state.eigeneInstitution.value
+});
+
+const mapDispatchToProps = (dispatch: RootDispatch) => ({
+    loadArtikel: () => dispatch(loadArtikel()),
+    loadBedarfe: () => dispatch(loadBedarfe()),
+    loadEigeneInstitution: () => dispatch(loadEigeneInstitution())
+});
+
+const connector = connect(mapStateToProps, mapDispatchToProps);
+type PropsFromRedux = ConnectedProps<typeof connector>;
+
+export default connector(withStyles(styles)(DemandScreen));

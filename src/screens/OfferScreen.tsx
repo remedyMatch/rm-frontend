@@ -1,18 +1,20 @@
 import React, {Component} from "react";
 import {createStyles, Theme, withStyles} from "@material-ui/core/styles";
 import {WithStylesPublic} from "../util/WithStylesPublic";
-import {Artikel} from "../Model/Artikel";
-import {Angebot} from "../Model/Angebot";
-import {Institution} from "../Model/Institution";
 import EntryTable from "../components/EntryTable";
 import {FormTextInput} from "../components/FormTextInput";
 import {FormButton} from "../components/FormButton";
 import AddOfferDialog from "./Dialogs/Offer/AddOfferDialog";
-import {apiDelete, apiGet} from "../util/ApiUtils";
+import {apiDelete} from "../util/ApiUtils";
 import OfferDetailsDialog from "./Dialogs/Offer/OfferDetailsDialog";
 import RespondOfferDialog from "./Dialogs/Offer/RespondOfferDialog";
+import {RootDispatch, RootState} from "../State/Store";
+import {loadAngebote} from "../State/AngeboteState";
+import {loadArtikel} from "../State/ArtikelState";
+import {loadEigeneInstitution} from "../State/EigeneInstitutionState";
+import {connect, ConnectedProps} from "react-redux";
 
-interface Props extends WithStylesPublic<typeof styles> {
+interface Props extends WithStylesPublic<typeof styles>, PropsFromRedux {
 }
 
 interface State {
@@ -20,9 +22,6 @@ interface State {
     contactId?: string;
     addDialogOpen: boolean;
     searchFilter: string;
-    artikel?: Artikel[];
-    angebote?: Angebot[];
-    ownInstitution?: Institution;
 }
 
 const styles = (theme: Theme) =>
@@ -36,6 +35,9 @@ const styles = (theme: Theme) =>
         searchInput: {
             width: "40%",
             minWidth: "200px"
+        },
+        button: {
+            margin: "8px 0px"
         }
     });
 
@@ -57,23 +59,24 @@ class OfferScreen extends Component<Props, State> {
                         changeListener={this.setFilter}
                         value={this.state.searchFilter}/>
                     <FormButton
+                        className={classes.button}
                         onClick={() => this.setState(state => ({addDialogOpen: !state.addDialogOpen}))}>
                         Angebot anlegen
                     </FormButton>
                 </div>
                 <EntryTable
                     rows={this.filter()}
-                    delete={{onDelete: this.onDelete, institutionId: this.state.ownInstitution?.id || ""}}
+                    delete={{onDelete: this.onDelete, institutionId: this.props.eigeneInstitution?.id || ""}}
                     details={{onClick: this.onDetailsClicked}}/>
                 <AddOfferDialog
                     open={this.state.addDialogOpen}
                     onCancelled={this.onAddCancelled}
                     onSaved={this.onAddSaved}
-                    artikel={this.state.artikel || []}/>
+                    artikel={this.props.artikel || []}/>
                 <OfferDetailsDialog
                     open={!!this.state.infoId}
                     onDone={this.onDetailsDone}
-                    item={this.state.angebote?.find(item => item.id === this.state.infoId)!}
+                    item={this.props.angebote?.find(item => item.id === this.state.infoId)!}
                     onContact={this.onDetailsContact}/>
                 <RespondOfferDialog
                     open={!!this.state.contactId}
@@ -117,7 +120,7 @@ class OfferScreen extends Component<Props, State> {
 
     private onDelete = async (id: string) => {
         await apiDelete("/remedy/angebot/" + id);
-        this.loadAngebote();
+        this.props.loadAngebote();
     };
 
     private setFilter = (value: string) => {
@@ -125,7 +128,7 @@ class OfferScreen extends Component<Props, State> {
     };
 
     private filter = () => {
-        return (this.state.angebote || [])
+        return (this.props.angebote || [])
             .filter(angebot => JSON.stringify(Object.values(angebot)).toLowerCase().indexOf(this.state.searchFilter.toLowerCase()) !== -1);
     };
 
@@ -135,41 +138,29 @@ class OfferScreen extends Component<Props, State> {
 
     private onAddSaved = () => {
         this.setState({addDialogOpen: false});
-        this.loadAngebote();
+        this.props.loadAngebote();
     };
 
     componentDidMount = async () => {
-        this.loadArtikel();
-        this.loadAngebote();
-        this.loadInstitution();
-    };
-
-    private loadArtikel = async () => {
-        const result = await apiGet<Artikel[]>("/remedy/artikel/suche");
-        if (!result.error) {
-            this.setState({
-                artikel: result.result
-            });
-        }
-    };
-
-    private loadAngebote = async () => {
-        const result = await apiGet<Angebot[]>("/remedy/angebot");
-        if (!result.error) {
-            this.setState({
-                angebote: result.result
-            });
-        }
-    };
-
-    private loadInstitution = async () => {
-        const result = await apiGet<Institution>("/remedy/institution/assigned");
-        if (!result.error) {
-            this.setState({
-                ownInstitution: result.result
-            });
-        }
+        this.props.loadArtikel();
+        this.props.loadAngebote();
+        this.props.loadEigeneInstitution();
     };
 }
 
-export default withStyles(styles)(OfferScreen);
+const mapStateToProps = (state: RootState) => ({
+    angebote: state.angebote.value,
+    artikel: state.artikel.value,
+    eigeneInstitution: state.eigeneInstitution.value,
+});
+
+const mapDispatchToProps = (dispatch: RootDispatch) => ({
+    loadAngebote: () => dispatch(loadAngebote()),
+    loadArtikel: () => dispatch(loadArtikel()),
+    loadEigeneInstitution: () => dispatch(loadEigeneInstitution()),
+});
+
+const connector = connect(mapStateToProps, mapDispatchToProps);
+type PropsFromRedux = ConnectedProps<typeof connector>;
+
+export default connector(withStyles(styles)(OfferScreen));

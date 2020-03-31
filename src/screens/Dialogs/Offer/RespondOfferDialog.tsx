@@ -1,10 +1,12 @@
 import React, {ChangeEvent, PureComponent} from "react";
 import {createStyles, Theme, withStyles} from "@material-ui/core/styles";
-import {Button, Dialog, DialogActions, DialogContent, DialogTitle, TextareaAutosize} from "@material-ui/core";
+import {TextareaAutosize} from "@material-ui/core";
 import {WithStylesPublic} from "../../../util/WithStylesPublic";
-import ErrorToast from "../../../components/ErrorToast";
 import {apiPost} from "../../../util/ApiUtils";
 import {FormTextInput} from "../../../components/FormTextInput";
+import {handleDialogButton} from "../../../util/DialogUtils";
+import {defined, validate} from "../../../util/ValidationUtils";
+import PopupDialog from "../../../components/PopupDialog";
 
 interface Props extends WithStylesPublic<typeof styles> {
     open: boolean;
@@ -21,15 +23,16 @@ interface State {
     error?: string;
 }
 
+const initialState = {
+    comment: "",
+    location: "",
+    disabled: false,
+    amount: 0,
+    error: undefined
+};
+
 const styles = (theme: Theme) =>
     createStyles({
-        content: {
-            width: "60vw",
-            maxWidth: "400px",
-            paddingBottom: "16px",
-            display: "flex",
-            flexDirection: "column"
-        },
         comment: {
             marginTop: "16px",
             resize: "none",
@@ -47,54 +50,27 @@ const styles = (theme: Theme) =>
     });
 
 class RespondOfferDialog extends PureComponent<Props, State> {
-    state: State = {
-        comment: "",
-        location: "",
-        amount: 0,
-        disabled: false
-    };
+    state: State = {...initialState};
 
-    private onSave = async () => {
-        if(!this.props.offerId) {
-            this.setState({
-                error: "Angebot nicht gesetzt!"
-            });
-            return;
-        }
-
-        this.setState({
-            disabled: true,
-            error: undefined
-        });
-
-        const result = await apiPost("/remedy/angebot/anfragen", {
-            angebotId: this.props.offerId,
-            kommentar: this.state.comment,
-            standort: this.state.location,
-            anzahl: this.state.amount
-        });
-
-        if (result.error) {
-            this.setState({
-                disabled: false,
-                error: "Absenden der Anfrage fehlgeschlagen: " + result.error
-            });
-            return;
-        }
-
-        this.setState({
-            comment: "",
-            disabled: false
-        });
-
-        this.props.onSaved();
+    private onSave = () => {
+        handleDialogButton(
+            this.setState,
+            this.props.onSaved,
+            () => validate(
+                defined(this.props.offerId, "Angebot nicht gesetzt!")
+            ),
+            () => apiPost("/remedy/angebot/anfragen", {
+                angebotId: this.props.offerId,
+                kommentar: this.state.comment,
+                standort: this.state.location,
+                anzahl: this.state.amount
+            }),
+            initialState
+        );
     };
 
     private onCancel = () => {
-        this.setState({
-            error: undefined
-        });
-
+        this.onCloseError();
         this.props.onCancelled();
     };
 
@@ -114,45 +90,38 @@ class RespondOfferDialog extends PureComponent<Props, State> {
         const classes = this.props.classes!;
 
         return (
-            <Dialog
-                maxWidth="lg"
+            <PopupDialog
+                width="md"
                 open={this.props.open}
-                onClose={this.onCancel}>
-                <DialogTitle>{this.state.location} kontaktieren</DialogTitle>
-                <DialogContent>
-                    <div className={classes.content}>
-                        <ErrorToast error={this.state.error} onClose={this.onCloseError}/>
-                        <FormTextInput
-                            label="Eigener Standort"
-                            changeListener={this.setLocation}
-                            value={this.state.location}
-                            disabled={this.state.disabled} />
-                        <FormTextInput
-                            label="Anzahl"
-                            type="number"
-                            min={1}
-                            changeListener={(value: string) =>  this.setState({amount: +value})}
-                            value={""+this.state.amount}
-                            disabled={this.state.disabled} />
-                        <TextareaAutosize
-                            rowsMin={3}
-                            rowsMax={8}
-                            placeholder="Kommentar"
-                            value={this.state.comment}
-                            disabled={this.state.disabled}
-                            className={classes.comment}
-                            onChange={this.setComment}/>
-                    </div>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={this.onCancel} color="secondary">
-                        Abbrechen
-                    </Button>
-                    <Button onClick={this.onSave} color="secondary">
-                        Absenden
-                    </Button>
-                </DialogActions>
-            </Dialog>
+                error={this.state.error}
+                title="Kontakt aufnehmen"
+                disabled={this.state.disabled}
+                firstTitle="Abbrechen"
+                secondTitle="Absenden"
+                onFirst={this.onCancel}
+                onSecond={this.onSave}
+                onCloseError={this.onCloseError}>
+                <FormTextInput
+                    label="Eigener Standort"
+                    changeListener={this.setLocation}
+                    value={this.state.location}
+                    disabled={this.state.disabled}/>
+                <FormTextInput
+                    label="Anzahl"
+                    type="number"
+                    min={1}
+                    changeListener={(value: string) => this.setState({amount: +value})}
+                    value={"" + this.state.amount}
+                    disabled={this.state.disabled}/>
+                <TextareaAutosize
+                    rowsMin={3}
+                    rowsMax={8}
+                    placeholder="Kommentar"
+                    value={this.state.comment}
+                    disabled={this.state.disabled}
+                    className={classes.comment}
+                    onChange={this.setComment}/>
+            </PopupDialog>
         );
     };
 }

@@ -1,21 +1,20 @@
 import React, {Component} from "react";
 import {createStyles, Theme, withStyles} from "@material-ui/core/styles";
 import {WithStylesPublic} from "../util/WithStylesPublic";
-import {apiGet} from "../util/ApiUtils";
 import {FormTextInput} from "../components/FormTextInput";
-import {Bedarf} from "../Model/Bedarf";
-import {Aufgabe} from "../Model/Aufgabe";
-import {Angebot} from "../Model/Angebot";
+import {Aufgabe} from "../Domain/Aufgabe";
 import TaskTable from "../components/TaskTable";
 import EditTaskDialog from "./Dialogs/Task/EditTaskDialog";
+import {RootDispatch, RootState} from "../State/Store";
+import {loadAngebote} from "../State/AngeboteState";
+import {loadBedarfe} from "../State/BedarfeState";
+import {connect, ConnectedProps} from "react-redux";
+import {loadAufgaben} from "../State/AufgabenState";
 
-interface Props extends WithStylesPublic<typeof styles> {
+interface Props extends WithStylesPublic<typeof styles>, PropsFromRedux {
 }
 
 interface State {
-    angebote?: Angebot[];
-    bedarf?: Bedarf[];
-    tasks?: Aufgabe[];
     searchFilter: string;
     editTask?: Aufgabe;
 }
@@ -53,8 +52,8 @@ class TaskScreen extends Component<Props, State> {
                 </div>
                 <TaskTable
                     rows={this.filter()}
-                    offers={this.state.angebote}
-                    demands={this.state.bedarf}
+                    offers={this.props.angebote}
+                    demands={this.props.bedarfe}
                     onEditClicked={this.onEditClicked}/>
                 <EditTaskDialog
                     open={!!this.state.editTask}
@@ -81,7 +80,7 @@ class TaskScreen extends Component<Props, State> {
         this.setState({
             editTask: undefined
         });
-        this.loadAufgaben();
+        this.props.loadAufgaben();
     };
 
     private setFilter = (value: string) => {
@@ -89,42 +88,30 @@ class TaskScreen extends Component<Props, State> {
     };
 
     private filter = () => {
-        return (this.state.tasks || [])
+        return (this.props.aufgaben || [])
             .filter(task => (task.taskName.toLowerCase() + task.displayName.toLowerCase()).indexOf(this.state.searchFilter.toLowerCase()) !== -1);
     };
 
     componentDidMount = async () => {
-        this.loadAufgaben();
-        this.loadBedarf();
-        this.loadAngebote();
-    };
-
-    private loadAufgaben = async () => {
-        const result = await apiGet<Aufgabe[]>("/remedy/aufgabe");
-        if (!result.error) {
-            this.setState({
-                tasks: result.result
-            });
-        }
-    };
-
-    private loadAngebote = async () => {
-        const result = await apiGet<Angebot[]>("/remedy/angebot");
-        if (!result.error) {
-            this.setState({
-                angebote: result.result
-            });
-        }
-    };
-
-    private loadBedarf = async () => {
-        const result = await apiGet<Angebot[]>("/remedy/bedarf");
-        if (!result.error) {
-            this.setState({
-                bedarf: result.result
-            });
-        }
+        this.props.loadAufgaben();
+        this.props.loadBedarfe();
+        this.props.loadAngebote();
     };
 }
 
-export default withStyles(styles)(TaskScreen);
+const mapStateToProps = (state: RootState) => ({
+    angebote: state.angebote.value,
+    aufgaben: state.aufgaben.value,
+    bedarfe: state.bedarfe.value
+});
+
+const mapDispatchToProps = (dispatch: RootDispatch) => ({
+    loadAngebote: () => dispatch(loadAngebote()),
+    loadAufgaben: () => dispatch(loadAufgaben()),
+    loadBedarfe: () => dispatch(loadBedarfe()),
+});
+
+const connector = connect(mapStateToProps, mapDispatchToProps);
+type PropsFromRedux = ConnectedProps<typeof connector>;
+
+export default connector(withStyles(styles)(TaskScreen));
