@@ -4,9 +4,11 @@ import {Typography} from "@material-ui/core";
 import {Bedarf} from "../../../Domain/Bedarf";
 import {FormButton} from "../../../components/Form/FormButton";
 import PopupDialog from "../../../components/Dialog/PopupDialog";
+import {Institution} from "../../../Domain/Institution";
 
 interface Props {
     open: boolean;
+    eigeneInstitution?: Institution;
     item?: Bedarf;
     onContact?: () => void;
     onDone: () => void;
@@ -98,7 +100,8 @@ const DemandDetailsDialog: React.FC<Props> = props => {
                 <span className={classes.left}>Kommentar</span>
                 <span className={classes.right}>{props.item?.kommentar}</span>
             </div>
-            {props.onContact && (<div className={classes.footer}>
+            {props.onContact && props.eigeneInstitution?.id !== props.item?.institutionId && (
+                <div className={classes.footer}>
                     <FormButton
                         onClick={props.onContact}
                         size="small">

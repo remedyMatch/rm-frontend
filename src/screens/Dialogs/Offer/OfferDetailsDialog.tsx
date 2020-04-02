@@ -6,10 +6,12 @@ import {Angebot} from "../../../Domain/Angebot";
 import {format} from "date-fns";
 import {de} from "date-fns/locale";
 import PopupDialog from "../../../components/Dialog/PopupDialog";
+import {Institution} from "../../../Domain/Institution";
 
 interface Props {
     open: boolean;
     item?: Angebot;
+    eigeneInstitution?: Institution;
     onContact?: () => void;
     onDone: () => void;
 }
@@ -113,7 +115,8 @@ const OfferDetailsDialog: React.FC<Props> = props => {
                 <span className={classes.left}>Kommentar</span>
                 <span className={classes.right}>{props.item?.kommentar}</span>
             </div>
-            {props.onContact && (<div className={classes.footer}>
+            {props.onContact && props.eigeneInstitution?.id !== props.item?.institutionId && (
+                <div className={classes.footer}>
                     <FormButton
                         onClick={props.onContact}
                         size="small">

@@ -5,7 +5,7 @@ import {WithStylesPublic} from "../../../util/WithStylesPublic";
 import {apiPost} from "../../../util/ApiUtils";
 import {FormTextInput} from "../../../components/Form/FormTextInput";
 import {handleDialogButton} from "../../../util/DialogUtils";
-import {defined, numberSize, validate} from "../../../util/ValidationUtils";
+import {defined, numberSize, stringLength, validate} from "../../../util/ValidationUtils";
 import PopupDialog from "../../../components/Dialog/PopupDialog";
 import {FormLocationPicker} from "../../../components/Form/FormLocationPicker";
 import {InstitutionStandort} from "../../../Domain/InstitutionStandort";
@@ -68,7 +68,8 @@ class RespondOfferDialog extends PureComponent<Props, State> {
                 defined(this.props.angebot, "Angebot nicht gesetzt!"),
                 defined(this.props.eigeneInstitution, "Eigene Institution nicht gesetzt!"),
                 defined(this.state.location, "Es muss ein Standort gesetzt werden!"),
-                numberSize(this.state.amount, "Die Anzahl", 1)
+                numberSize(this.state.amount, "Die Anzahl", 1),
+                stringLength(this.state.comment, "Der Kommentar", 1)
             ),
             () => apiPost("/remedy/angebot/anfragen", {
                 angebotId: this.props.angebot!.id,

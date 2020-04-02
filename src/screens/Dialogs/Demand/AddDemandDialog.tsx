@@ -84,6 +84,7 @@ class AddDemandDialog extends PureComponent<Props, State> {
             () => validate(
                 defined(this.state.category, "Es muss eine Kategorie gewählt werden!"),
                 defined(this.state.article, "Es muss ein Artikel gewählt werden!"),
+                defined(this.state.location, "Es muss ein Standort gewählt werden!"),
                 numberSize(this.state.amount, "Die Anzahl", 1)
             ),
             () => apiPost("/remedy/bedarf", {

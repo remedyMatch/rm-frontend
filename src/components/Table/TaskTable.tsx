@@ -61,7 +61,7 @@ const TaskTable: React.FC<Props> = props => {
                 <TableBody>
                     {props.rows.map(row => (
                         <TableRow key={row.taskId}>
-                            <TableCell component="th" scope="row">{row.taskName}</TableCell>
+                            <TableCell>{row.taskName}</TableCell>
                             <TableCell>{row.displayName}</TableCell>
                             <TableCell>
                                 <IconButton
@@ -74,7 +74,7 @@ const TaskTable: React.FC<Props> = props => {
                     ))}
                     {props.rows.length === 0 && (
                         <TableRow>
-                            <TableCell className={classes.empty} colSpan={3}>Keine Aufgaben vorhanden</TableCell>
+                            <TableCell className={classes.empty} colSpan={99}>Keine Aufgaben vorhanden</TableCell>
                         </TableRow>
                     )}
                 </TableBody>

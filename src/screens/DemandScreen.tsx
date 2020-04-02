@@ -1,7 +1,6 @@
 import React, {Component} from "react";
 import {createStyles, Theme, withStyles} from "@material-ui/core/styles";
 import {WithStylesPublic} from "../util/WithStylesPublic";
-import {apiDelete} from "../util/ApiUtils";
 import {FormTextInput} from "../components/Form/FormTextInput";
 import {FormButton} from "../components/Form/FormButton";
 import AddDemandDialog from "./Dialogs/Demand/AddDemandDialog";
@@ -13,6 +12,7 @@ import {loadArtikel} from "../State/ArtikelState";
 import {loadBedarfe} from "../State/BedarfeState";
 import {loadEigeneInstitution} from "../State/EigeneInstitutionState";
 import {connect, ConnectedProps} from "react-redux";
+import OfferDetailsDialog from "./Dialogs/Offer/OfferDetailsDialog";
 
 interface Props extends WithStylesPublic<typeof styles>, PropsFromRedux {
 }
@@ -44,6 +44,7 @@ class DemandScreen extends Component<Props, State> {
 
     render() {
         const classes = this.props.classes!;
+        const institutionId = this.props.eigeneInstitution?.id || "";
 
         return (
             <>
@@ -59,9 +60,10 @@ class DemandScreen extends Component<Props, State> {
                     </FormButton>
                 </div>
                 <EntryTable
-                    rows={this.filter()}
-                    delete={{onDelete: this.onDelete, institutionId: this.props.eigeneInstitution?.id || ""}}
-                    details={{onClick: this.onDetailsClicked}}/>
+                    hideType
+                    bedarfe={this.filter()}
+                    angebote={[]}
+                    details={{onClick: this.onDetailsClicked, eigeneInstitutionId: institutionId}}/>
                 <AddDemandDialog
                     open={this.state.addDialogOpen}
                     onCancelled={this.onAddCancelled}
@@ -72,7 +74,8 @@ class DemandScreen extends Component<Props, State> {
                     open={!!this.state.infoId}
                     onDone={this.onDetailsDone}
                     item={this.props.bedarfe?.find(item => item.id === this.state.infoId)!}
-                    onContact={this.onDetailsContact}/>
+                    onContact={this.onDetailsContact}
+                    eigeneInstitution={this.props.eigeneInstitution}/>
                 <RespondDemandDialog
                     open={!!this.state.contactId}
                     onCancelled={this.onContactCancelled}
@@ -111,11 +114,6 @@ class DemandScreen extends Component<Props, State> {
         this.setState({
             infoId: id
         });
-    };
-
-    private onDelete = async (id: string) => {
-        await apiDelete("/remedy/bedarf/" + id);
-        this.props.loadBedarfe();
     };
 
     private setFilter = (value: string) => {

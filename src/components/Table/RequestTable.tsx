@@ -10,17 +10,11 @@ import {Anfrage} from "../../Domain/Anfrage";
 import {Bedarf} from "../../Domain/Bedarf";
 import {Angebot} from "../../Domain/Angebot";
 import {IconButton} from "@material-ui/core";
-import {Cancel} from "@material-ui/icons";
+import {CallMade, CallReceived, Cancel} from "@material-ui/icons";
 
 const useStyles = makeStyles({
     table: {
         minWidth: "650px",
-    },
-    columnLarge: {
-        width: "30%"
-    },
-    columnSmall: {
-        width: "5%"
     },
     iconButton: {
         margin: "-16px -8px -16px -24px"
@@ -35,55 +29,107 @@ const useStyles = makeStyles({
         textAlign: "center",
         backgroundColor: "rgba(0,0,0,0.1)",
         padding: "8px"
+    },
+    typeCell: {
+        display: "flex",
+        alignItems: "center"
+    },
+    typeIcon: {
+        fontSize: "0.8rem",
+        marginLeft: "8px"
+    },
+    typeColumn: {
+        whiteSpace: "nowrap"
+    },
+    cancelColumn: {
+
+    },
+    contactColumn: {
+        whiteSpace: "nowrap"
+    },
+    articleColumn: {
+        width: "99%"
+    },
+    distanceColumn: {
+        whiteSpace: "nowrap"
+    },
+    statusColumn: {
+        whiteSpace: "nowrap"
     }
 });
 
 interface Props {
-    rows: Anfrage[];
-    type: "sent" | "received";
-    demands?: Bedarf[];
-    offers?: Angebot[];
+    erhalten: Anfrage[];
+    gesendet: Anfrage[];
+    showType?: boolean;
+    bedarfe?: Bedarf[];
+    angebote?: Angebot[];
     onCancel?: (id?: string) => void;
 }
 
 const RequestTable: React.FC<Props> = props => {
     const classes = useStyles();
+    const data1 = props.erhalten.map(anfrage => ({type: "received", data: anfrage}));
+    const data2 = props.gesendet.map(anfrage => ({type: "sent", data: anfrage}));
+    const data = data1.concat(data2);
 
     return (
         <TableContainer className={classes.tableContainer}>
             <MUITable className={classes.table}>
                 <TableHead>
                     <TableRow>
-                        <TableCell className={classes.columnLarge}>{props.type === "sent" ? "Empfänger" : "Absender"}</TableCell>
-                        <TableCell>Anzeige</TableCell>
-                        {props.onCancel && (<TableCell className={classes.columnSmall} />)}
+                        {props.showType && (<TableCell className={classes.typeColumn}>Typ</TableCell>)}
+                        <TableCell className={classes.contactColumn}>Absender / Empfänger</TableCell>
+                        <TableCell className={classes.articleColumn}>Anzeige</TableCell>
+                        <TableCell className={classes.distanceColumn}>Entfernung</TableCell>
+                        <TableCell className={classes.statusColumn}>Status</TableCell>
+                        {props.onCancel && (<TableCell className={classes.cancelColumn}/>)}
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {props.rows.map(row => {
-                        const institution = props.type === "sent" ? row.institutionAn : row.institutionVon;
-                        const item = (row.bedarfId ? props.demands : props.offers)?.find(item => item.id === (row.bedarfId || row.angebotId));
+                    {data.map(entry => {
+                        const row = entry.data;
+                        const institution = entry.type === "sent" ? row.institutionAn : row.institutionVon;
+                        const item = (row.bedarfId ? props.bedarfe : props.angebote)?.find(item => item.id === (row.bedarfId || row.angebotId));
                         const onCancel = props.onCancel;
 
                         return (
                             <TableRow key={row.id}>
-                                <TableCell component="th" scope="row">{institution.name}</TableCell>
-                                <TableCell>{(row.bedarfId ? "Bedarf: " : "Angebot: ") + item?.anzahl + " " + item?.artikel.name}</TableCell>
-                                {onCancel && (
-                                    <TableCell>
+                                {props.showType && (
+                                    <TableCell className={classes.typeCell}>
+                                        {entry.type === "sent" ? "Gestellt" : "Erhalten"}
+                                        {entry.type === "sent" ?
+                                            <CallMade className={classes.typeIcon}/> :
+                                            <CallReceived className={classes.typeIcon}/>}
+                                    </TableCell>
+                                )}
+                                <TableCell className={classes.contactColumn}>
+                                    {(entry.type === "sent" ? "An " : "Von ") + institution.name}
+                                </TableCell>
+                                <TableCell className={classes.articleColumn}>
+                                    {(row.bedarfId ? "Bedarf: " : "Angebot: ") + item?.anzahl + " " + item?.artikel.name}
+                                </TableCell>
+                                <TableCell className={classes.distanceColumn}>
+                                    {row.entfernung.toFixed(1) + " km"}
+                                </TableCell>
+                                <TableCell className={classes.statusColumn}>
+                                    {row.status}
+                                </TableCell>
+                                <TableCell className={classes.cancelColumn}>
+                                    {onCancel && entry.type === "sent" && row.status !== "Storniert" && (
                                         <IconButton
                                             className={classes.iconButton}
                                             onClick={() => onCancel(item?.id)}>
                                             <Cancel/>
                                         </IconButton>
-                                    </TableCell>
-                                )}
+                                    )}
+                                </TableCell>
                             </TableRow>
                         )
                     })}
-                    {props.rows.length === 0 && (
+                    {data.length === 0 && (
                         <TableRow>
-                            <TableCell className={classes.empty} colSpan={4}>Keine Anfragen vorhanden</TableCell>
+                            <TableCell className={classes.empty} colSpan={99}>Keine Anfragen vorhanden</TableCell>
                         </TableRow>
                     )}
                 </TableBody>

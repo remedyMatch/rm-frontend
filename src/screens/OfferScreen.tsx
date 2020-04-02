@@ -5,7 +5,6 @@ import EntryTable from "../components/Table/EntryTable";
 import {FormTextInput} from "../components/Form/FormTextInput";
 import {FormButton} from "../components/Form/FormButton";
 import AddOfferDialog from "./Dialogs/Offer/AddOfferDialog";
-import {apiDelete} from "../util/ApiUtils";
 import OfferDetailsDialog from "./Dialogs/Offer/OfferDetailsDialog";
 import RespondOfferDialog from "./Dialogs/Offer/RespondOfferDialog";
 import {RootDispatch, RootState} from "../State/Store";
@@ -44,6 +43,7 @@ class OfferScreen extends Component<Props, State> {
 
     render() {
         const classes = this.props.classes!;
+        const institutionId = this.props.eigeneInstitution?.id || "";
 
         return (
             <>
@@ -59,9 +59,10 @@ class OfferScreen extends Component<Props, State> {
                     </FormButton>
                 </div>
                 <EntryTable
-                    rows={this.filter()}
-                    delete={{onDelete: this.onDelete, institutionId: this.props.eigeneInstitution?.id || ""}}
-                    details={{onClick: this.onDetailsClicked}}/>
+                    hideType
+                    angebote={this.filter()}
+                    bedarfe={[]}
+                    details={{onClick: this.onDetailsClicked, eigeneInstitutionId: institutionId}}/>
                 <AddOfferDialog
                     open={this.state.addDialogOpen}
                     onCancelled={this.onAddCancelled}
@@ -72,7 +73,8 @@ class OfferScreen extends Component<Props, State> {
                     open={!!this.state.infoId}
                     onDone={this.onDetailsDone}
                     item={this.props.angebote?.find(item => item.id === this.state.infoId)!}
-                    onContact={this.onDetailsContact}/>
+                    onContact={this.onDetailsContact}
+                    eigeneInstitution={this.props.eigeneInstitution}/>
                 <RespondOfferDialog
                     open={!!this.state.contactId}
                     onCancelled={this.onContactCancelled}
@@ -112,11 +114,6 @@ class OfferScreen extends Component<Props, State> {
         this.setState({
             infoId: id
         });
-    };
-
-    private onDelete = async (id: string) => {
-        await apiDelete("/remedy/angebot/" + id);
-        this.props.loadAngebote();
     };
 
     private setFilter = (value: string) => {

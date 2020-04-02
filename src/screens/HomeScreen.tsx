@@ -1,11 +1,10 @@
 import React, {Component} from "react";
 import {createStyles, Theme, withStyles} from "@material-ui/core/styles";
 import {WithStylesPublic} from "../util/WithStylesPublic";
-import {apiDelete} from "../util/ApiUtils";
 import EntryTable from "../components/Table/EntryTable";
 import {Typography} from "@material-ui/core";
 import RequestTable from "../components/Table/RequestTable";
-import CancelReceivedRequestDialog from "./Dialogs/CancelReceivedRequestDialog";
+import CancelSentRequestDialog from "./Dialogs/Home/CancelSentRequestDialog";
 import {RootDispatch, RootState} from "../State/Store";
 import {loadArtikel} from "../State/ArtikelState";
 import {loadBedarfe} from "../State/BedarfeState";
@@ -15,12 +14,17 @@ import {loadAngebote} from "../State/AngeboteState";
 import {loadErhalteneAnfragen} from "../State/ErhalteneAnfragenState";
 import {loadGesendeteAnfragen} from "../State/GesendeteAnfragenState";
 import DemandDetailsDialog from "./Dialogs/Demand/DemandDetailsDialog";
+import DeleteEntryDialog from "./Dialogs/Home/DeleteEntryDialog";
+import OfferDetailsDialog from "./Dialogs/Offer/OfferDetailsDialog";
+import {loadMatches} from "../State/MatchesState";
 
 interface Props extends WithStylesPublic<typeof styles>, PropsFromRedux {
 }
 
 interface State {
-    cancelId?: string;
+    cancelSentRequestId?: string;
+    deleteEntryId?: string;
+    deleteEntryIsDemand: boolean;
     infoId?: string;
     infoIsOffer: boolean;
 }
@@ -36,78 +40,82 @@ const styles = (theme: Theme) =>
 
 class HomeScreen extends Component<Props, State> {
     state: State = {
-        infoIsOffer: false
+        infoIsOffer: false,
+        deleteEntryIsDemand: false
     };
 
     render() {
         const classes = this.props.classes!;
+        const institutionId = this.props.eigeneInstitution?.id || "";
 
         return (
             <>
-                <Typography variant="subtitle1" className={classes.subtitle}>Erhaltene Anfragen</Typography>
+                <Typography variant="subtitle1" className={classes.subtitle}>Meine Anfragen</Typography>
                 <RequestTable
-                    rows={this.props.erhalteneAnfragen || []}
-                    type="received"
-                    demands={this.props.bedarfe}
-                    offers={this.props.angebote}/>
-                <Typography variant="subtitle1" className={classes.subtitle}>Gestellte Anfragen</Typography>
-                <RequestTable
-                    rows={this.props.gesendeteAnfragen || []}
-                    type="sent"
-                    demands={this.props.bedarfe}
-                    offers={this.props.angebote}
-                    onCancel={this.onCancelOffer}/>
-                <Typography variant="subtitle1" className={classes.subtitle}>Meine Angebote</Typography>
+                    erhalten={this.props.erhalteneAnfragen || []}
+                    gesendet={this.props.gesendeteAnfragen || []}
+                    showType
+                    bedarfe={this.props.bedarfe}
+                    angebote={this.props.angebote}
+                    onCancel={this.onCancelSentRequest}/>
+                <Typography variant="subtitle1" className={classes.subtitle}>Meine Anzeigen</Typography>
                 <EntryTable
-                    rows={this.filterOffer()}
+                    hideDistance
+                    showDetailedAmount
+                    useSimplePagination
+                    angebote={this.filterOffer()}
+                    bedarfe={this.filterDemand()}
                     delete={{
-                        onDelete: this.onDeleteOffer,
-                        institutionId: this.props.eigeneInstitution?.id || ""
+                        onDelete: this.onDeleteEntry,
+                        eigeneInstitutionId: institutionId
                     }}
-                    details={{onClick: this.onOfferDetailsClicked}}/>
-                <Typography variant="subtitle1" className={classes.subtitle}>Mein Bedarf</Typography>
-                <EntryTable
-                    rows={this.filterDemand()}
-                    delete={{
-                        onDelete: this.onDeleteDemand,
-                        institutionId: this.props.eigeneInstitution?.id || ""
-                    }}
-                    details={{onClick: this.onDemandDetailsClicked}}/>
-                <DemandDetailsDialog
+                    details={{
+                        onClick: this.onDetailsClicked,
+                        eigeneInstitutionId: institutionId
+                    }}/>
+                <OfferDetailsDialog
                     open={!!this.state.infoId && this.state.infoIsOffer}
                     onDone={this.onDetailsDone}
+                    eigeneInstitution={this.props.eigeneInstitution}
                     item={this.props.angebote?.find(item => item.id === this.state.infoId)!}/>
                 <DemandDetailsDialog
                     open={!!this.state.infoId && !this.state.infoIsOffer}
                     onDone={this.onDetailsDone}
+                    eigeneInstitution={this.props.eigeneInstitution}
                     item={this.props.bedarfe?.find(item => item.id === this.state.infoId)!}/>
-                <CancelReceivedRequestDialog
-                    open={!!this.state.cancelId}
-                    request={this.props.gesendeteAnfragen?.find(sr => (sr.angebotId || sr.bedarfId) === this.state.cancelId)}
-                    onNo={this.onCancelNo}
-                    onYes={this.onCancelYes}
-                />
+                <CancelSentRequestDialog
+                    open={!!this.state.cancelSentRequestId}
+                    request={this.props.gesendeteAnfragen?.find(sr => (sr.angebotId || sr.bedarfId) === this.state.cancelSentRequestId)}
+                    onNo={this.onCancelSentRequestNo}
+                    onYes={this.onCancelSentRequestYes}/>
+                <DeleteEntryDialog
+                    open={!!this.state.deleteEntryId}
+                    onNo={this.onDeleteEntryNo}
+                    onYes={this.onDeleteEntryYes}
+                    isDemand={this.state.deleteEntryIsDemand}
+                    item={(this.props.bedarfe || []).concat(this.props.angebote || []).find(e => e.id === this.state.deleteEntryId)}
+                    requestId={this.state.deleteEntryId}/>
             </>
         )
     }
 
-    private onCancelOffer = (id?: string) => {
+    private onCancelSentRequest = (id?: string) => {
         if (id) {
             this.setState({
-                cancelId: id
+                cancelSentRequestId: id
             });
         }
     };
 
-    private onCancelNo = () => {
+    private onCancelSentRequestNo = () => {
         this.setState({
-            cancelId: undefined
+            cancelSentRequestId: undefined
         });
     };
 
-    private onCancelYes = () => {
+    private onCancelSentRequestYes = () => {
         this.setState({
-            cancelId: undefined
+            cancelSentRequestId: undefined
         });
         this.props.loadGesendeteAnfragen();
     };
@@ -118,23 +126,16 @@ class HomeScreen extends Component<Props, State> {
         });
     };
 
-    private onOfferDetailsClicked = (id: string) => {
+    private onDetailsClicked = (id: string) => {
+        if (!this.props.angebote) {
+            return;
+        }
+
+        const isOffer = !!this.props.angebote.find(angebot => angebot.id === id);
         this.setState({
             infoId: id,
-            infoIsOffer: true
+            infoIsOffer: isOffer
         });
-    };
-
-    private onDemandDetailsClicked = (id: string) => {
-        this.setState({
-            infoId: id,
-            infoIsOffer: false
-        });
-    };
-
-    private onDeleteDemand = async (id: string) => {
-        await apiDelete("/remedy/bedarf/" + id);
-        this.props.loadBedarfe();
     };
 
     private filterDemand = () => {
@@ -142,9 +143,31 @@ class HomeScreen extends Component<Props, State> {
             .filter(bedarf => bedarf.institutionId === this.props.eigeneInstitution?.id);
     };
 
-    private onDeleteOffer = async (id: string) => {
-        await apiDelete("/remedy/angebot/" + id);
+    private onDeleteEntry = (id: string) => {
+        if (!this.props.bedarfe) {
+            return;
+        }
+
+        const isDemand = !!this.props.bedarfe.find(bedarf => bedarf.id === id);
+        this.setState({
+            deleteEntryId: id,
+            deleteEntryIsDemand: isDemand
+        });
+
+    };
+
+    private onDeleteEntryYes = () => {
+        this.setState({
+            deleteEntryId: undefined
+        });
         this.props.loadAngebote();
+        this.props.loadBedarfe();
+    };
+
+    private onDeleteEntryNo = () => {
+        this.setState({
+            deleteEntryId: undefined
+        });
     };
 
     private filterOffer = () => {
@@ -159,6 +182,7 @@ class HomeScreen extends Component<Props, State> {
         this.props.loadErhalteneAnfragen();
         this.props.loadGesendeteAnfragen();
         this.props.loadEigeneInstitution();
+        this.props.loadMatches();
     };
 }
 
@@ -168,7 +192,8 @@ const mapStateToProps = (state: RootState) => ({
     bedarfe: state.bedarfe.value,
     eigeneInstitution: state.eigeneInstitution.value,
     erhalteneAnfragen: state.erhalteneAnfragen.value,
-    gesendeteAnfragen: state.gesendeteAnfragen.value
+    gesendeteAnfragen: state.gesendeteAnfragen.value,
+    matches: state.matches.value
 });
 
 const mapDispatchToProps = (dispatch: RootDispatch) => ({
@@ -177,7 +202,8 @@ const mapDispatchToProps = (dispatch: RootDispatch) => ({
     loadBedarfe: () => dispatch(loadBedarfe()),
     loadEigeneInstitution: () => dispatch(loadEigeneInstitution()),
     loadErhalteneAnfragen: () => dispatch(loadErhalteneAnfragen()),
-    loadGesendeteAnfragen: () => dispatch(loadGesendeteAnfragen())
+    loadGesendeteAnfragen: () => dispatch(loadGesendeteAnfragen()),
+    loadMatches: () => dispatch(loadMatches())
 });
 
 const connector = connect(mapStateToProps, mapDispatchToProps);
