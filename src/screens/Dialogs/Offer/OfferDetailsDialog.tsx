@@ -43,6 +43,9 @@ const useStyles = makeStyles((theme: Theme) => ({
         marginTop: "32px",
         display: "flex",
         justifyContent: "center"
+    },
+    emptyPlaceholder: {
+        fontStyle: "italic"
     }
 }));
 
@@ -113,7 +116,7 @@ const OfferDetailsDialog: React.FC<Props> = props => {
             </div>
             <div className={classes.row}>
                 <span className={classes.left}>Kommentar</span>
-                <span className={classes.right}>{props.item?.kommentar}</span>
+                <span className={classes.right}>{props.item?.kommentar || <span className={classes.emptyPlaceholder}>Keiner</span>}</span>
             </div>
             {props.onContact && props.eigeneInstitution?.id !== props.item?.institutionId && (
                 <div className={classes.footer}>

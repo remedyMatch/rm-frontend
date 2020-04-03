@@ -279,9 +279,10 @@ const EntryTable: React.FC<Props> = props => {
                                 <>
                                     {column.id === "type" && (
                                         <TableCell
-                                            className={classes.typeColumn}>
+                                            className={classes.typeColumn}
+                                            {...column.getHeaderProps()}>
                                             <TableSortLabel
-                                                {...column.getHeaderProps(column.getSortByToggleProps())}
+                                                {...column.getSortByToggleProps()}
                                                 active={column.isSorted}
                                                 direction={column.isSortedDesc ? "desc" : "asc"}>
                                                 {column.render('Header')}
@@ -290,9 +291,10 @@ const EntryTable: React.FC<Props> = props => {
                                     )}
                                     {column.id === "data.category" && (
                                         <TableCell
-                                            className={classes.categoryColumn}>
+                                            className={classes.categoryColumn}
+                                            {...column.getHeaderProps()}>
                                             <TableSortLabel
-                                                {...column.getHeaderProps(column.getSortByToggleProps())}
+                                                {...column.getSortByToggleProps()}
                                                 active={column.isSorted}
                                                 direction={column.isSortedDesc ? "desc" : "asc"}>
                                                 {column.render('Header')}
@@ -301,9 +303,10 @@ const EntryTable: React.FC<Props> = props => {
                                     )}
                                     {column.id === "data.article" && (
                                         <TableCell
-                                            className={classes.articleColumn}>
+                                            className={classes.articleColumn}
+                                            {...column.getHeaderProps()}>
                                             <TableSortLabel
-                                                {...column.getHeaderProps(column.getSortByToggleProps())}
+                                                {...column.getSortByToggleProps()}
                                                 active={column.isSorted}
                                                 direction={column.isSortedDesc ? "desc" : "asc"}>
                                                 {column.render('Header')}
@@ -312,9 +315,10 @@ const EntryTable: React.FC<Props> = props => {
                                     )}
                                     {column.id === "data.amount" && (
                                         <TableCell
-                                            className={classes.amountColumn}>
+                                            className={classes.amountColumn}
+                                            {...column.getHeaderProps()}>
                                             <TableSortLabel
-                                                {...column.getHeaderProps(column.getSortByToggleProps())}
+                                                {...column.getSortByToggleProps()}
                                                 active={column.isSorted}
                                                 direction={column.isSortedDesc ? "desc" : "asc"}>
                                                 {column.render('Header')}
@@ -334,9 +338,10 @@ const EntryTable: React.FC<Props> = props => {
                                     )}
                                     {column.id === "data.distance" && (
                                         <TableCell
-                                            className={classes.distanceColumn}>
+                                            className={classes.distanceColumn}
+                                            {...column.getHeaderProps()}>
                                             <TableSortLabel
-                                                {...column.getHeaderProps(column.getSortByToggleProps())}
+                                                {...column.getSortByToggleProps()}
                                                 active={column.isSorted}
                                                 direction={column.isSortedDesc ? "desc" : "asc"}>
                                                 {column.render('Header')}
@@ -345,13 +350,15 @@ const EntryTable: React.FC<Props> = props => {
                                     )}
                                     {column.id === "details" && (
                                         <TableCell
-                                            className={classes.detailsColumn}>
+                                            className={classes.detailsColumn}
+                                            {...column.getHeaderProps()}>
                                             {column.render('Header')}
                                         </TableCell>
                                     )}
                                     {column.id === "delete" && (
                                         <TableCell
-                                            className={classes.deleteColumn}>
+                                            className={classes.deleteColumn}
+                                            {...column.getHeaderProps()}>
                                             {column.render('Header')}
                                         </TableCell>
                                     )}

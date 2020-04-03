@@ -71,7 +71,7 @@ const RequestTable: React.FC<Props> = props => {
     const classes = useStyles();
     const data1 = props.erhalten.map(anfrage => ({type: "received", data: anfrage}));
     const data2 = props.gesendet.map(anfrage => ({type: "sent", data: anfrage}));
-    const data = data1.concat(data2);
+    const data = data1.concat(data2).sort((a, b) => a.data.status.localeCompare(b.data.status));
 
     return (
         <TableContainer className={classes.tableContainer}>

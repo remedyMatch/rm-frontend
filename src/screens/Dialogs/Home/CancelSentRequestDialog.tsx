@@ -24,7 +24,6 @@ class CancelSentOfferDialog extends Component<Props, State> {
     };
 
     render() {
-        console.log(this.props.request);
         return (
             <PopupDialog
                 open={this.props.open}
