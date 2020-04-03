@@ -55,8 +55,7 @@ class EditInstitutionDialog extends Component<Props, State> {
                 name: this.state.name,
                 typ: this.state.type,
                 id: this.props.institution!.id
-            }),
-            initialState
+            })
         );
     };
 
@@ -121,12 +120,22 @@ class EditInstitutionDialog extends Component<Props, State> {
         );
     };
 
+    private setData = () => {
+        this.setState({
+            name: this.props.institution!.name || "",
+            type: this.props.institution!.typ
+        });
+    };
+
+    componentDidMount(): void {
+        if(this.props.institution) {
+            this.setData();
+        }
+    }
+
     componentDidUpdate(prevProps: Readonly<Props>, prevState: Readonly<State>, snapshot?: any): void {
         if (!prevProps.institution && this.props.institution) {
-            this.setState({
-                name: this.props.institution.name || "",
-                type: this.props.institution.typ
-            })
+            this.setData();
         }
     }
 }

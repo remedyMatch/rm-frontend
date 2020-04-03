@@ -17,6 +17,7 @@ import DemandDetailsDialog from "./Dialogs/Demand/DemandDetailsDialog";
 import DeleteEntryDialog from "./Dialogs/Home/DeleteEntryDialog";
 import OfferDetailsDialog from "./Dialogs/Offer/OfferDetailsDialog";
 import {loadMatches} from "../State/MatchesState";
+import MatchTable from "../components/Table/MatchTable";
 
 interface Props extends WithStylesPublic<typeof styles>, PropsFromRedux {
 }
@@ -50,6 +51,10 @@ class HomeScreen extends Component<Props, State> {
 
         return (
             <>
+                <Typography variant="subtitle1" className={classes.subtitle}>Meine Matches</Typography>
+                <MatchTable
+                    articles={this.props.artikel || []}
+                    matches={this.props.matches || []}/>
                 <Typography variant="subtitle1" className={classes.subtitle}>Meine Anfragen</Typography>
                 <RequestTable
                     erhalten={this.props.erhalteneAnfragen || []}

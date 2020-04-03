@@ -6,6 +6,7 @@ import LoginService from "../../util/LoginService";
 import {RootDispatch, RootState} from "../../State/Store";
 import {connect, ConnectedProps} from "react-redux";
 import {loadAufgaben} from "../../State/AufgabenState";
+import {Badge} from "@material-ui/core";
 
 interface Props extends RouteComponentProps, PropsFromRedux {
 }
@@ -26,7 +27,8 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
     badge: {
         "&>span": {
-            right: "8%"
+            top: "25%",
+            right: "15%"
         }
     },
     navlink: {
@@ -59,10 +61,10 @@ const Menu: React.FC<Props> = props => {
     const classes = useStyles();
 
     useEffect(() => {
-        if (!props.aufgabenLoading) {
+        if (!props.aufgabenLoading && (props.aufgabenLoadTime || 0) < new Date().getTime() - 10000) {
             props.loadAufgaben();
         }
-    }, []);
+    });
 
     return (
         <div className={classes.root}>
@@ -86,12 +88,17 @@ const Menu: React.FC<Props> = props => {
                     activeClassName={classes.navlinkActive}>
                     Angebote
                 </NavLink>
-                <NavLink
-                    to="/aufgaben"
-                    className={classes.navlink}
-                    activeClassName={classes.navlinkActive}>
-                    Aufgaben
-                </NavLink>
+                <Badge
+                    color="secondary"
+                    className={classes.badge}
+                    badgeContent={props.aufgaben?.length}>
+                    <NavLink
+                        to="/aufgaben"
+                        className={classes.navlink}
+                        activeClassName={classes.navlinkActive}>
+                        Aufgaben
+                    </NavLink>
+                </Badge>
                 <NavLink
                     to="/institution"
                     className={classes.navlink}
@@ -114,7 +121,8 @@ const Menu: React.FC<Props> = props => {
 
 const mapStateToProps = (state: RootState) => ({
     aufgaben: state.aufgaben.value,
-    aufgabenLoading: state.aufgaben.loading
+    aufgabenLoading: state.aufgaben.loading,
+    aufgabenLoadTime: state.aufgaben.loadTime
 });
 
 const mapDispatchToProps = (dispatch: RootDispatch) => ({

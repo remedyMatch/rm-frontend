@@ -116,7 +116,7 @@ const RequestTable: React.FC<Props> = props => {
                                     {row.status}
                                 </TableCell>
                                 <TableCell className={classes.cancelColumn}>
-                                    {onCancel && entry.type === "sent" && row.status !== "Storniert" && (
+                                    {onCancel && entry.type === "sent" && row.status === "Offen" && (
                                         <IconButton
                                             className={classes.iconButton}
                                             onClick={() => onCancel(item?.id)}>

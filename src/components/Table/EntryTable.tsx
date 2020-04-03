@@ -446,7 +446,7 @@ const EntryTable: React.FC<Props> = props => {
                         <TableCell colSpan={99} className={classes.tableFooterCell}>
                             <div className={classes.tableFooterContainer}>
                                 <div className={classes.tableFooter}>
-                                    {!props.useSimplePagination && (
+                                    {!props.useSimplePagination && page.length > 0 && (
                                         <TextField
                                             className={classes.pageIndexControl}
                                             variant="outlined"
@@ -461,7 +461,7 @@ const EntryTable: React.FC<Props> = props => {
                                         count={pageCount}
                                         page={pageIndex + 1}
                                         onChange={(e, page) => gotoPage(page - 1)}/>
-                                    {!props.useSimplePagination && (
+                                    {!props.useSimplePagination && page.length > 0 && (
                                         <FormControl
                                             variant="outlined"
                                             className={classes.pageSizeControl}

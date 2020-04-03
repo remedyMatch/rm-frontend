@@ -5,6 +5,8 @@ import ConfirmReceiptTaskDialog from "./Handler/ConfirmReceiptTaskDialog";
 import {Anfrage} from "../../../Domain/Anfrage";
 import {Angebot} from "../../../Domain/Angebot";
 import {Bedarf} from "../../../Domain/Bedarf";
+import {Match} from "../../../Domain/Match";
+import {Artikel} from "../../../Domain/Artikel";
 
 interface Props {
     open: boolean;
@@ -13,6 +15,8 @@ interface Props {
     task?: Aufgabe;
     request?: Anfrage;
     item?: Angebot | Bedarf;
+    match?: Match;
+    article?: Artikel;
 }
 
 const EditTaskDialog: React.FC<Props> = props => {
@@ -32,6 +36,8 @@ const EditTaskDialog: React.FC<Props> = props => {
             return (
                 <ConfirmReceiptTaskDialog
                     task={props.task}
+                    match={props.match}
+                    article={props.article}
                     onFinished={props.onFinished}
                     onCancelled={props.onCancelled}/>
             );

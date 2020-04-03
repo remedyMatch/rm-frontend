@@ -7,8 +7,12 @@ export interface Match {
     standortVon: MatchStandort;
     standortAn: MatchStandort;
     institutionAn: Institution;
+    kommentar: string;
     anfrageId: string;
     status: "Offen" | "Ausgeliefert";
     prozessInstanzId: string;
     entfernung: number;
+    artikelId: string;
+    anzahl: number;
+    anfrageTyp: string;
 }

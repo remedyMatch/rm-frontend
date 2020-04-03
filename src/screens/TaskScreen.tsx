@@ -14,6 +14,10 @@ import {loadErhalteneAnfragen} from "../State/ErhalteneAnfragenState";
 import {Anfrage} from "../Domain/Anfrage";
 import {Bedarf} from "../Domain/Bedarf";
 import {Angebot} from "../Domain/Angebot";
+import {Match} from "../Domain/Match";
+import {loadMatches} from "../State/MatchesState";
+import {loadArtikel} from "../State/ArtikelState";
+import {Artikel} from "../Domain/Artikel";
 
 interface Props extends WithStylesPublic<typeof styles>, PropsFromRedux {
 }
@@ -23,6 +27,8 @@ interface State {
     editTask?: Aufgabe;
     editRequest?: Anfrage;
     editItem?: Angebot | Bedarf;
+    editMatch?: Match;
+    editArticle?: Artikel;
 }
 
 const styles = (theme: Theme) =>
@@ -63,6 +69,8 @@ class TaskScreen extends Component<Props, State> {
                     open={!!this.state.editTask}
                     task={this.state.editTask}
                     item={this.state.editItem}
+                    match={this.state.editMatch}
+                    article={this.state.editArticle}
                     request={this.state.editRequest}
                     onCancelled={this.onEditCancelled}
                     onFinished={this.onEditFinished}/>
@@ -77,10 +85,14 @@ class TaskScreen extends Component<Props, State> {
             .concat(this.props.bedarfe || [])
             .concat(this.props.angebote || [])
             .find(item => item.id === id) ;
+        const match = this.props.matches?.find(match => match.id === task.objektId);
+        const article = this.props.artikel?.find(artikel => artikel.id === match?.artikelId);
         this.setState({
             editTask: task,
             editRequest: request,
-            editItem: item
+            editItem: item,
+            editMatch: match,
+            editArticle: article
         });
     };
 
@@ -108,24 +120,30 @@ class TaskScreen extends Component<Props, State> {
 
     componentDidMount = async () => {
         this.props.loadAufgaben();
+        this.props.loadArtikel();
         this.props.loadBedarfe();
         this.props.loadAngebote();
         this.props.loadErhalteneAnfragen();
+        this.props.loadMatches();
     };
 }
 
 const mapStateToProps = (state: RootState) => ({
     angebote: state.angebote.value,
+    artikel: state.artikel.value,
     aufgaben: state.aufgaben.value,
     bedarfe: state.bedarfe.value,
-    erhalteneAnfragen: state.erhalteneAnfragen.value
+    erhalteneAnfragen: state.erhalteneAnfragen.value,
+    matches: state.matches.value
 });
 
 const mapDispatchToProps = (dispatch: RootDispatch) => ({
     loadAngebote: () => dispatch(loadAngebote()),
+    loadArtikel: () => dispatch(loadArtikel()),
     loadAufgaben: () => dispatch(loadAufgaben()),
     loadBedarfe: () => dispatch(loadBedarfe()),
-    loadErhalteneAnfragen: () => dispatch(loadErhalteneAnfragen())
+    loadErhalteneAnfragen: () => dispatch(loadErhalteneAnfragen()),
+    loadMatches: () => dispatch(loadMatches())
 });
 
 const connector = connect(mapStateToProps, mapDispatchToProps);
