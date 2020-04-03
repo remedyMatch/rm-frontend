@@ -7,10 +7,9 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import {Anfrage} from "../../Domain/Anfrage";
-import {Bedarf} from "../../Domain/Bedarf";
-import {Angebot} from "../../Domain/Angebot";
 import {IconButton} from "@material-ui/core";
 import {CallMade, CallReceived, Cancel} from "@material-ui/icons";
+import {Artikel} from "../../Domain/Artikel";
 
 const useStyles = makeStyles({
     table: {
@@ -41,9 +40,7 @@ const useStyles = makeStyles({
     typeColumn: {
         whiteSpace: "nowrap"
     },
-    cancelColumn: {
-
-    },
+    cancelColumn: {},
     contactColumn: {
         whiteSpace: "nowrap"
     },
@@ -62,9 +59,8 @@ interface Props {
     erhalten: Anfrage[];
     gesendet: Anfrage[];
     showType?: boolean;
-    bedarfe?: Bedarf[];
-    angebote?: Angebot[];
     onCancel?: (id?: string) => void;
+    artikel: Artikel[];
 }
 
 const RequestTable: React.FC<Props> = props => {
@@ -90,7 +86,7 @@ const RequestTable: React.FC<Props> = props => {
                     {data.map(entry => {
                         const row = entry.data;
                         const institution = entry.type === "sent" ? row.institutionAn : row.institutionVon;
-                        const item = (row.bedarfId ? props.bedarfe : props.angebote)?.find(item => item.id === (row.bedarfId || row.angebotId));
+                        const item = props.artikel.find(item => item.id === row.artikelId);
                         const onCancel = props.onCancel;
 
                         return (
@@ -107,7 +103,7 @@ const RequestTable: React.FC<Props> = props => {
                                     {(entry.type === "sent" ? "An " : "Von ") + institution.name}
                                 </TableCell>
                                 <TableCell className={classes.articleColumn}>
-                                    {(row.bedarfId ? "Bedarf: " : "Angebot: ") + item?.anzahl + " " + item?.artikel.name}
+                                    {(row.bedarfId ? "Bedarf: " : "Angebot: ") + row?.anzahl + " " + item?.name}
                                 </TableCell>
                                 <TableCell className={classes.distanceColumn}>
                                     {row.entfernung.toFixed(1) + " km"}

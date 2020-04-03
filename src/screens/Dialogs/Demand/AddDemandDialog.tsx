@@ -10,7 +10,6 @@ import {handleDialogButton} from "../../../util/DialogUtils";
 import {defined, numberSize, validate} from "../../../util/ValidationUtils";
 import PopupDialog from "../../../components/Dialog/PopupDialog";
 import {FormLocationPicker} from "../../../components/Form/FormLocationPicker";
-import {FormCheckbox} from "../../../components/Form/FormCheckbox";
 import {InstitutionStandort} from "../../../Domain/InstitutionStandort";
 import {Institution} from "../../../Domain/Institution";
 
@@ -28,9 +27,6 @@ interface State {
     amount: number;
     location?: string;
     comment: string;
-    sterile: boolean;
-    sealed: boolean;
-    medical: boolean;
     disabled: boolean;
     error?: string;
 }
@@ -41,9 +37,6 @@ const initialState = {
     amount: 0,
     location: undefined,
     comment: "",
-    sterile: false,
-    sealed: false,
-    medical: false,
     disabled: false,
     error: undefined
 };
@@ -95,9 +88,9 @@ class AddDemandDialog extends PureComponent<Props, State> {
                 standort: {
                     id: this.state.location
                 },
-                steril: this.state.sterile,
-                originalverpackt: this.state.sealed,
-                medizinisch: this.state.medical,
+                steril: false,
+                originalverpackt: false,
+                medizinisch: false,
                 kommentar: this.state.comment
             }),
             initialState
@@ -133,18 +126,6 @@ class AddDemandDialog extends PureComponent<Props, State> {
 
     private setComment = (event: ChangeEvent<HTMLTextAreaElement>) => {
         this.setState({comment: event.target.value});
-    };
-
-    private setSterile = (sterile: boolean) => {
-        this.setState({sterile});
-    };
-
-    private setSealed = (sealed: boolean) => {
-        this.setState({sealed});
-    };
-
-    private setMedical = (medical: boolean) => {
-        this.setState({medical});
     };
 
     private getCategoryOptions = () => {
@@ -234,24 +215,6 @@ class AddDemandDialog extends PureComponent<Props, State> {
                     className={classes.formRow}
                     disabled={this.state.disabled}
                     valueId={this.state.location}/>
-                <FormCheckbox
-                    disabled={this.state.disabled}
-                    checked={this.state.sterile}
-                    onChange={this.setSterile}
-                    label="Produkt ist steril"
-                />
-                <FormCheckbox
-                    disabled={this.state.disabled}
-                    checked={this.state.sealed}
-                    onChange={this.setSealed}
-                    label="Produkt ist originalverpackt"
-                />
-                <FormCheckbox
-                    disabled={this.state.disabled}
-                    checked={this.state.medical}
-                    onChange={this.setMedical}
-                    label="Produkt ist medizinisch"
-                />
                 <TextareaAutosize
                     rowsMin={3}
                     rowsMax={8}

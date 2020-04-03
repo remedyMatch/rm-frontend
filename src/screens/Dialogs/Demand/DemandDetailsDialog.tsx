@@ -88,20 +88,9 @@ const DemandDetailsDialog: React.FC<Props> = props => {
                 <span className={classes.right}>{props.item?.rest}</span>
             </div>
             <div className={classes.row}>
-                <span className={classes.left}>Medizinisch</span>
-                <span className={classes.right}>{props.item?.medizinisch ? "Ja" : "Nein"}</span>
-            </div>
-            <div className={classes.row}>
-                <span className={classes.left}>Steril</span>
-                <span className={classes.right}>{props.item?.steril ? "Ja" : "Nein"}</span>
-            </div>
-            <div className={classes.row}>
-                <span className={classes.left}>Originalverpackt</span>
-                <span className={classes.right}>{props.item?.originalverpackt ? "Ja" : "Nein"}</span>
-            </div>
-            <div className={classes.row}>
                 <span className={classes.left}>Kommentar</span>
-                <span className={classes.right}>{props.item?.kommentar || <span className={classes.emptyPlaceholder}>Keiner</span>}</span>
+                <span className={classes.right}>{props.item?.kommentar ||
+                <span className={classes.emptyPlaceholder}>Keiner</span>}</span>
             </div>
             {props.onContact && props.eigeneInstitution?.id !== props.item?.institutionId && (
                 <div className={classes.footer}>

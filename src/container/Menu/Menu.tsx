@@ -103,9 +103,9 @@ const Menu: React.FC<Props> = props => {
                     to="/institution"
                     className={classes.navlink}
                     activeClassName={classes.navlinkActive}>
-                    Institution
+                    Mein Konto
                 </NavLink>
-                <a
+                <span
                     className={classes.navlink}
                     onClick={async () => {
                         await LoginService.doLogout();
@@ -113,7 +113,7 @@ const Menu: React.FC<Props> = props => {
                     }}>
                     <ExitToApp className={classes.logoutIcon}/>
                     Abmelden
-                </a>
+                </span>
             </div>
         </div>
     );

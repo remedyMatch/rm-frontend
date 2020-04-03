@@ -12,6 +12,7 @@ export interface Anfrage {
     standortVon: InstitutionStandort;
     entfernung: number;
     prozessInstanzId: string;
+    artikelId: string;
     anzahl: number;
     status: string;
 }

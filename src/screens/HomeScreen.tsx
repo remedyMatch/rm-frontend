@@ -60,14 +60,14 @@ class HomeScreen extends Component<Props, State> {
                     erhalten={this.props.erhalteneAnfragen || []}
                     gesendet={this.props.gesendeteAnfragen || []}
                     showType
-                    bedarfe={this.props.bedarfe}
-                    angebote={this.props.angebote}
+                    artikel={this.props.artikel || []}
                     onCancel={this.onCancelSentRequest}/>
                 <Typography variant="subtitle1" className={classes.subtitle}>Meine Anzeigen</Typography>
                 <EntryTable
                     hideDistance
                     showDetailedAmount
                     useSimplePagination
+                    useAdvancedLocation
                     angebote={this.filterOffer()}
                     bedarfe={this.filterDemand()}
                     delete={{

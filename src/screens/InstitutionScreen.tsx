@@ -100,16 +100,8 @@ class OfferScreen extends Component<Props, State> {
                     <Typography
                         variant="subtitle1"
                         className={classes.subtitle}>
-                        Meine Institution
+                        Mein Konto
                     </Typography>
-                    <div className={classes.row}>
-                        <span className={classes.left}>ID:</span>
-                        <span className={classes.right}>{this.props.eigeneInstitution?.id}</span>
-                    </div>
-                    <div className={classes.row}>
-                        <span className={classes.left}>Key:</span>
-                        <span className={classes.right}>{this.props.eigeneInstitution?.institutionKey}</span>
-                    </div>
                     <div className={classes.row}>
                         <span className={classes.left}>Typ:</span>
                         <span className={classes.right}>{this.props.eigeneInstitution?.typ || <span className={clsx(classes.missingError, classes.missing)}>Nicht angegeben!</span>}</span>
@@ -171,7 +163,7 @@ class OfferScreen extends Component<Props, State> {
                         </div>
                     ))}
                     {(!standorte || standorte.length === 0) && (
-                        <span className={classes.missing}>Keine weiteren Standorte vorhanden.<br />Bitte auf Hinzufügen klicken.</span>
+                        <span className={classes.missing}>Keine weiteren Standorte vorhanden.<br />Bitte bei Bedarf auf Hinzufügen klicken.</span>
                     )}
                     <div className={classes.footer}>
                         <FormButton

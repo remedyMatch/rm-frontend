@@ -131,6 +131,7 @@ interface Props {
     hideType?: boolean;
     hideDistance?: boolean;
     useSimplePagination?: boolean;
+    useAdvancedLocation?: boolean;
     showDetailedAmount?: boolean;
     delete?: {
         eigeneInstitutionId: string;
@@ -168,7 +169,7 @@ const EntryTable: React.FC<Props> = props => {
                 accessor: 'data.distance'
             }
         ],
-        [props.hideDistance]
+        []
     );
 
     const data = React.useMemo(
@@ -180,7 +181,7 @@ const EntryTable: React.FC<Props> = props => {
                     category: angebot.artikel.artikelKategorie.name,
                     article: angebot.artikel.name,
                     amount: angebot.rest + (props.showDetailedAmount ? "/" + angebot.anzahl : ""),
-                    location: angebot.standort.name + ", " + angebot.standort.ort,
+                    location: (props.useAdvancedLocation ? angebot.standort.name + ", " : "") + angebot.standort.ort,
                     distance: angebot.entfernung.toFixed(1) + " km"
                 }
             })))
@@ -190,11 +191,11 @@ const EntryTable: React.FC<Props> = props => {
                     category: bedarf.artikel.artikelKategorie.name,
                     article: bedarf.artikel.name,
                     amount: bedarf.rest + (props.showDetailedAmount ? "/" + bedarf.anzahl : ""),
-                    location: bedarf.standort.name + ", " + bedarf.standort.ort,
+                    location: (props.useAdvancedLocation ? bedarf.standort.name + ", " : "") + bedarf.standort.ort,
                     distance: bedarf.entfernung.toFixed(1) + " km"
                 }
             }))),
-        [props.angebote, props.bedarfe]
+        [props.angebote, props.bedarfe, props.showDetailedAmount, props.useAdvancedLocation]
     );
 
     const hiddenColumns: string[] = [];

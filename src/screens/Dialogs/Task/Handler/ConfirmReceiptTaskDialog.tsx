@@ -8,8 +8,6 @@ import {handleDialogButton} from "../../../../util/DialogUtils";
 import {defined, validate} from "../../../../util/ValidationUtils";
 import PopupDialog from "../../../../components/Dialog/PopupDialog";
 import {LocalOffer, LocationOn, Search} from "@material-ui/icons";
-import {Angebot} from "../../../../Domain/Angebot";
-import {Bedarf} from "../../../../Domain/Bedarf";
 import {Match} from "../../../../Domain/Match";
 import {Artikel} from "../../../../Domain/Artikel";
 

@@ -12,7 +12,6 @@ import {loadArtikel} from "../State/ArtikelState";
 import {loadBedarfe} from "../State/BedarfeState";
 import {loadEigeneInstitution} from "../State/EigeneInstitutionState";
 import {connect, ConnectedProps} from "react-redux";
-import OfferDetailsDialog from "./Dialogs/Offer/OfferDetailsDialog";
 
 interface Props extends WithStylesPublic<typeof styles>, PropsFromRedux {
 }

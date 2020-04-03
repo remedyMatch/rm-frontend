@@ -90,7 +90,7 @@ class EditInstitutionDialog extends Component<Props, State> {
                 fullWidth={false}
                 open={this.props.open}
                 error={this.state.error}
-                title="Institution bearbeiten"
+                title="Mein Konto bearbeiten"
                 disabled={this.state.disabled}
                 firstTitle="Abbrechen"
                 secondTitle="Speichern"
