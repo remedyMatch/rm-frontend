@@ -4,7 +4,7 @@ import {apiGet} from "../util/ApiUtils";
 /**
  * Base api url to use.
  */
-const baseUrl = process.env.REACT_APP_BASE_PATH + "remedy";
+const baseUrl = "/remedy";
 
 /**
  * Creates the absolute url of the request. Adds the base url if necessary.
