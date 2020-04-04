@@ -13,6 +13,7 @@ import {loadEigeneInstitution} from "../../State/EigeneInstitutionState";
 import {connect, ConnectedProps} from "react-redux";
 import {Backdrop, CircularProgress, DialogContentText, Typography} from "@material-ui/core";
 import PopupDialog from "../../components/Dialog/PopupDialog";
+import {Questions} from "../../screens/Dialogs/QuestionPath/Questions";
 
 interface Props extends WithStylesPublic<typeof styles>, PropsFromRedux {
 }
@@ -58,7 +59,7 @@ class Layout extends Component<Props, State> {
         const inst = this.props.eigeneInstitution;
 
         if (!inst) {
-            if(this.props.eigeneInstitutionError && !this.props.eigeneInstitutionLoading) {
+            if (this.props.eigeneInstitutionError && !this.props.eigeneInstitutionLoading) {
                 return (
                     <PopupDialog
                         open
@@ -67,7 +68,8 @@ class Layout extends Component<Props, State> {
                         firstTitle="Neu laden"
                         onFirst={this.props.loadEigeneInstitution}>
                         <DialogContentText>
-                            Es ist ein Fehler beim Laden aufgetreten. Klicke unten auf neu laden, um es erneut zu versuchen.
+                            Es ist ein Fehler beim Laden aufgetreten. Klicke unten auf neu laden, um es erneut zu
+                            versuchen.
                         </DialogContentText>
                     </PopupDialog>
                 );
@@ -87,7 +89,8 @@ class Layout extends Component<Props, State> {
             return (
                 <div className={classes.content}>
                     <div className={classes.setupWarning}>
-                        <Typography variant="subtitle1" className={classes.setupWarningHeading}>Willkommen bei RemedyMatch!</Typography>
+                        <Typography variant="subtitle1" className={classes.setupWarningHeading}>Willkommen bei
+                            RemedyMatch!</Typography>
                         <Typography variant="body1">Bevor du deinen Account verwenden kannst, benötigen wir noch einige
                             Informationen über deine Organisation. Bitte trage alle relevanten Daten unten
                             ein. Du kannst diese Informationen auch später jederzeit anpassen.</Typography>
@@ -109,6 +112,7 @@ class Layout extends Component<Props, State> {
                         <Route path="/angebote" component={OfferScreen}/>
                         <Route path="/aufgaben" component={TaskScreen}/>
                         <Route path="/konto" component={InstitutionScreen}/>
+                        <Route path="/fragenpfad" component={Questions}/>
                         <Route path="/" exact component={HomeScreen}/>
                         <Redirect to="/"/>
                     </Switch>
