@@ -1,23 +1,10 @@
-import React, {useState} from "react";
-import {createStyles, makeStyles, Theme} from "@material-ui/core/styles";
+import React from "react";
+import {createStyles, makeStyles} from "@material-ui/core/styles";
 import {Grid} from "@material-ui/core";
-import {CardButton} from "./CardButton";
-import {CategoryOptions} from "./CategoryOptions";
+import {CardButton} from "./utils/CardButton";
+import {Answers} from "./QuestionStepper";
 
-export interface Answers {
-    isDonor: boolean | undefined;
-    category: "mask" | "disinfectant" | "gloves" | "facemask" | undefined;
-    exactType: string | undefined;
-    number: number | undefined;
-    location: string | undefined;
-}
-
-export interface Category {
-    categoryName: "mask" | "disinfectant" | "gloves" | "facemask";
-    items: string[];
-}
-
-const useStyles = makeStyles((theme: Theme) =>
+const useStyles = makeStyles(() =>
     createStyles({
         questionGrid: {
             height: 500,
@@ -25,18 +12,16 @@ const useStyles = makeStyles((theme: Theme) =>
             position: "relative",
         },
     }));
-export const Questions: React.FC = () => {
-    const classes = useStyles();
-    const initialAnswers: Answers = {
-        isDonor: undefined,
-        category: undefined,
-        exactType: undefined,
-        number: undefined,
-        location: undefined,
-    };
-    const [answers, setAnswers] = useState<Answers>(initialAnswers);
+export const QuestionsDonorSeeker: React.FC<{
+    answers: Answers,
+    setAnswers: (answers: Answers) => void,
+    currentStep: number,
+    setCurrentStep: (currentStep: number) => void,
+}> =
+    ({answers, setAnswers, currentStep, setCurrentStep}) => {
+        const classes = useStyles();
 
-    if (answers.isDonor === undefined) {
+
         return (
             <Grid container spacing={3}>
                 <Grid item xs={6} className={classes.questionGrid}>
@@ -47,7 +32,8 @@ export const Questions: React.FC = () => {
                             exactType: answers.exactType,
                             number: answers.number,
                             location: answers.location,
-                        })
+                        });
+                        setCurrentStep(currentStep + 1)
                     }}>
                         Anbieten
                     </CardButton>
@@ -61,19 +47,12 @@ export const Questions: React.FC = () => {
                             exactType: answers.exactType,
                             number: answers.number,
                             location: answers.location,
-                        })
+                        });
+                        setCurrentStep(currentStep + 1)
                     }}>
                         Suchen
                     </CardButton>
                 </Grid>
             </Grid>
-        )
-    }
-
-    return (
-        <CategoryOptions categorys={[{categoryName: "mask", items: ["mask1", "mask2"]}, {
-            categoryName: "facemask",
-            items: ["facemask1", "facemask2"]
-        }]} answers={answers} setAnswers={setAnswers}/>
-    )
-};
+        );
+    };

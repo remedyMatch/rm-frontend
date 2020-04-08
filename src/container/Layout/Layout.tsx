@@ -8,12 +8,12 @@ import SearchScreen from "../../screens/DemandScreen";
 import OfferScreen from "../../screens/OfferScreen";
 import InstitutionScreen from "../../screens/InstitutionScreen";
 import TaskScreen from "../../screens/TaskScreen";
+import {QuestionStepper} from "../../screens/Dialogs/QuestionPath/QuestionStepper";
 import {RootDispatch, RootState} from "../../State/Store";
 import {loadEigeneInstitution} from "../../State/EigeneInstitutionState";
 import {connect, ConnectedProps} from "react-redux";
 import {Backdrop, CircularProgress, DialogContentText, Typography} from "@material-ui/core";
 import PopupDialog from "../../components/Dialog/PopupDialog";
-import {Questions} from "../../screens/Dialogs/QuestionPath/Questions";
 
 interface Props extends WithStylesPublic<typeof styles>, PropsFromRedux {
 }
@@ -112,7 +112,7 @@ class Layout extends Component<Props, State> {
                         <Route path="/angebote" component={OfferScreen}/>
                         <Route path="/aufgaben" component={TaskScreen}/>
                         <Route path="/konto" component={InstitutionScreen}/>
-                        <Route path="/fragenpfad" component={Questions}/>
+                        <Route path="/stepper" component={QuestionStepper}/>
                         <Route path="/" exact component={HomeScreen}/>
                         <Redirect to="/"/>
                     </Switch>
