@@ -3,11 +3,12 @@ import {createStyles, makeStyles} from "@material-ui/core/styles";
 import {Grid} from "@material-ui/core";
 import {CardButton} from "./utils/CardButton";
 import {Answers} from "./QuestionStepper";
+import FaceIcon from '@material-ui/icons/Face';
 
 const useStyles = makeStyles(() =>
     createStyles({
         questionGrid: {
-            height: 500,
+            height: 400,
             paddingTop: "100%",
             position: "relative",
         },
@@ -35,7 +36,10 @@ export const QuestionsDonorSeeker: React.FC<{
                         });
                         setCurrentStep(currentStep + 1)
                     }}>
-                        Anbieten
+                        <FaceIcon/>
+                        <div>
+                            Anbieten
+                        </div>
                     </CardButton>
                 </Grid>
 

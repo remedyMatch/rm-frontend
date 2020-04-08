@@ -1,5 +1,5 @@
 import React from "react";
-import {Button, Card} from "@material-ui/core";
+import {ButtonBase, Card} from "@material-ui/core";
 import {createStyles, makeStyles, Theme} from "@material-ui/core/styles";
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -20,10 +20,10 @@ const useStyles = makeStyles((theme: Theme) =>
 export const CardButton: React.FC<{ onClick: () => void }> = ({children, onClick}) => {
     const classes = useStyles();
     return (
-        <Button onClick={onClick} classes={{root: classes.questionButton, label: classes.questionButton}}>
+        <ButtonBase onClick={onClick} className={classes.questionButton}>
             <Card className={classes.questionCard}>
                 {children}
             </Card>
-        </Button>
+        </ButtonBase>
     )
 };
