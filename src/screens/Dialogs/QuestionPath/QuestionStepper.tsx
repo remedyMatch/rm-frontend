@@ -9,6 +9,7 @@ import {QuestionsItems} from "./QuestionsItems";
 import {QuestionsNumbersProductDetails} from "./QuestionsNumbersProductDetails";
 import {StepButton} from "@material-ui/core";
 import {uuidv4} from "./utils/uuid";
+import {Summary} from "./Summary";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -156,14 +157,16 @@ export const QuestionStepper: React.FC<{}> = () => {
                 }
             case 3:
                 return <QuestionsNumbersProductDetails answers={answers} setAnswers={setAnswers}/>;
+            case 4:
+                return <Summary answers={answers} setCurrentStep={setCurrentStep}/>;
             default:
-                return 'Unknown stepIndex';
+                return <div>Hoppla, da ist etwas schief gegangen.</div>;
         }
     }
 };
 
 function getStepNames() {
-    return ["Anbieter oder Suchender?", "Kategorie", "Artikel", "Anzahl und Produktdetails"];
+    return ["Anbieter oder Suchender?", "Kategorie", "Artikel", "Anzahl und Produktdetails", "Zusammenfassung"];
 }
 
 const sampleCategories: Category[] = [
