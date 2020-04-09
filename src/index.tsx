@@ -8,7 +8,7 @@ import LoginService from "./util/LoginService";
 import {Provider} from "react-redux";
 import {store} from "./State/Store";
 
-//LoginService.initKeycloak(() =>
+LoginService.initKeycloak(() =>
 ReactDOM.render(
     (
         <Provider store={store}>
@@ -18,7 +18,7 @@ ReactDOM.render(
         </Provider>
     ),
     document.getElementById("root"))
-//)
+)
 ;
 
 // If you want your react-ui-common to work offline and load faster, you can change

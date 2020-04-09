@@ -1,8 +1,8 @@
 import React from "react";
 import {createStyles, makeStyles} from "@material-ui/core/styles";
 import {Grid} from "@material-ui/core";
-import {CardButton} from "./utils/CardButton";
-import {Answers} from "./QuestionStepper";
+import {CardButton} from "../utils/CardButton";
+import {Answers} from "../QuestionsStepper/QuestionsStepper";
 import FaceIcon from '@material-ui/icons/Face';
 
 const useStyles = makeStyles(() =>

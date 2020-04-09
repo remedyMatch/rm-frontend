@@ -2,14 +2,13 @@ import React, {useState} from 'react';
 import {createStyles, makeStyles, Theme} from '@material-ui/core/styles';
 import Stepper from '@material-ui/core/Stepper';
 import Step from '@material-ui/core/Step';
-import Button from '@material-ui/core/Button';
-import {QuestionsDonorSeeker} from "./QuestionsDonorSeeker";
-import {QuestionsCategory} from "./QuestionsCategory";
-import {QuestionsItems} from "./QuestionsItems";
-import {QuestionsNumbersProductDetails} from "./QuestionsNumbersProductDetails";
+import {QuestionsDonorSeeker} from "../QuestionsDonorSeeker/QuestionsDonorSeeker";
+import {QuestionsCategory} from "../QuestionsCategory/QuestionsCategory";
+import {QuestionsItems} from "../QuestionsItems/QuestionsItems";
+import {QuestionsProductDetails} from "../QuestionsProductDetails/QuestionsProductDetails";
 import {StepButton} from "@material-ui/core";
-import {uuidv4} from "./utils/uuid";
-import {Summary} from "./Summary";
+import {uuidv4} from "../utils/uuid";
+import {QuestionsSummary} from "../QuestionsSummary/QuestionsSummary";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -51,7 +50,8 @@ export interface Category {
 
 export interface Item {
     itemName: string;
-    validOptions: Options;
+    validOptions: ValidOptions;
+    options: Options;
 }
 
 export interface Options {
@@ -62,7 +62,14 @@ export interface Options {
     note: string | undefined;
 }
 
-export const QuestionStepper: React.FC<{}> = () => {
+export interface ValidOptions {
+    isValidBestByDate: boolean;
+    isValidSterile: boolean;
+    isValidOriginalPackaging: boolean;
+    isValidMedical: boolean;
+}
+
+export const QuestionsStepper: React.FC<{}> = () => {
     const classes = useStyles();
     const [currentStep, setCurrentStep] = useState<number>(0);
     const steps = getStepNames();
@@ -77,7 +84,6 @@ export const QuestionStepper: React.FC<{}> = () => {
     const [answers, setAnswers] = useState<Answers>(initialAnswers);
 
 
-
     return (
         <div className={classes.root}>
             <Stepper activeStep={currentStep} alternativeLabel>
@@ -89,26 +95,9 @@ export const QuestionStepper: React.FC<{}> = () => {
             </Stepper>
             <div>
                 {currentStep === steps.length ? (
-                    <div>
-                        <div className={classes.instructions}>Hier kommen die Ergebnisse rein</div>
-                        <Button onClick={handleReset}>Weitere Artikel suchen/ anbieten</Button>
-                    </div>
+                    <div className={classes.instructions}>Hier kommen die Ergebnisse rein</div>
                 ) : (
-                    <div>
-                        <div className={classes.instructions}>{getStepContent(currentStep)}</div>
-                        <div>
-                            <Button
-                                disabled={currentStep === 0}
-                                onClick={handleBack}
-                                className={classes.button}
-                            >
-                                Back
-                            </Button>
-                            <Button className={classes.button} onClick={handleNext}>
-                                {currentStep === steps.length - 1 ? 'Finish' : 'Next'}
-                            </Button>
-                        </div>
-                    </div>
+                    <div className={classes.instructions}>{getStepContent(currentStep)}</div>
                 )}
             </div>
         </div>
@@ -135,11 +124,12 @@ export const QuestionStepper: React.FC<{}> = () => {
     function getStepContent(stepIndex: number) {
         switch (stepIndex) {
             case 0:
-                return <QuestionsDonorSeeker answers={answers}
-                                             setAnswers={setAnswers}
-                                             currentStep={currentStep}
-                                             setCurrentStep={setCurrentStep}
-                />;
+                return (
+                    <QuestionsDonorSeeker answers={answers}
+                                          setAnswers={setAnswers}
+                                          currentStep={currentStep}
+                                          setCurrentStep={setCurrentStep}
+                    />);
             case 1:
                 return <QuestionsCategory answers={answers}
                                           setAnswers={setAnswers}
@@ -151,14 +141,22 @@ export const QuestionStepper: React.FC<{}> = () => {
                 if (answers.category !== undefined) {
                     return <QuestionsItems answers={answers}
                                            setAnswers={setAnswers}
+                                           currentStep={currentStep}
+                                           setCurrentStep={setCurrentStep}
                                            items={answers.category.items}/>;
                 } else {
                     return <div>Wähle zuerst eine Kategorie aus.</div>
                 }
             case 3:
-                return <QuestionsNumbersProductDetails answers={answers} setAnswers={setAnswers}/>;
+                return <QuestionsProductDetails answers={answers}
+                                                setAnswers={setAnswers}
+                                                currentStep={currentStep}
+                                                setCurrentStep={setCurrentStep}
+                />;
             case 4:
-                return <Summary answers={answers} setCurrentStep={setCurrentStep}/>;
+                return <QuestionsSummary answers={answers}
+                                         currentStep={currentStep}
+                                         setCurrentStep={setCurrentStep}/>;
             default:
                 return <div>Hoppla, da ist etwas schief gegangen.</div>;
         }
@@ -175,18 +173,31 @@ const sampleCategories: Category[] = [
         items: [{
             itemName: "Essener Modell",
             validOptions: {
+                isValidBestByDate: true,
+                isValidSterile: true,
+                isValidOriginalPackaging: true,
+                isValidMedical: true,
+            },
+            options: {
                 bestByDate: undefined,
                 isSterile: undefined,
-                isOriginalPackaging: undefined,
                 isMedical: undefined,
+                isOriginalPackaging: undefined,
                 note: undefined,
             }
         }, {
-            itemName: "OP Maske", validOptions: {
+            itemName: "OP Maske",
+            validOptions: {
+                isValidBestByDate: true,
+                isValidSterile: true,
+                isValidOriginalPackaging: true,
+                isValidMedical: true,
+            },
+            options: {
                 bestByDate: undefined,
                 isSterile: undefined,
-                isOriginalPackaging: undefined,
                 isMedical: undefined,
+                isOriginalPackaging: undefined,
                 note: undefined,
             }
         }]

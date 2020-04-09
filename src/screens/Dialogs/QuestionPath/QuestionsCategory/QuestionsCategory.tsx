@@ -1,10 +1,10 @@
 import React from "react";
 import {Grid} from "@material-ui/core";
 import {createStyles, makeStyles, Theme} from "@material-ui/core/styles";
-import {CardButton} from "./utils/CardButton";
-import {Answers, Category} from "./QuestionStepper";
-import {uuidv4} from "./utils/uuid";
-import {chunkArray} from "./utils/chunkArray";
+import {CardButton} from "../utils/CardButton";
+import {Answers, Category} from "../QuestionsStepper/QuestionsStepper";
+import {uuidv4} from "../utils/uuid";
+import {chunkArray} from "../utils/chunkArray";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -15,6 +15,7 @@ const useStyles = makeStyles((theme: Theme) =>
         },
     }));
 
+
 export const QuestionsCategory: React.FC<{
     answers: Answers,
     setAnswers: (answers: Answers) => void,
@@ -24,6 +25,7 @@ export const QuestionsCategory: React.FC<{
 }> =
     ({answers, setAnswers, currentStep, setCurrentStep, categories}) => {
         const classes = useStyles();
+
         const chunkSize = 2;
         const chunkedCategories = chunkArray(categories, chunkSize);
         // @ts-ignore
