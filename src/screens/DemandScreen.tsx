@@ -1,5 +1,6 @@
 import React, {Component} from "react";
 import {createStyles, Theme, withStyles} from "@material-ui/core/styles";
+import {loadArtikelKategorien} from "../State/ArtikelKategorienState";
 import {WithStylesPublic} from "../util/WithStylesPublic";
 import {FormTextInput} from "../components/Form/FormTextInput";
 import {FormButton} from "../components/Form/FormButton";
@@ -60,6 +61,8 @@ class DemandScreen extends Component<Props, State> {
                 </div>
                 <EntryTable
                     hideType
+                    artikel={this.props.artikel || []}
+                    artikelKategorien={this.props.artikelKategorien || []}
                     bedarfe={this.filter()}
                     angebote={[]}
                     details={{onClick: this.onDetailsClicked, eigeneInstitutionId: institutionId}}/>
@@ -68,6 +71,7 @@ class DemandScreen extends Component<Props, State> {
                     onCancelled={this.onAddCancelled}
                     onSaved={this.onAddSaved}
                     artikel={this.props.artikel || []}
+                    artikelKategorien={this.props.artikelKategorien || []}
                     institution={this.props.eigeneInstitution}/>
                 <DemandDetailsDialog
                     open={!!this.state.infoId}
@@ -135,6 +139,7 @@ class DemandScreen extends Component<Props, State> {
 
     componentDidMount = async () => {
         this.props.loadArtikel();
+        this.props.loadArtikelKategorien();
         this.props.loadBedarfe();
         this.props.loadEigeneInstitution();
     };
@@ -142,12 +147,14 @@ class DemandScreen extends Component<Props, State> {
 
 const mapStateToProps = (state: RootState) => ({
     artikel: state.artikel.value,
+    artikelKategorien: state.artikelKategorien.value,
     bedarfe: state.bedarfe.value,
     eigeneInstitution: state.eigeneInstitution.value
 });
 
 const mapDispatchToProps = (dispatch: RootDispatch) => ({
     loadArtikel: () => dispatch(loadArtikel()),
+    loadArtikelKategorien: () => dispatch(loadArtikelKategorien()),
     loadBedarfe: () => dispatch(loadBedarfe()),
     loadEigeneInstitution: () => dispatch(loadEigeneInstitution())
 });

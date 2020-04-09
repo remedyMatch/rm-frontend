@@ -1,33 +1,44 @@
-import React, {Component} from "react";
-import {createStyles, Theme, withStyles} from "@material-ui/core/styles";
-import {WithStylesPublic} from "../util/WithStylesPublic";
-import EntryTable from "../components/Table/EntryTable";
 import {Typography} from "@material-ui/core";
+import {createStyles, Theme, withStyles} from "@material-ui/core/styles";
+import React, {Component} from "react";
+import {connect, ConnectedProps} from "react-redux";
+import EntryTable from "../components/Table/EntryTable";
+import MatchTable from "../components/Table/MatchTable";
 import RequestTable from "../components/Table/RequestTable";
-import CancelSentRequestDialog from "./Dialogs/Home/CancelSentRequestDialog";
-import {RootDispatch, RootState} from "../State/Store";
+import {Artikel} from "../Domain/Artikel";
+import {ArtikelKategorie} from "../Domain/ArtikelKategorie";
+import {loadAngebote} from "../State/AngeboteState";
+import {loadArtikelKategorien} from "../State/ArtikelKategorienState";
 import {loadArtikel} from "../State/ArtikelState";
 import {loadBedarfe} from "../State/BedarfeState";
 import {loadEigeneInstitution} from "../State/EigeneInstitutionState";
-import {connect, ConnectedProps} from "react-redux";
-import {loadAngebote} from "../State/AngeboteState";
 import {loadErhalteneAnfragen} from "../State/ErhalteneAnfragenState";
 import {loadGesendeteAnfragen} from "../State/GesendeteAnfragenState";
+import {loadMatches} from "../State/MatchesState";
+import {RootDispatch, RootState} from "../State/Store";
+import {WithStylesPublic} from "../util/WithStylesPublic";
 import DemandDetailsDialog from "./Dialogs/Demand/DemandDetailsDialog";
+import CancelSentRequestDialog from "./Dialogs/Home/CancelSentRequestDialog";
 import DeleteEntryDialog from "./Dialogs/Home/DeleteEntryDialog";
 import OfferDetailsDialog from "./Dialogs/Offer/OfferDetailsDialog";
-import {loadMatches} from "../State/MatchesState";
-import MatchTable from "../components/Table/MatchTable";
 
 interface Props extends WithStylesPublic<typeof styles>, PropsFromRedux {
 }
 
 interface State {
     cancelSentRequestId?: string;
-    deleteEntryId?: string;
-    deleteEntryIsDemand: boolean;
-    infoId?: string;
-    infoIsOffer: boolean;
+    deleteEntry?: {
+        isDemand: boolean;
+        name: string;
+        amount: number;
+        id: string;
+    };
+    info?: {
+        id: string;
+        isOffer: boolean;
+        article?: Artikel;
+        category?: ArtikelKategorie;
+    };
 }
 
 const styles = (theme: Theme) =>
@@ -40,10 +51,7 @@ const styles = (theme: Theme) =>
     });
 
 class HomeScreen extends Component<Props, State> {
-    state: State = {
-        infoIsOffer: false,
-        deleteEntryIsDemand: false
-    };
+    state: State = {};
 
     render() {
         const classes = this.props.classes!;
@@ -68,6 +76,8 @@ class HomeScreen extends Component<Props, State> {
                     showDetailedAmount
                     useSimplePagination
                     useAdvancedLocation
+                    artikel={this.props.artikel || []}
+                    artikelKategorien={this.props.artikelKategorien || []}
                     angebote={this.filterOffer()}
                     bedarfe={this.filterDemand()}
                     delete={{
@@ -79,30 +89,46 @@ class HomeScreen extends Component<Props, State> {
                         eigeneInstitutionId: institutionId
                     }}/>
                 <OfferDetailsDialog
-                    open={!!this.state.infoId && this.state.infoIsOffer}
+                    open={!!this.state.info && this.state.info.isOffer}
                     onDone={this.onDetailsDone}
                     eigeneInstitution={this.props.eigeneInstitution}
-                    item={this.props.angebote?.find(item => item.id === this.state.infoId)!}/>
+                    artikel={this.state.info?.article}
+                    artikelKategorie={this.state.info?.category}
+                    item={this.props.angebote?.find(item => item.id === this.state.info?.id)}/>
                 <DemandDetailsDialog
-                    open={!!this.state.infoId && !this.state.infoIsOffer}
+                    open={!!this.state.info && !this.state.info.isOffer}
                     onDone={this.onDetailsDone}
                     eigeneInstitution={this.props.eigeneInstitution}
-                    item={this.props.bedarfe?.find(item => item.id === this.state.infoId)!}/>
+                    artikel={this.state.info?.article}
+                    artikelKategorie={this.state.info?.category}
+                    item={this.props.bedarfe?.find(item => item.id === this.state.info?.id)}/>
                 <CancelSentRequestDialog
                     open={!!this.state.cancelSentRequestId}
                     request={this.props.gesendeteAnfragen?.find(sr => (sr.angebotId || sr.bedarfId) === this.state.cancelSentRequestId)}
                     onNo={this.onCancelSentRequestNo}
                     onYes={this.onCancelSentRequestYes}/>
                 <DeleteEntryDialog
-                    open={!!this.state.deleteEntryId}
+                    open={!!this.state.deleteEntry}
                     onNo={this.onDeleteEntryNo}
                     onYes={this.onDeleteEntryYes}
-                    isDemand={this.state.deleteEntryIsDemand}
-                    item={(this.props.bedarfe || []).concat(this.props.angebote || []).find(e => e.id === this.state.deleteEntryId)}
-                    requestId={this.state.deleteEntryId}/>
+                    isDemand={this.state.deleteEntry?.isDemand}
+                    articleName={this.state.deleteEntry?.name}
+                    amount={this.state.deleteEntry?.amount}
+                    requestId={this.state.deleteEntry?.id}/>
             </>
         )
     }
+
+    componentDidMount = async () => {
+        this.props.loadArtikel();
+        this.props.loadArtikelKategorien();
+        this.props.loadAngebote();
+        this.props.loadBedarfe();
+        this.props.loadErhalteneAnfragen();
+        this.props.loadGesendeteAnfragen();
+        this.props.loadEigeneInstitution();
+        this.props.loadMatches();
+    };
 
     private onCancelSentRequest = (id?: string) => {
         if (id) {
@@ -127,7 +153,7 @@ class HomeScreen extends Component<Props, State> {
 
     private onDetailsDone = () => {
         this.setState({
-            infoId: undefined
+            info: undefined
         });
     };
 
@@ -136,10 +162,14 @@ class HomeScreen extends Component<Props, State> {
             return;
         }
 
-        const isOffer = !!this.props.angebote.find(angebot => angebot.id === id);
+        const offer = this.props.angebote?.find(angebot => angebot.id === id);
+        const demand = this.props.bedarfe?.find(bedarf => bedarf.id === id);
+        const isOffer = !!offer;
+        const article = this.props.artikel?.find(artikel => artikel.id === offer?.artikelId || demand?.artikelId || "");
+        const category = this.props.artikelKategorien?.find(kategorie => kategorie.id === article?.artikelKategorieId);
+
         this.setState({
-            infoId: id,
-            infoIsOffer: isOffer
+            info: {isOffer, article, category, id}
         });
     };
 
@@ -149,21 +179,23 @@ class HomeScreen extends Component<Props, State> {
     };
 
     private onDeleteEntry = (id: string) => {
-        if (!this.props.bedarfe) {
-            return;
-        }
+        const demand = this.props.bedarfe?.find(bedarf => bedarf.id === id);
+        const offer = this.props.angebote?.find(angebot => angebot.id === id);
+        const article = this.props.artikel?.find(artikel => artikel.id === demand?.artikelId || offer?.artikelId);
 
-        const isDemand = !!this.props.bedarfe.find(bedarf => bedarf.id === id);
         this.setState({
-            deleteEntryId: id,
-            deleteEntryIsDemand: isDemand
+            deleteEntry: {
+                id: id,
+                isDemand: !!demand,
+                name: article?.name || "",
+                amount: demand?.rest || offer?.anzahl || 0
+            }
         });
-
     };
 
     private onDeleteEntryYes = () => {
         this.setState({
-            deleteEntryId: undefined
+            deleteEntry: undefined
         });
         this.props.loadAngebote();
         this.props.loadBedarfe();
@@ -171,7 +203,7 @@ class HomeScreen extends Component<Props, State> {
 
     private onDeleteEntryNo = () => {
         this.setState({
-            deleteEntryId: undefined
+            deleteEntry: undefined
         });
     };
 
@@ -179,21 +211,12 @@ class HomeScreen extends Component<Props, State> {
         return (this.props.angebote || [])
             .filter(angebot => angebot.institutionId === this.props.eigeneInstitution?.id);
     };
-
-    componentDidMount = async () => {
-        this.props.loadArtikel();
-        this.props.loadAngebote();
-        this.props.loadBedarfe();
-        this.props.loadErhalteneAnfragen();
-        this.props.loadGesendeteAnfragen();
-        this.props.loadEigeneInstitution();
-        this.props.loadMatches();
-    };
 }
 
 const mapStateToProps = (state: RootState) => ({
     angebote: state.angebote.value,
     artikel: state.artikel.value,
+    artikelKategorien: state.artikelKategorien.value,
     bedarfe: state.bedarfe.value,
     eigeneInstitution: state.eigeneInstitution.value,
     erhalteneAnfragen: state.erhalteneAnfragen.value,
@@ -204,6 +227,7 @@ const mapStateToProps = (state: RootState) => ({
 const mapDispatchToProps = (dispatch: RootDispatch) => ({
     loadAngebote: () => dispatch(loadAngebote()),
     loadArtikel: () => dispatch(loadArtikel()),
+    loadArtikelKategorien: () => dispatch(loadArtikelKategorien()),
     loadBedarfe: () => dispatch(loadBedarfe()),
     loadEigeneInstitution: () => dispatch(loadEigeneInstitution()),
     loadErhalteneAnfragen: () => dispatch(loadErhalteneAnfragen()),

@@ -1,10 +1,9 @@
-import {ArtikelKategorie} from "./ArtikelKategorie";
+import {ArtikelVariante} from "./ArtikelVariante";
 
 export interface Artikel {
     id: string;
-    ean: string;
+    artikelKategorieId: string;
     name: string;
     beschreibung: string;
-    hersteller: string;
-    artikelKategorie: ArtikelKategorie;
+    varianten?: ArtikelVariante[];
 }

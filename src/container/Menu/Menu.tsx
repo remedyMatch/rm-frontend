@@ -100,7 +100,7 @@ const Menu: React.FC<Props> = props => {
                     </NavLink>
                 </Badge>
                 <NavLink
-                    to="/institution"
+                    to="/konto"
                     className={classes.navlink}
                     activeClassName={classes.navlinkActive}>
                     Mein Konto

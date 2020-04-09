@@ -93,8 +93,8 @@ class Layout extends Component<Props, State> {
                             ein. Du kannst diese Informationen auch später jederzeit anpassen.</Typography>
                     </div>
                     <Switch>
-                        <Route path="/institution" component={InstitutionScreen}/>
-                        <Redirect to="/institution"/>
+                        <Route path="/konto" component={InstitutionScreen}/>
+                        <Redirect to="/konto"/>
                     </Switch>
                 </div>
             );
@@ -108,7 +108,7 @@ class Layout extends Component<Props, State> {
                         <Route path="/bedarf" component={SearchScreen}/>
                         <Route path="/angebote" component={OfferScreen}/>
                         <Route path="/aufgaben" component={TaskScreen}/>
-                        <Route path="/institution" component={InstitutionScreen}/>
+                        <Route path="/konto" component={InstitutionScreen}/>
                         <Route path="/" exact component={HomeScreen}/>
                         <Redirect to="/"/>
                     </Switch>

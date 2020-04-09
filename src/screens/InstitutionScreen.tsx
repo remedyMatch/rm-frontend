@@ -80,7 +80,7 @@ const styles = (theme: Theme) =>
         }
     });
 
-class OfferScreen extends Component<Props, State> {
+class InstitutionScreen extends Component<Props, State> {
     state: State = {
         editDialogOpen: false,
         addLocationDialogOpen: false,
@@ -269,4 +269,4 @@ const mapDispatchToProps = (dispatch: RootDispatch) => ({
 const connector = connect(mapStateToProps, mapDispatchToProps);
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
-export default connector(withStyles(styles)(OfferScreen));
+export default connector(withStyles(styles)(InstitutionScreen));

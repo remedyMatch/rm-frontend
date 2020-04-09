@@ -1,5 +1,6 @@
 import {combineReducers, configureStore} from "@reduxjs/toolkit";
 import {angeboteSlice} from "./AngeboteState";
+import {artikelKategorienSlice} from "./ArtikelKategorienState";
 import {artikelSlice} from "./ArtikelState";
 import {aufgabenSlice} from "./AufgabenState";
 import {bedarfeSlice} from "./BedarfeState";
@@ -12,6 +13,7 @@ import {matchesSlice} from "./MatchesState";
 const rootReducer = combineReducers({
     angebote: angeboteSlice.reducer,
     artikel: artikelSlice.reducer,
+    artikelKategorien: artikelKategorienSlice.reducer,
     aufgaben: aufgabenSlice.reducer,
     bedarfe: bedarfeSlice.reducer,
     eigeneInstitution: eigeneInstitutionSlice.reducer,

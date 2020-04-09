@@ -1,17 +1,18 @@
-import React, {Component} from "react";
 import {createStyles, Theme, withStyles} from "@material-ui/core/styles";
-import {WithStylesPublic} from "../util/WithStylesPublic";
-import EntryTable from "../components/Table/EntryTable";
-import {FormTextInput} from "../components/Form/FormTextInput";
+import React, {Component} from "react";
+import {connect, ConnectedProps} from "react-redux";
 import {FormButton} from "../components/Form/FormButton";
+import {FormTextInput} from "../components/Form/FormTextInput";
+import EntryTable from "../components/Table/EntryTable";
+import {loadAngebote} from "../State/AngeboteState";
+import {loadArtikelKategorien} from "../State/ArtikelKategorienState";
+import {loadArtikel} from "../State/ArtikelState";
+import {loadEigeneInstitution} from "../State/EigeneInstitutionState";
+import {RootDispatch, RootState} from "../State/Store";
+import {WithStylesPublic} from "../util/WithStylesPublic";
 import AddOfferDialog from "./Dialogs/Offer/AddOfferDialog";
 import OfferDetailsDialog from "./Dialogs/Offer/OfferDetailsDialog";
 import RespondOfferDialog from "./Dialogs/Offer/RespondOfferDialog";
-import {RootDispatch, RootState} from "../State/Store";
-import {loadAngebote} from "../State/AngeboteState";
-import {loadArtikel} from "../State/ArtikelState";
-import {loadEigeneInstitution} from "../State/EigeneInstitutionState";
-import {connect, ConnectedProps} from "react-redux";
 
 interface Props extends WithStylesPublic<typeof styles>, PropsFromRedux {
 }
@@ -61,6 +62,8 @@ class OfferScreen extends Component<Props, State> {
                 <EntryTable
                     hideType
                     angebote={this.filter()}
+                    artikel={this.props.artikel || []}
+                    artikelKategorien={this.props.artikelKategorien || []}
                     bedarfe={[]}
                     details={{onClick: this.onDetailsClicked, eigeneInstitutionId: institutionId}}/>
                 <AddOfferDialog
@@ -68,7 +71,8 @@ class OfferScreen extends Component<Props, State> {
                     onCancelled={this.onAddCancelled}
                     onSaved={this.onAddSaved}
                     institution={this.props.eigeneInstitution}
-                    artikel={this.props.artikel || []}/>
+                    artikel={this.props.artikel || []}
+                    artikelKategorien={this.props.artikelKategorien || []}/>
                 <OfferDetailsDialog
                     open={!!this.state.infoId}
                     onDone={this.onDetailsDone}
@@ -81,10 +85,17 @@ class OfferScreen extends Component<Props, State> {
                     onSaved={this.onContactSaved}
                     angebot={this.props.angebote?.find(item => item.id === this.state.contactId)}
                     eigeneInstitution={this.props.eigeneInstitution}
-                    />
+                />
             </>
         )
     }
+
+    componentDidMount = async () => {
+        this.props.loadArtikel();
+        this.props.loadArtikelKategorien();
+        this.props.loadAngebote();
+        this.props.loadEigeneInstitution();
+    };
 
     private onContactCancelled = () => {
         this.setState({
@@ -133,23 +144,19 @@ class OfferScreen extends Component<Props, State> {
         this.setState({addDialogOpen: false});
         this.props.loadAngebote();
     };
-
-    componentDidMount = async () => {
-        this.props.loadArtikel();
-        this.props.loadAngebote();
-        this.props.loadEigeneInstitution();
-    };
 }
 
 const mapStateToProps = (state: RootState) => ({
     angebote: state.angebote.value,
     artikel: state.artikel.value,
+    artikelKategorien: state.artikelKategorien.value,
     eigeneInstitution: state.eigeneInstitution.value,
 });
 
 const mapDispatchToProps = (dispatch: RootDispatch) => ({
     loadAngebote: () => dispatch(loadAngebote()),
     loadArtikel: () => dispatch(loadArtikel()),
+    loadArtikelKategorien: () => dispatch(loadArtikelKategorien()),
     loadEigeneInstitution: () => dispatch(loadEigeneInstitution()),
 });
 

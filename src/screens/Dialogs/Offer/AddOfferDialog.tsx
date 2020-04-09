@@ -1,33 +1,36 @@
-import React, {ChangeEvent, PureComponent} from "react";
-import {createStyles, Theme, withStyles} from "@material-ui/core/styles";
-import {TextareaAutosize, TextField, Typography} from "@material-ui/core";
-import {Autocomplete} from "@material-ui/lab";
-import {WithStylesPublic} from "../../../util/WithStylesPublic";
-import {DatePicker, MuiPickersUtilsProvider} from "@material-ui/pickers";
 import DateFnsUtils from '@date-io/date-fns';
+import {TextareaAutosize, TextField, Typography} from "@material-ui/core";
+import {createStyles, Theme, withStyles} from "@material-ui/core/styles";
+import {Autocomplete} from "@material-ui/lab";
+import {KeyboardDatePicker, MuiPickersUtilsProvider} from "@material-ui/pickers";
+import {de} from "date-fns/locale";
+import React, {ChangeEvent, PureComponent} from "react";
+import PopupDialog from "../../../components/Dialog/PopupDialog";
+import {FormCheckbox} from "../../../components/Form/FormCheckbox";
+import {FormLocationPicker} from "../../../components/Form/FormLocationPicker";
 import {Artikel} from "../../../Domain/Artikel";
 import {ArtikelKategorie} from "../../../Domain/ArtikelKategorie";
-import {apiPost} from "../../../util/ApiUtils";
-import PopupDialog from "../../../components/Dialog/PopupDialog";
-import {handleDialogButton} from "../../../util/DialogUtils";
-import {defined, numberSize, validate} from "../../../util/ValidationUtils";
+import {ArtikelVariante} from "../../../Domain/ArtikelVariante";
 import {Institution} from "../../../Domain/Institution";
 import {InstitutionStandort} from "../../../Domain/InstitutionStandort";
-import {de} from "date-fns/locale";
-import {FormLocationPicker} from "../../../components/Form/FormLocationPicker";
-import {FormCheckbox} from "../../../components/Form/FormCheckbox";
+import {apiPost} from "../../../util/ApiUtils";
+import {handleDialogButton} from "../../../util/DialogUtils";
+import {defined, numberSize, stringLength, validate} from "../../../util/ValidationUtils";
+import {WithStylesPublic} from "../../../util/WithStylesPublic";
 
 interface Props extends WithStylesPublic<typeof styles> {
     open: boolean;
     onCancelled: () => void;
     onSaved: () => void;
     artikel: Artikel[];
+    artikelKategorien: ArtikelKategorie[];
     institution?: Institution;
 }
 
 interface State {
     category?: string;
     article?: string;
+    articleVariant?: string;
     amount: number;
     location?: string;
     useBefore?: Date;
@@ -42,6 +45,7 @@ interface State {
 const initialState = {
     category: undefined,
     article: undefined,
+    articleVariant: undefined,
     amount: 0,
     location: undefined,
     useBefore: new Date(),
@@ -82,107 +86,14 @@ const styles = (theme: Theme) =>
             border: "1px solid #CCC",
             borderRadius: "4px",
             backgroundColor: "#FCFCFC"
+        },
+        checkbox: {
+            marginRight: "auto"
         }
     });
 
 class AddOfferDialog extends PureComponent<Props, State> {
     state: State = {...initialState};
-
-    private onSave = async () => {
-        handleDialogButton(
-            this.setState.bind(this),
-            this.props.onSaved,
-            () => validate(
-                defined(this.state.category, "Es muss eine Kategorie gewählt werden!"),
-                defined(this.state.article, "Es muss ein Artikel gewählt werden!"),
-                defined(this.state.location, "Es muss ein Standort gewählt werden!"),
-                numberSize(this.state.amount, "Die Anzahl", 1)
-            ),
-            () => apiPost("/remedy/angebot", {
-                artikel: {
-                    id: this.state.article
-                },
-                anzahl: this.state.amount,
-                standort: {
-                    id: this.state.location
-                },
-                haltbarkeit: this.state.useBefore,
-                steril: this.state.sterile,
-                originalverpackt: this.state.sealed,
-                medizinisch: this.state.medical,
-                kommentar: this.state.comment
-            }),
-            initialState
-        );
-    };
-
-    private onCancel = () => {
-        this.setState({
-            error: undefined
-        });
-
-        this.props.onCancelled();
-    };
-
-    private onCloseError = () => {
-        this.setState({error: undefined});
-    };
-
-    private setCategory = (event: any, category: ArtikelKategorie | null) => {
-        this.setState({category: category === null ? undefined : category.id});
-    };
-
-    private setArticle = (event: any, article: Artikel | null) => {
-        this.setState({article: article === null ? undefined : article.id});
-    };
-
-    private setAmount = (event: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
-        this.setState({amount: parseInt(event.target.value)});
-    };
-
-    private setLocation = (location: InstitutionStandort | null) => {
-        this.setState({location: location === null ? undefined : location.id});
-    };
-
-    private setUseBefore = (useBefore: Date | null) => {
-        this.setState({useBefore: useBefore === null ? undefined : useBefore});
-    };
-
-    private setComment = (event: ChangeEvent<HTMLTextAreaElement>) => {
-        this.setState({comment: event.target.value});
-    };
-
-    private setSterile = (sterile: boolean) => {
-        this.setState({sterile});
-    };
-
-    private setSealed = (sealed: boolean) => {
-        this.setState({sealed});
-    };
-
-    private setMedical = (medical: boolean) => {
-        this.setState({medical});
-    };
-
-    private getCategoryOptions = () => {
-        const result: ArtikelKategorie[] = [];
-        this.props.artikel.forEach(artikel => {
-            if (!result.find(ak => ak.id === artikel.artikelKategorie.id)) {
-                result.push(artikel.artikelKategorie);
-            }
-        });
-        return result;
-    };
-
-    private getArticleOptions = () => {
-        return this.props.artikel.filter(artikel => artikel.artikelKategorie.id === this.state.category);
-    };
-
-    private getLocationOptions = () => {
-        return ([] as InstitutionStandort[])
-            .concat(this.props.institution?.hauptstandort || [])
-            .concat(this.props.institution?.standorte || []);
-    };
 
     public render = () => {
         const classes = this.props.classes!;
@@ -233,8 +144,27 @@ class AddOfferDialog extends PureComponent<Props, State> {
                                 variant="outlined"/>
                         )}
                     />
+                    <Autocomplete
+                        size="small"
+                        onChange={this.setArticleVariant}
+                        options={this.getArticleVariantOptions()}
+                        value={this.getArticleVariantOptions().find(n => n.id === this.state.articleVariant) || null}
+                        disabled={this.state.disabled || !this.state.category || !this.state.article}
+                        disableClearable
+                        getOptionLabel={a => a.variante}
+                        classes={{listbox: classes.popup}}
+                        className={classes.formRow}
+                        renderInput={params => (
+                            <TextField
+                                {...params}
+                                label="Variante"
+                                variant="outlined"/>
+                        )}
+                    />
                     <Typography variant="caption" className={classes.caption}>
-                        Kategorie oder Artikel nicht gefunden? Schreib uns eine E-Mail!
+                        <a href="mailto:info@remedymatch.io?subject=Fehlende%20Kategorie">
+                            Kategorie oder Artikel nicht gefunden? Schreib uns eine E-Mail!
+                        </a>
                     </Typography>
                     <TextField
                         label="Anzahl"
@@ -251,8 +181,9 @@ class AddOfferDialog extends PureComponent<Props, State> {
                         className={classes.formRow}
                         disabled={this.state.disabled}
                         valueId={this.state.location}/>
-                    <DatePicker
+                    <KeyboardDatePicker
                         variant="inline"
+                        minDate={new Date()}
                         format="dd.MM.yyyy"
                         disabled={this.state.disabled}
                         margin="normal"
@@ -264,19 +195,22 @@ class AddOfferDialog extends PureComponent<Props, State> {
                         onChange={this.setUseBefore}
                     />
                     <FormCheckbox
+                        className={classes.checkbox}
                         disabled={this.state.disabled}
                         checked={this.state.sterile}
                         onChange={this.setSterile}
                         label="Produkt ist steril"
                     />
                     <FormCheckbox
+                        className={classes.checkbox}
                         disabled={this.state.disabled}
                         checked={this.state.sealed}
                         onChange={this.setSealed}
                         label="Produkt ist originalverpackt"
                     />
                     <FormCheckbox
-                        disabled={this.state.disabled}
+                        className={classes.checkbox}
+                        disabled={this.state.disabled || !this.getArticleVariantOptions().find(n => n.id === this.state.articleVariant)?.medizinischAuswaehlbar}
                         checked={this.state.medical}
                         onChange={this.setMedical}
                         label="Produkt ist medizinisch"
@@ -301,6 +235,107 @@ class AddOfferDialog extends PureComponent<Props, State> {
             })
         }
     }
+
+    private onSave = async () => {
+        handleDialogButton(
+            this.setState.bind(this),
+            this.props.onSaved,
+            () => validate(
+                defined(this.state.category, "Es muss eine Kategorie gewählt werden!"),
+                defined(this.state.article, "Es muss ein Artikel gewählt werden!"),
+                defined(this.state.articleVariant, "Es muss eine Variante gewählt werden!"),
+                defined(this.state.location, "Es muss ein Standort gewählt werden!"),
+                stringLength(this.state.comment, "Der Kommentar", 1),
+                numberSize(this.state.amount, "Die Anzahl", 1)
+            ),
+            () => apiPost("/remedy/angebot", {
+                artikelVarianteId: this.state.articleVariant,
+                anzahl: this.state.amount,
+                standortId: this.state.location,
+                haltbarkeit: this.state.useBefore,
+                steril: this.state.sterile,
+                originalverpackt: this.state.sealed,
+                medizinisch: this.state.medical,
+                kommentar: this.state.comment
+            }),
+            initialState
+        );
+    };
+
+    private onCancel = () => {
+        this.setState({
+            error: undefined
+        });
+
+        this.props.onCancelled();
+    };
+
+    private onCloseError = () => {
+        this.setState({error: undefined});
+    };
+
+    private setCategory = (event: any, category: ArtikelKategorie | null) => {
+        this.setState({category: category === null ? undefined : category.id});
+    };
+
+    private setArticle = (event: any, article: Artikel | null) => {
+        this.setState({article: article === null ? undefined : article.id});
+    };
+
+    private setArticleVariant = (event: any, articleVariant: ArtikelVariante | null) => {
+        this.setState({articleVariant: articleVariant === null ? undefined : articleVariant.id});
+    };
+
+    private setAmount = (event: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
+        const amount = parseFloat(event.target.value);
+        if(isNaN(amount)) {
+            return;
+        }
+
+        this.setState({amount: amount});
+    };
+
+    private setLocation = (location: InstitutionStandort | null) => {
+        this.setState({location: location === null ? undefined : location.id});
+    };
+
+    private setUseBefore = (useBefore: Date | null) => {
+        this.setState({useBefore: useBefore === null ? undefined : useBefore});
+    };
+
+    private setComment = (event: ChangeEvent<HTMLTextAreaElement>) => {
+        this.setState({comment: event.target.value});
+    };
+
+    private setSterile = (sterile: boolean) => {
+        this.setState({sterile});
+    };
+
+    private setSealed = (sealed: boolean) => {
+        this.setState({sealed});
+    };
+
+    private setMedical = (medical: boolean) => {
+        this.setState({medical});
+    };
+
+    private getCategoryOptions = () => {
+        return this.props.artikelKategorien;
+    };
+
+    private getArticleOptions = () => {
+        return this.props.artikel.filter(artikel => artikel.artikelKategorieId === this.state.category);
+    };
+
+    private getArticleVariantOptions = () => {
+        return this.props.artikel.find(artikel => artikel.id === this.state.article)?.varianten || [];
+    };
+
+    private getLocationOptions = () => {
+        return ([] as InstitutionStandort[])
+            .concat(this.props.institution?.hauptstandort || [])
+            .concat(this.props.institution?.standorte || []);
+    };
 }
 
 export default withStyles(styles)(AddOfferDialog);

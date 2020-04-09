@@ -1,18 +1,16 @@
-import {Artikel} from "./Artikel";
 import {InstitutionStandort} from "./InstitutionStandort";
 
 export interface Angebot {
     id: string;
-    artikel: Artikel;
+    artikelId: string;
+    artikelVarianteId: string;
     anzahl: number;
-    standort: InstitutionStandort;
-    kommentar: string;
-    rest: number;
     institutionId: string;
+    standort: InstitutionStandort;
     haltbarkeit: string;
     steril: boolean;
     originalverpackt: boolean;
     medizinisch: boolean;
-    bedient: boolean;
+    kommentar: string;
     entfernung: number;
 }

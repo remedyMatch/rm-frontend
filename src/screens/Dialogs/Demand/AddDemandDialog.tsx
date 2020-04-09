@@ -2,12 +2,13 @@ import React, {ChangeEvent, PureComponent} from "react";
 import {createStyles, Theme, withStyles} from "@material-ui/core/styles";
 import {TextareaAutosize, TextField, Typography} from "@material-ui/core";
 import {Autocomplete} from "@material-ui/lab";
+import {ArtikelVariante} from "../../../Domain/ArtikelVariante";
 import {WithStylesPublic} from "../../../util/WithStylesPublic";
 import {Artikel} from "../../../Domain/Artikel";
 import {ArtikelKategorie} from "../../../Domain/ArtikelKategorie";
 import {apiPost} from "../../../util/ApiUtils";
 import {handleDialogButton} from "../../../util/DialogUtils";
-import {defined, numberSize, validate} from "../../../util/ValidationUtils";
+import {defined, numberSize, stringLength, validate} from "../../../util/ValidationUtils";
 import PopupDialog from "../../../components/Dialog/PopupDialog";
 import {FormLocationPicker} from "../../../components/Form/FormLocationPicker";
 import {InstitutionStandort} from "../../../Domain/InstitutionStandort";
@@ -18,12 +19,14 @@ interface Props extends WithStylesPublic<typeof styles> {
     onCancelled: () => void;
     onSaved: () => void;
     artikel: Artikel[];
+    artikelKategorien: ArtikelKategorie[];
     institution?: Institution;
 }
 
 interface State {
     category?: string;
     article?: string;
+    articleVariant?: string;
     amount: number;
     location?: string;
     comment: string;
@@ -34,6 +37,7 @@ interface State {
 const initialState = {
     category: undefined,
     article: undefined,
+    articleVariant: undefined,
     amount: 0,
     location: undefined,
     comment: "",
@@ -77,19 +81,17 @@ class AddDemandDialog extends PureComponent<Props, State> {
             () => validate(
                 defined(this.state.category, "Es muss eine Kategorie gewählt werden!"),
                 defined(this.state.article, "Es muss ein Artikel gewählt werden!"),
+                defined(this.state.articleVariant, "Es muss eine Variante gewählt werden!"),
                 defined(this.state.location, "Es muss ein Standort gewählt werden!"),
+                stringLength(this.state.comment, "Der Kommentar", 1),
                 numberSize(this.state.amount, "Die Anzahl", 1)
             ),
             () => apiPost("/remedy/bedarf", {
-                artikel: {
-                    id: this.state.article
-                },
+                artikelId: this.state.article,
+                artikelVarianteId: this.state.articleVariant,
                 anzahl: this.state.amount,
-                standort: {
-                    id: this.state.location
-                },
+                standortId: this.state.location,
                 steril: false,
-                originalverpackt: false,
                 medizinisch: false,
                 kommentar: this.state.comment
             }),
@@ -116,8 +118,17 @@ class AddDemandDialog extends PureComponent<Props, State> {
         this.setState({article: article === null ? undefined : article.id});
     };
 
+    private setArticleVariant = (event: any, articleVariant: ArtikelVariante | null) => {
+        this.setState({articleVariant: articleVariant === null ? undefined : articleVariant.id});
+    };
+
     private setAmount = (event: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
-        this.setState({amount: parseInt(event.target.value)});
+        const amount = parseFloat(event.target.value);
+        if(isNaN(amount)) {
+            return;
+        }
+
+        this.setState({amount: amount});
     };
 
     private setLocation = (location: InstitutionStandort | null) => {
@@ -129,17 +140,15 @@ class AddDemandDialog extends PureComponent<Props, State> {
     };
 
     private getCategoryOptions = () => {
-        const result: ArtikelKategorie[] = [];
-        this.props.artikel.forEach(artikel => {
-            if (!result.find(ak => ak.id === artikel.artikelKategorie.id)) {
-                result.push(artikel.artikelKategorie);
-            }
-        });
-        return result;
+        return this.props.artikelKategorien;
     };
 
     private getArticleOptions = () => {
-        return this.props.artikel.filter(artikel => artikel.artikelKategorie.id === this.state.category);
+        return this.props.artikel.filter(artikel => artikel.artikelKategorieId === this.state.category);
+    };
+
+    private getArticleVariantOptions = () => {
+        return this.props.artikel.find(artikel => artikel.id === this.state.article)?.varianten || [];
     };
 
     private getLocationOptions = () => {
@@ -197,8 +206,27 @@ class AddDemandDialog extends PureComponent<Props, State> {
                             variant="outlined"/>
                     )}
                 />
+                <Autocomplete
+                    size="small"
+                    onChange={this.setArticleVariant}
+                    options={this.getArticleVariantOptions()}
+                    value={this.getArticleVariantOptions().find(n => n.id === this.state.articleVariant) || null}
+                    disabled={this.state.disabled || !this.state.category || !this.state.article}
+                    disableClearable
+                    getOptionLabel={a => a.variante}
+                    classes={{listbox: classes.popup}}
+                    className={classes.formRow}
+                    renderInput={params => (
+                        <TextField
+                            {...params}
+                            label="Variante"
+                            variant="outlined"/>
+                    )}
+                />
                 <Typography variant="caption" className={classes.caption}>
-                    Kategorie oder Artikel nicht gefunden? Schreib uns eine E-Mail!
+                    <a href="mailto:info@remedymatch.io?subject=Fehlende%20Kategorie">
+                        Kategorie oder Artikel nicht gefunden? Schreib uns eine E-Mail!
+                    </a>
                 </Typography>
                 <TextField
                     label="Anzahl"

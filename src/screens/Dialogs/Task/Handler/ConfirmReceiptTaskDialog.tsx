@@ -120,7 +120,10 @@ class RespondRequestTaskDialog extends PureComponent<Props, State> {
                     {isOffer ? <LocalOffer/> : <Search/>}
                     <Typography variant="body1" className={classes.text}>
                         <b>{isOffer ? "Angebot" : "Bedarf"}:</b> <br/>
-                        <i>{article?.hersteller}</i> <br/>
+                        {
+                            // TODO
+                        }
+                        {/* <i>{article?.hersteller}</i> <br/> */ }
                         {article?.name} <br/>
                         {match?.anzahl} Stück
                     </Typography>

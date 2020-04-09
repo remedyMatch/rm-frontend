@@ -1,11 +1,3 @@
-import React from 'react';
-import {makeStyles, Theme} from '@material-ui/core/styles';
-import MUITable from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
 import {
     FormControl,
     IconButton,
@@ -16,11 +8,21 @@ import {
     TableSortLabel,
     TextField
 } from "@material-ui/core";
+import {makeStyles, Theme} from '@material-ui/core/styles';
+import MUITable from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableContainer from '@material-ui/core/TableContainer';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
 import {Delete, Info} from "@material-ui/icons";
-import {Bedarf} from "../../Domain/Bedarf";
-import {Angebot} from "../../Domain/Angebot";
-import {usePagination, useSortBy, useTable} from "react-table";
 import {Pagination} from "@material-ui/lab";
+import React from 'react';
+import {usePagination, useSortBy, useTable} from "react-table";
+import {Angebot} from "../../Domain/Angebot";
+import {Artikel} from "../../Domain/Artikel";
+import {ArtikelKategorie} from "../../Domain/ArtikelKategorie";
+import {Bedarf} from "../../Domain/Bedarf";
 
 declare type DataRow = {
     type: "offer" | "demand", data: {
@@ -126,6 +128,8 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 interface Props {
+    artikel: Artikel[];
+    artikelKategorien: ArtikelKategorie[];
     angebote: Angebot[];
     bedarfe: Bedarf[];
     hideType?: boolean;
@@ -174,28 +178,38 @@ const EntryTable: React.FC<Props> = props => {
 
     const data = React.useMemo(
         () => ([] as DataRow[])
-            .concat(props.angebote.map(angebot => ({
-                type: "offer",
-                data: {
-                    id: angebot.id,
-                    category: angebot.artikel.artikelKategorie.name,
-                    article: angebot.artikel.name,
-                    amount: angebot.rest + (props.showDetailedAmount ? "/" + angebot.anzahl : ""),
-                    location: (props.useAdvancedLocation ? angebot.standort.name + ", " : "") + angebot.standort.ort,
-                    distance: angebot.entfernung.toFixed(1) + " km"
-                }
-            })))
-            .concat(props.bedarfe.map(bedarf => ({
-                type: "demand", data: {
-                    id: bedarf.id,
-                    category: bedarf.artikel.artikelKategorie.name,
-                    article: bedarf.artikel.name,
-                    amount: bedarf.rest + (props.showDetailedAmount ? "/" + bedarf.anzahl : ""),
-                    location: (props.useAdvancedLocation ? bedarf.standort.name + ", " : "") + bedarf.standort.ort,
-                    distance: bedarf.entfernung.toFixed(1) + " km"
-                }
-            }))),
-        [props.angebote, props.bedarfe, props.showDetailedAmount, props.useAdvancedLocation]
+            .concat(props.angebote.map(angebot => {
+                const artikel = props.artikel.find(artikel => artikel.varianten?.map(variante => variante.id).indexOf(angebot.artikelVarianteId) !== -1);
+                const kategorie = props.artikelKategorien.find(kategorie => kategorie.id === artikel?.artikelKategorieId);
+
+                return {
+                    type: "offer",
+                    data: {
+                        id: angebot.id,
+                        category: kategorie?.name || "",
+                        article: artikel?.name || "",
+                        amount: angebot.anzahl.toString(),
+                        location: (props.useAdvancedLocation ? angebot.standort.name + ", " : "") + angebot.standort.ort,
+                        distance: angebot.entfernung.toFixed(1) + " km"
+                    }
+                };
+            }))
+            .concat(props.bedarfe.map(bedarf => {
+                const artikel = props.artikel.find(artikel => artikel.varianten?.map(variante => variante.id).indexOf(bedarf.artikelVarianteId) !== -1);
+                const kategorie = props.artikelKategorien.find(kategorie => kategorie.id === artikel?.artikelKategorieId);
+
+                return {
+                    type: "demand", data: {
+                        id: bedarf.id,
+                        category: kategorie?.name || "",
+                        article: artikel?.name || "",
+                        amount: bedarf.rest + (props.showDetailedAmount ? "/" + bedarf.anzahl : ""),
+                        location: (props.useAdvancedLocation ? bedarf.standort.name + ", " : "") + bedarf.standort.ort,
+                        distance: bedarf.entfernung.toFixed(1) + " km"
+                    }
+                };
+            })),
+        [props.angebote, props.bedarfe, props.showDetailedAmount, props.useAdvancedLocation, props.artikel, props.artikelKategorien]
     );
 
     const hiddenColumns: string[] = [];
@@ -276,95 +290,101 @@ const EntryTable: React.FC<Props> = props => {
                         <TableRow
                             {...headerGroup.getHeaderGroupProps()}
                             className={classes.tableHeaderRow}>
-                            {headerGroup.headers.map(column => (
-                                <>
-                                    {column.id === "type" && (
-                                        <TableCell
-                                            className={classes.typeColumn}
-                                            {...column.getHeaderProps()}>
-                                            <TableSortLabel
-                                                {...column.getSortByToggleProps()}
-                                                active={column.isSorted}
-                                                direction={column.isSortedDesc ? "desc" : "asc"}>
-                                                {column.render('Header')}
-                                            </TableSortLabel>
-                                        </TableCell>
-                                    )}
-                                    {column.id === "data.category" && (
-                                        <TableCell
-                                            className={classes.categoryColumn}
-                                            {...column.getHeaderProps()}>
-                                            <TableSortLabel
-                                                {...column.getSortByToggleProps()}
-                                                active={column.isSorted}
-                                                direction={column.isSortedDesc ? "desc" : "asc"}>
-                                                {column.render('Header')}
-                                            </TableSortLabel>
-                                        </TableCell>
-                                    )}
-                                    {column.id === "data.article" && (
-                                        <TableCell
-                                            className={classes.articleColumn}
-                                            {...column.getHeaderProps()}>
-                                            <TableSortLabel
-                                                {...column.getSortByToggleProps()}
-                                                active={column.isSorted}
-                                                direction={column.isSortedDesc ? "desc" : "asc"}>
-                                                {column.render('Header')}
-                                            </TableSortLabel>
-                                        </TableCell>
-                                    )}
-                                    {column.id === "data.amount" && (
-                                        <TableCell
-                                            className={classes.amountColumn}
-                                            {...column.getHeaderProps()}>
-                                            <TableSortLabel
-                                                {...column.getSortByToggleProps()}
-                                                active={column.isSorted}
-                                                direction={column.isSortedDesc ? "desc" : "asc"}>
-                                                {column.render('Header')}
-                                            </TableSortLabel>
-                                        </TableCell>
-                                    )}
-                                    {column.id === "data.location" && (
-                                        <TableCell
-                                            className={classes.locationColumn}>
-                                            <TableSortLabel
-                                                {...column.getHeaderProps(column.getSortByToggleProps())}
-                                                active={column.isSorted}
-                                                direction={column.isSortedDesc ? "desc" : "asc"}>
-                                                {column.render('Header')}
-                                            </TableSortLabel>
-                                        </TableCell>
-                                    )}
-                                    {column.id === "data.distance" && (
-                                        <TableCell
-                                            className={classes.distanceColumn}
-                                            {...column.getHeaderProps()}>
-                                            <TableSortLabel
-                                                {...column.getSortByToggleProps()}
-                                                active={column.isSorted}
-                                                direction={column.isSortedDesc ? "desc" : "asc"}>
-                                                {column.render('Header')}
-                                            </TableSortLabel>
-                                        </TableCell>
-                                    )}
-                                    {column.id === "details" && (
-                                        <TableCell
-                                            className={classes.detailsColumn}
-                                            {...column.getHeaderProps()}>
+                            {headerGroup.headers.map(column => {
+                                if (column.id === "type") return (
+                                    <TableCell
+                                        className={classes.typeColumn}
+                                        {...column.getHeaderProps()}>
+                                        <TableSortLabel
+                                            {...column.getSortByToggleProps()}
+                                            active={column.isSorted}
+                                            direction={column.isSortedDesc ? "desc" : "asc"}>
                                             {column.render('Header')}
-                                        </TableCell>
-                                    )}
-                                    {column.id === "delete" && (
-                                        <TableCell
-                                            className={classes.deleteColumn}
-                                            {...column.getHeaderProps()}>
+                                        </TableSortLabel>
+                                    </TableCell>
+                                );
+                                if (column.id === "data.category") return (
+                                    <TableCell
+                                        className={classes.categoryColumn}
+                                        {...column.getHeaderProps()}>
+                                        <TableSortLabel
+                                            {...column.getSortByToggleProps()}
+                                            active={column.isSorted}
+                                            direction={column.isSortedDesc ? "desc" : "asc"}>
                                             {column.render('Header')}
-                                        </TableCell>
-                                    )}
-                                </>
-                            ))}
+                                        </TableSortLabel>
+                                    </TableCell>
+                                );
+
+                                if (column.id === "data.article") return (
+                                    <TableCell
+                                        className={classes.articleColumn}
+                                        {...column.getHeaderProps()}>
+                                        <TableSortLabel
+                                            {...column.getSortByToggleProps()}
+                                            active={column.isSorted}
+                                            direction={column.isSortedDesc ? "desc" : "asc"}>
+                                            {column.render('Header')}
+                                        </TableSortLabel>
+                                    </TableCell>
+                                );
+
+                                if (column.id === "data.amount") return (
+                                    <TableCell
+                                        className={classes.amountColumn}
+                                        {...column.getHeaderProps()}>
+                                        <TableSortLabel
+                                            {...column.getSortByToggleProps()}
+                                            active={column.isSorted}
+                                            direction={column.isSortedDesc ? "desc" : "asc"}>
+                                            {column.render('Header')}
+                                        </TableSortLabel>
+                                    </TableCell>
+                                );
+
+                                if (column.id === "data.location") return (
+                                    <TableCell
+                                        className={classes.locationColumn}>
+                                        <TableSortLabel
+                                            {...column.getHeaderProps(column.getSortByToggleProps())}
+                                            active={column.isSorted}
+                                            direction={column.isSortedDesc ? "desc" : "asc"}>
+                                            {column.render('Header')}
+                                        </TableSortLabel>
+                                    </TableCell>
+                                );
+
+                                if (column.id === "data.distance") return (
+                                    <TableCell
+                                        className={classes.distanceColumn}
+                                        {...column.getHeaderProps()}>
+                                        <TableSortLabel
+                                            {...column.getSortByToggleProps()}
+                                            active={column.isSorted}
+                                            direction={column.isSortedDesc ? "desc" : "asc"}>
+                                            {column.render('Header')}
+                                        </TableSortLabel>
+                                    </TableCell>
+                                );
+
+                                if (column.id === "details") return (
+                                    <TableCell
+                                        className={classes.detailsColumn}
+                                        {...column.getHeaderProps()}>
+                                        {column.render('Header')}
+                                    </TableCell>
+                                );
+
+                                if (column.id === "delete") return (
+                                    <TableCell
+                                        className={classes.deleteColumn}
+                                        {...column.getHeaderProps()}>
+                                        {column.render('Header')}
+                                    </TableCell>
+                                );
+
+                                return null;
+                            })}
                         </TableRow>
                     ))}
                 </TableHead>
@@ -378,66 +398,73 @@ const EntryTable: React.FC<Props> = props => {
                         prepareRow(row);
                         return (
                             <TableRow {...row.getRowProps()}>
-                                {row.cells.map(cell => (
-                                    <>
-                                        {cell.column.id === "type" && (
-                                            <TableCell
-                                                {...cell.getCellProps()}
-                                                className={classes.typeColumn}>
-                                                {cell.render('Cell')}
-                                            </TableCell>
-                                        )}
-                                        {cell.column.id === "data.category" && (
-                                            <TableCell
-                                                {...cell.getCellProps()}
-                                                className={classes.categoryColumn}>
-                                                {cell.render('Cell')}
-                                            </TableCell>
-                                        )}
-                                        {cell.column.id === "data.article" && (
-                                            <TableCell
-                                                {...cell.getCellProps()}
-                                                className={classes.articleColumn}>
-                                                {cell.render('Cell')}
-                                            </TableCell>
-                                        )}
-                                        {cell.column.id === "data.amount" && (
-                                            <TableCell
-                                                {...cell.getCellProps()}
-                                                className={classes.amountColumn}>
-                                                {cell.render('Cell')}
-                                            </TableCell>
-                                        )}
-                                        {cell.column.id === "data.location" && (
-                                            <TableCell
-                                                {...cell.getCellProps()}
-                                                className={classes.locationColumn}>
-                                                {cell.render('Cell')}
-                                            </TableCell>
-                                        )}
-                                        {cell.column.id === "data.distance" && (
-                                            <TableCell
-                                                {...cell.getCellProps()}
-                                                className={classes.distanceColumn}>
-                                                {cell.render('Cell')}
-                                            </TableCell>
-                                        )}
-                                        {cell.column.id === "details" && (
-                                            <TableCell
-                                                {...cell.getCellProps()}
-                                                className={classes.detailsColumn}>
-                                                {cell.render('Cell')}
-                                            </TableCell>
-                                        )}
-                                        {cell.column.id === "delete" && (
-                                            <TableCell
-                                                {...cell.getCellProps()}
-                                                className={classes.deleteColumn}>
-                                                {cell.render('Cell')}
-                                            </TableCell>
-                                        )}
-                                    </>
-                                ))}
+                                {row.cells.map(cell => {
+                                    if (cell.column.id === "type") return (
+                                        <TableCell
+                                            {...cell.getCellProps()}
+                                            className={classes.typeColumn}>
+                                            {cell.render('Cell')}
+                                        </TableCell>
+                                    );
+
+                                    if (cell.column.id === "data.category") return (
+                                        <TableCell
+                                            {...cell.getCellProps()}
+                                            className={classes.categoryColumn}>
+                                            {cell.render('Cell')}
+                                        </TableCell>
+                                    );
+
+                                    if (cell.column.id === "data.article") return (
+                                        <TableCell
+                                            {...cell.getCellProps()}
+                                            className={classes.articleColumn}>
+                                            {cell.render('Cell')}
+                                        </TableCell>
+                                    );
+
+                                    if (cell.column.id === "data.amount") return (
+                                        <TableCell
+                                            {...cell.getCellProps()}
+                                            className={classes.amountColumn}>
+                                            {cell.render('Cell')}
+                                        </TableCell>
+                                    );
+
+                                    if (cell.column.id === "data.location") return (
+                                        <TableCell
+                                            {...cell.getCellProps()}
+                                            className={classes.locationColumn}>
+                                            {cell.render('Cell')}
+                                        </TableCell>
+                                    );
+
+                                    if (cell.column.id === "data.distance") return (
+                                        <TableCell
+                                            {...cell.getCellProps()}
+                                            className={classes.distanceColumn}>
+                                            {cell.render('Cell')}
+                                        </TableCell>
+                                    );
+
+                                    if (cell.column.id === "details") return (
+                                        <TableCell
+                                            {...cell.getCellProps()}
+                                            className={classes.detailsColumn}>
+                                            {cell.render('Cell')}
+                                        </TableCell>
+                                    );
+
+                                    if (cell.column.id === "delete") return (
+                                        <TableCell
+                                            {...cell.getCellProps()}
+                                            className={classes.deleteColumn}>
+                                            {cell.render('Cell')}
+                                        </TableCell>
+                                    );
+
+                                    return null;
+                                })}
                             </TableRow>
                         )
                     })}

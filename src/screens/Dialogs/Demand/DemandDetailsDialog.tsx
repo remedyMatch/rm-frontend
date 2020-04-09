@@ -1,6 +1,8 @@
 import React from "react";
 import {makeStyles, Theme} from "@material-ui/core/styles";
 import {Typography} from "@material-ui/core";
+import {Artikel} from "../../../Domain/Artikel";
+import {ArtikelKategorie} from "../../../Domain/ArtikelKategorie";
 import {Bedarf} from "../../../Domain/Bedarf";
 import {FormButton} from "../../../components/Form/FormButton";
 import PopupDialog from "../../../components/Dialog/PopupDialog";
@@ -10,6 +12,8 @@ interface Props {
     open: boolean;
     eigeneInstitution?: Institution;
     item?: Bedarf;
+    artikel?: Artikel;
+    artikelKategorie?: ArtikelKategorie;
     onContact?: () => void;
     onDone: () => void;
 }
@@ -49,6 +53,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 const DemandDetailsDialog: React.FC<Props> = props => {
     const classes = useStyles();
+    const variante = props.artikel?.varianten?.find(variante => variante.id === props.item?.artikelVarianteId);
 
     return (
         <PopupDialog
@@ -60,23 +65,28 @@ const DemandDetailsDialog: React.FC<Props> = props => {
             <Typography variant="subtitle1" className={classes.subtitle}>Benötigter Artikel</Typography>
             <div className={classes.row}>
                 <span className={classes.left}>Kategorie</span>
-                <span className={classes.right}>{props.item?.artikel.artikelKategorie.name}</span>
+                <span className={classes.right}>{props.artikelKategorie?.name}</span>
             </div>
             <div className={classes.row}>
                 <span className={classes.left}>Artikel</span>
-                <span className={classes.right}>{props.item?.artikel.name}</span>
+                <span className={classes.right}>{props.artikel?.name}</span>
             </div>
             <div className={classes.row}>
                 <span className={classes.left}>Beschreibung</span>
-                <span className={classes.right}>{props.item?.artikel.beschreibung}</span>
+                <span className={classes.right}>{props.artikel?.beschreibung}</span>
+            </div>
+            <Typography variant="subtitle1" className={classes.subtitle}>Benötigte Variante</Typography>
+            <div className={classes.row}>
+                <span className={classes.left}>Name</span>
+                <span className={classes.right}>{variante?.variante}</span>
             </div>
             <div className={classes.row}>
-                <span className={classes.left}>EAN</span>
-                <span className={classes.right}>{props.item?.artikel.ean}</span>
+                <span className={classes.left}>Beschreibung</span>
+                <span className={classes.right}>{variante?.beschreibung}</span>
             </div>
             <div className={classes.row}>
-                <span className={classes.left}>Hersteller</span>
-                <span className={classes.right}>{props.item?.artikel.hersteller}</span>
+                <span className={classes.left}>Norm</span>
+                <span className={classes.right}>{variante?.norm}</span>
             </div>
             <Typography variant="subtitle1" className={classes.subtitle}>Weitere Details</Typography>
             <div className={classes.row}>

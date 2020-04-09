@@ -6,11 +6,15 @@ import {Angebot} from "../../../Domain/Angebot";
 import {format} from "date-fns";
 import {de} from "date-fns/locale";
 import PopupDialog from "../../../components/Dialog/PopupDialog";
+import {Artikel} from "../../../Domain/Artikel";
+import {ArtikelKategorie} from "../../../Domain/ArtikelKategorie";
 import {Institution} from "../../../Domain/Institution";
 
 interface Props {
     open: boolean;
     item?: Angebot;
+    artikel?: Artikel;
+    artikelKategorie?: ArtikelKategorie;
     eigeneInstitution?: Institution;
     onContact?: () => void;
     onDone: () => void;
@@ -60,6 +64,7 @@ const formatDate = (date?: string) => {
 
 const OfferDetailsDialog: React.FC<Props> = props => {
     const classes = useStyles();
+    const variante = props.artikel?.varianten?.find(variante => variante.id === props.item?.artikelVarianteId);
 
     return (
         <PopupDialog
@@ -71,23 +76,28 @@ const OfferDetailsDialog: React.FC<Props> = props => {
             <Typography variant="subtitle1" className={classes.subtitle}>Angebotener Artikel</Typography>
             <div className={classes.row}>
                 <span className={classes.left}>Kategorie</span>
-                <span className={classes.right}>{props.item?.artikel.artikelKategorie.name}</span>
+                <span className={classes.right}>{props.artikelKategorie?.name}</span>
             </div>
             <div className={classes.row}>
                 <span className={classes.left}>Artikel</span>
-                <span className={classes.right}>{props.item?.artikel.name}</span>
+                <span className={classes.right}>{props.artikel?.name}</span>
             </div>
             <div className={classes.row}>
                 <span className={classes.left}>Beschreibung</span>
-                <span className={classes.right}>{props.item?.artikel.beschreibung}</span>
+                <span className={classes.right}>{props.artikel?.beschreibung}</span>
+            </div>
+            <Typography variant="subtitle1" className={classes.subtitle}>Angebotene Variante</Typography>
+            <div className={classes.row}>
+                <span className={classes.left}>Name</span>
+                <span className={classes.right}>{variante?.variante}</span>
             </div>
             <div className={classes.row}>
-                <span className={classes.left}>EAN</span>
-                <span className={classes.right}>{props.item?.artikel.ean}</span>
+                <span className={classes.left}>Beschreibung</span>
+                <span className={classes.right}>{variante?.beschreibung}</span>
             </div>
             <div className={classes.row}>
-                <span className={classes.left}>Hersteller</span>
-                <span className={classes.right}>{props.item?.artikel.hersteller}</span>
+                <span className={classes.left}>Norm</span>
+                <span className={classes.right}>{variante?.norm}</span>
             </div>
             <Typography variant="subtitle1" className={classes.subtitle}>Weitere Details</Typography>
             <div className={classes.row}>
@@ -96,7 +106,7 @@ const OfferDetailsDialog: React.FC<Props> = props => {
             </div>
             <div className={classes.row}>
                 <span className={classes.left}>Anzahl</span>
-                <span className={classes.right}>{props.item?.rest}</span>
+                <span className={classes.right}>{props.item?.anzahl}</span>
             </div>
             <div className={classes.row}>
                 <span className={classes.left}>Haltbar bis</span>

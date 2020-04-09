@@ -11,12 +11,8 @@ interface Props {
     onYes: () => void;
     requestId?: string;
     isDemand?: boolean;
-    item?: {
-        rest: number;
-        artikel: {
-            name: string;
-        };
-    }
+    amount?: number;
+    articleName?: string;
 }
 
 interface State {
@@ -45,8 +41,8 @@ class DeleteEntryDialog extends Component<Props, State> {
                     Soll
                     {this.props.isDemand && " der Bedarf nach "}
                     {!this.props.isDemand && " das Angebot über "}
-                    {this.props.item?.rest + " "}
-                    {this.props.item?.artikel.name + " "}
+                    {this.props.amount + " "}
+                    {this.props.articleName + " "}
                     wirklich gelöscht werden?
                 </DialogContentText>
             </PopupDialog>

@@ -8,11 +8,11 @@ export interface Anfrage {
     institutionAn: Institution;
     bedarfId?: string;
     angebotId?: string;
+    artikelId: string;
     standortAn: InstitutionStandort;
     standortVon: InstitutionStandort;
     entfernung: number;
     prozessInstanzId: string;
-    artikelId: string;
     anzahl: number;
     status: string;
 }

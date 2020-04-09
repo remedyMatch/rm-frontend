@@ -1,16 +1,16 @@
-import React, {PureComponent} from "react";
-import {createStyles, Theme, withStyles} from "@material-ui/core/styles";
-import {WithStylesPublic} from "../../../../util/WithStylesPublic";
-import {Aufgabe} from "../../../../Domain/Aufgabe";
 import {Button, Typography} from "@material-ui/core";
+import {createStyles, Theme, withStyles} from "@material-ui/core/styles";
+import {Email, LocalOffer, LocationOn, Search} from "@material-ui/icons";
+import React, {PureComponent} from "react";
+import PopupDialog from "../../../../components/Dialog/PopupDialog";
+import {Anfrage} from "../../../../Domain/Anfrage";
+import {Angebot} from "../../../../Domain/Angebot";
+import {Aufgabe} from "../../../../Domain/Aufgabe";
+import {Bedarf} from "../../../../Domain/Bedarf";
 import {apiPost} from "../../../../util/ApiUtils";
 import {handleDialogButton} from "../../../../util/DialogUtils";
 import {defined, validate} from "../../../../util/ValidationUtils";
-import PopupDialog from "../../../../components/Dialog/PopupDialog";
-import {Anfrage} from "../../../../Domain/Anfrage";
-import {Email, LocalOffer, LocationOn, Search} from "@material-ui/icons";
-import {Angebot} from "../../../../Domain/Angebot";
-import {Bedarf} from "../../../../Domain/Bedarf";
+import {WithStylesPublic} from "../../../../util/WithStylesPublic";
 
 interface Props extends WithStylesPublic<typeof styles> {
     onCancelled: () => void;
@@ -131,8 +131,10 @@ class RespondRequestTaskDialog extends PureComponent<Props, State> {
                     {isOffer ? <LocalOffer/> : <Search/>}
                     <Typography variant="body1" className={classes.text}>
                         <b>{isOffer ? "Angebot" : "Bedarf"}:</b> <br/>
-                        <i>{item?.artikel.hersteller}</i> <br/>
-                        {item?.artikel.name} <br/>
+                        { // TODO
+                        }
+                        { /*<i>{item?.artikel.hersteller}</i> <br/>
+                        {item?.artikel.name} <br/>*/ }
                         {request?.anzahl} Stück
                     </Typography>
                 </div>
