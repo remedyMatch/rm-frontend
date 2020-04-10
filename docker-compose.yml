@@ -1,0 +1,13 @@
+version: '3.3'
+
+services:
+  frontend:
+      image: remedymatch/frontend:latest
+      ports:
+        - 8080:80
+      networks:
+        - rm
+
+networks:
+  rm:
+    driver: overlay
