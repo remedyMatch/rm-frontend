@@ -7,7 +7,12 @@ RUN yarn build
 
 # Stage 2 - production container
 FROM nginx:alpine
+ENV APP_HOME  /usr/share/nginx/html
 COPY docker/nginx.conf /etc/nginx/conf.d/default.conf
-COPY --from=react-build /app/build /usr/share/nginx/html
+COPY --from=react-build /app/build ${APP_HOME}
+ADD docker/entrypoint.sh /entrypoint.sh
+
 EXPOSE 80
+
+ENTRYPOINT ["/entrypoint.sh"]
 CMD ["nginx", "-g", "daemon off;"]
