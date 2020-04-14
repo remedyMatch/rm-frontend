@@ -110,13 +110,13 @@ class InstitutionScreen extends Component<Props, State> {
                         <span className={classes.left}>Name:</span>
                         <span className={classes.right}>{this.props.eigeneInstitution?.name || <span className={clsx(classes.missingError, classes.missing)}>Nicht angegeben!</span>}</span>
                     </div>
-                    <div className={classes.footer}>
+                    {/*<div className={classes.footer}>
                         <FormButton
                             onClick={this.onEditClicked}
                             variant="text">
                             Bearbeiten
                         </FormButton>
-                    </div>
+                    </div>*/}
                 </div>
                 <div className={classes.container}>
                     <Typography
@@ -135,15 +135,18 @@ class InstitutionScreen extends Component<Props, State> {
                     {!standort && (
                         <span className={clsx(classes.missingError, classes.missing)}>Noch nicht eingetragen!<br/>Bitte auf Bearbeiten klicken.</span>
                     )}
-                    <div className={classes.footer}>
+                    {
+                        <div className={classes.footer}>
                         <FormButton
-                            onClick={this.onEditLocationClicked}
-                            variant="text">
-                            Bearbeiten
+                        /*onClick={this.onEditLocationClicked}*/
+                        onClick={() => {alert('Bitte senden Sie eine E-Mail an info@remedymatch.io um Ihren Standort zu ändern.')}}
+                        variant="text">
+                        Bearbeiten
                         </FormButton>
-                    </div>
+                        </div>
+                    }
                 </div>
-                <div className={classes.container}>
+                {/*<div className={classes.container}>
                     <Typography
                         variant="subtitle1"
                         className={classes.subtitle}>
@@ -172,8 +175,9 @@ class InstitutionScreen extends Component<Props, State> {
                             Hinzufügen
                         </FormButton>
                     </div>
-                </div>
-                <EditInstitutionDialog
+                </div>*/}
+                {/*
+                 <EditInstitutionDialog
                     onSaved={this.onEditSaved}
                     onCancelled={this.onEditCancelled}
                     open={this.state.editDialogOpen}
@@ -194,6 +198,7 @@ class InstitutionScreen extends Component<Props, State> {
                     onCancelled={this.onDeleteLocationCancelled}
                     open={!!this.state.deleteLocationId}
                     locationId={this.state.deleteLocationId}/>
+                    */}
             </div>
         )
     }
