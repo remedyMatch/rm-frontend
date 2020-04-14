@@ -4,6 +4,7 @@ export interface InstitutionStandort {
     plz: string;
     ort: string;
     strasse: string;
+    hausnummer: string;
     land: string;
     longitude: number;
     latitude: number;
