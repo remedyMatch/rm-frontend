@@ -20,6 +20,7 @@ interface State {
     plz: string;
     ort: string;
     strasse: string;
+    hausnummer: string;
     land: string;
     disabled: boolean;
     error?: string;
@@ -37,6 +38,7 @@ const initialState = {
     plz: "",
     ort: "",
     strasse: "",
+    hausnummer: "",
     land: "",
     disabled: false,
     error: undefined
@@ -90,6 +92,13 @@ class AddLocationDialog extends Component<Props, State> {
         });
     };
 
+    private setHausnummer = (hausnummer: string) => {
+        this.setState({
+            error: undefined,
+            hausnummer: hausnummer
+        });
+    };
+
     private setPlz = (plz: string) => {
         this.setState({
             error: undefined,
@@ -136,6 +145,12 @@ class AddLocationDialog extends Component<Props, State> {
                     label="Straße"
                     changeListener={this.setStrasse}
                     value={this.state.strasse}
+                    className={classes.formRow}
+                    disabled={this.state.disabled}/>
+                <FormTextInput
+                    label="Hausnummer"
+                    changeListener={this.setHausnummer}
+                    value={this.state.hausnummer}
                     className={classes.formRow}
                     disabled={this.state.disabled}/>
                 <FormTextInput

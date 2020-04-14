@@ -20,6 +20,7 @@ interface State {
     plz: string;
     ort: string;
     strasse: string;
+    hausnummer: string;
     land: string;
     disabled: boolean;
     error?: string;
@@ -37,6 +38,7 @@ const initialState = {
     plz: "",
     ort: "",
     strasse: "",
+    hausnummer: "",
     land: "",
     disabled: false,
     error: undefined
@@ -52,6 +54,7 @@ class EditLocationDialog extends Component<Props, State> {
             () => validate(
                 stringLength(this.state.name, "Der Name", 1),
                 stringLength(this.state.strasse, "Die Straße", 1),
+                stringLength(this.state.hausnummer, "Hausnummer", 1),
                 stringLength(this.state.plz, "Die PLZ", 1),
                 stringLength(this.state.ort, "Der Ort", 1),
                 stringLength(this.state.land, "Das Land", 1),
@@ -60,6 +63,7 @@ class EditLocationDialog extends Component<Props, State> {
                 id: this.props.institution?.hauptstandort?.id,
                 name: this.state.name,
                 strasse: this.state.strasse,
+                hausnummer: this.state.hausnummer,
                 plz: this.state.plz,
                 ort: this.state.ort,
                 land: this.state.land
@@ -87,6 +91,13 @@ class EditLocationDialog extends Component<Props, State> {
         this.setState({
             error: undefined,
             strasse: strasse
+        });
+    };
+
+    private setHausnummer = (hausnummer: string) => {
+        this.setState({
+            error: undefined,
+            hausnummer: hausnummer
         });
     };
 
@@ -139,6 +150,12 @@ class EditLocationDialog extends Component<Props, State> {
                     className={classes.formRow}
                     disabled={this.state.disabled}/>
                 <FormTextInput
+                    label="Hausnummer"
+                    changeListener={this.setHausnummer}
+                    value={this.state.hausnummer}
+                    className={classes.formRow}
+                    disabled={this.state.disabled}/>
+                <FormTextInput
                     label="PLZ"
                     changeListener={this.setPlz}
                     value={this.state.plz}
@@ -164,6 +181,7 @@ class EditLocationDialog extends Component<Props, State> {
         this.setState({
             name: this.props.institution!.hauptstandort?.name || "",
             strasse: this.props.institution!.hauptstandort?.strasse || "",
+            hausnummer: this.props.institution!.hauptstandort?.hausnummer || "",
             plz: this.props.institution!.hauptstandort?.plz || "",
             ort: this.props.institution!.hauptstandort?.ort || "",
             land: this.props.institution!.hauptstandort?.land || ""

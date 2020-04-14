@@ -127,7 +127,7 @@ class InstitutionScreen extends Component<Props, State> {
                     {standort && (
                         <div className={classes.address}>
                             <p>{standort.name}</p>
-                            <p>{standort.strasse}</p>
+                            <p>{standort.strasse} {standort.hausnummer}</p>
                             <p>{standort.plz} {standort.ort}</p>
                             <p>{standort.land}</p>
                         </div>
@@ -152,7 +152,7 @@ class InstitutionScreen extends Component<Props, State> {
                     {standorte?.map(standort => (
                         <div className={clsx(classes.address, classes.additionalAddress)} key={standort.id}>
                             <p>{standort.name}</p>
-                            <p>{standort.strasse}</p>
+                            <p>{standort.strasse} {standort.hausnummer}</p>
                             <p>{standort.plz} {standort.ort}</p>
                             <p>{standort.land}</p>
                             <FormButton
