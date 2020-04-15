@@ -7,7 +7,7 @@ import MatchTable from "../components/Table/MatchTable";
 import RequestTable from "../components/Table/RequestTable";
 import {Artikel} from "../Domain/Artikel";
 import {ArtikelKategorie} from "../Domain/ArtikelKategorie";
-import {loadAngebote} from "../State/AngeboteState";
+import {loadAngebote} from "../State/MeineAngeboteState";
 import {loadArtikelKategorien} from "../State/ArtikelKategorienState";
 import {loadArtikel} from "../State/ArtikelState";
 import {loadBedarfe} from "../State/BedarfeState";
