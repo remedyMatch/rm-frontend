@@ -71,8 +71,7 @@ class RespondOfferDialog extends PureComponent<Props, State> {
                 numberSize(this.state.amount, "Die Anzahl", 1),
                 stringLength(this.state.comment, "Der Kommentar", 1)
             ),
-            () => apiPost("/remedy/angebot/anfragen", {
-                angebotId: this.props.angebot!.id,
+            () => apiPost(`/remedy/angebot/${this.props.angebot!.id}/anfrage`, {
                 kommentar: this.state.comment,
                 standortId: this.state.location,
                 anzahl: this.state.amount
