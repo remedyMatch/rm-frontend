@@ -9,6 +9,9 @@ import {QuestionsProductDetails} from "../QuestionsProductDetails/QuestionsProdu
 import {StepButton} from "@material-ui/core";
 import {uuidv4} from "../utils/uuid";
 import {QuestionsSummary} from "../QuestionsSummary/QuestionsSummary";
+import {Prompt} from 'react-router-dom';
+import {ArtikelKategorie} from "../../../../Domain/ArtikelKategorie";
+import {Artikel} from "../../../../Domain/Artikel";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -36,16 +39,10 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export interface Answers {
     isDonor: boolean | undefined;
-    category: Category | undefined;
-    exactType: Item[] | undefined;
+    category: ArtikelKategorie | undefined;
+    exactType: Artikel[] | undefined;
     number: number | undefined;
     location: string | undefined;
-}
-
-
-export interface Category {
-    categoryName: "mask" | "disinfectant" | "gloves" | "facemask";
-    items: Item[];
 }
 
 export interface Item {
@@ -86,6 +83,7 @@ export const QuestionsStepper: React.FC<{}> = () => {
 
     return (
         <div className={classes.root}>
+            <Prompt message={"Der Zwischenstand ist nicht gespeichert. Wollen Sie diese Seite wirklich verlassen?"}/>
             <Stepper activeStep={currentStep} alternativeLabel>
                 {steps.map((label, index) => (
                     <Step key={uuidv4()}>
@@ -102,18 +100,6 @@ export const QuestionsStepper: React.FC<{}> = () => {
             </div>
         </div>
     );
-
-    function handleNext() {
-        setCurrentStep(currentStep + 1);
-    }
-
-    function handleBack() {
-        setCurrentStep(currentStep - 1);
-    }
-
-    function handleReset() {
-        setCurrentStep(0);
-    }
 
     function handleGoToStep(step: number): () => void {
         return () => {
@@ -135,7 +121,6 @@ export const QuestionsStepper: React.FC<{}> = () => {
                                           setAnswers={setAnswers}
                                           currentStep={currentStep}
                                           setCurrentStep={setCurrentStep}
-                                          categories={sampleCategories}
                 />;
             case 2:
                 if (answers.category !== undefined) {
@@ -143,7 +128,7 @@ export const QuestionsStepper: React.FC<{}> = () => {
                                            setAnswers={setAnswers}
                                            currentStep={currentStep}
                                            setCurrentStep={setCurrentStep}
-                                           items={answers.category.items}/>;
+                    />
                 } else {
                     return <div>Wähle zuerst eine Kategorie aus.</div>
                 }
@@ -166,40 +151,3 @@ export const QuestionsStepper: React.FC<{}> = () => {
 function getStepNames() {
     return ["Anbieter oder Suchender?", "Kategorie", "Artikel", "Anzahl und Produktdetails", "Zusammenfassung"];
 }
-
-const sampleCategories: Category[] = [
-    {
-        categoryName: "mask",
-        items: [{
-            itemName: "Essener Modell",
-            validOptions: {
-                isValidBestByDate: true,
-                isValidSterile: true,
-                isValidOriginalPackaging: true,
-                isValidMedical: true,
-            },
-            options: {
-                bestByDate: undefined,
-                isSterile: undefined,
-                isMedical: undefined,
-                isOriginalPackaging: undefined,
-                note: undefined,
-            }
-        }, {
-            itemName: "OP Maske",
-            validOptions: {
-                isValidBestByDate: true,
-                isValidSterile: true,
-                isValidOriginalPackaging: true,
-                isValidMedical: true,
-            },
-            options: {
-                bestByDate: undefined,
-                isSterile: undefined,
-                isMedical: undefined,
-                isOriginalPackaging: undefined,
-                note: undefined,
-            }
-        }]
-    },
-];

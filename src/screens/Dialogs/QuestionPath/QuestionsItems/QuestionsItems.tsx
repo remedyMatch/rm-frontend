@@ -1,32 +1,49 @@
-import React, {useState} from "react";
-import {Card, Checkbox, List, ListItem, ListItemIcon, ListItemText} from "@material-ui/core";
-import {Answers, Item} from "../QuestionsStepper/QuestionsStepper";
+import React, {useEffect, useState} from "react";
+import {Card, Checkbox, CircularProgress, List, ListItem, ListItemIcon, ListItemText} from "@material-ui/core";
+import {Answers} from "../QuestionsStepper/QuestionsStepper";
 import {NavigationDialogue} from "../QuestionsStepper/NavigationDialogue";
+import {useDispatch, useSelector} from "react-redux";
+import {getArtikel} from "../../../../State/Selectors/ArtikelSelector";
+import {loadArtikel} from "../../../../State/ArtikelState";
+import {Artikel} from "../../../../Domain/Artikel";
 
 export const QuestionsItems: React.FC<{
     answers: Answers, setAnswers: (answers: Answers) => void,
     currentStep: number, setCurrentStep: (step: number) => void,
-    items: Item[]
 }> =
     ({
          answers, setAnswers,
          currentStep, setCurrentStep,
-         items
      }) => {
-        const [checked, setChecked] = useState<Item[]>([]);
+        const [checked, setChecked] = useState<Artikel[]>([]);
+        const dispatch = useDispatch();
+        const items = useSelector(getArtikel)?.filter((item) => {
+            console.log(item.artikelKategorieId)
+            console.log(answers.category?.id)
+            return item.artikelKategorieId === answers.category?.id
+        }) || undefined
+
+        useEffect(() => {
+            dispatch(loadArtikel())
+        }, [dispatch])
+
+        if (items === undefined) {
+            return <CircularProgress/>
+        }
+
         return (
             <NavigationDialogue currentStep={currentStep} setCurrentStep={setCurrentStep}>
                 <Card>
                     <List>
                         {items.map((item) => {
                             return (
-                                <ListItem key={item.itemName} button onClick={handleClick(item)}>
+                                <ListItem key={item.id} button onClick={handleClick(item)}>
                                     <ListItemIcon>
                                         <Checkbox
                                             checked={checked.indexOf(item) !== -1}
                                         />
                                     </ListItemIcon>
-                                    <ListItemText primary={item.itemName}/>
+                                    <ListItemText primary={item.name}/>
                                 </ListItem>
                             );
                         })}
@@ -35,7 +52,7 @@ export const QuestionsItems: React.FC<{
             </NavigationDialogue>
         );
 
-        function handleClick(item: Item): () => void {
+        function handleClick(item: Artikel): () => void {
             return () => {
                 let tmpChecked = checked;
                 if (checked.indexOf(item) === -1) {

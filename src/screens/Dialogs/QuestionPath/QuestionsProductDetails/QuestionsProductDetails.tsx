@@ -5,6 +5,7 @@ import {uuidv4} from "../utils/uuid";
 import {chunkArray} from "../utils/chunkArray";
 import {DetailsCard} from "./DetailsCard";
 import {NavigationDialogue} from "../QuestionsStepper/NavigationDialogue";
+import {Artikel} from "../../../../Domain/Artikel";
 
 export type OneToTwelve = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
 
@@ -17,8 +18,7 @@ export const QuestionsProductDetails: React.FC<{
          currentStep, setCurrentStep,
      }) => {
 
-        const [filledItems, setFilledItems] = useState<Item[]>([]);
-        console.log(filledItems);
+        const [filledItems, setFilledItems] = useState<Artikel[]>([]);
 
         if (answers.exactType === undefined) {
             return <div>Keine Artikel ausgewählt!</div>
@@ -33,11 +33,11 @@ export const QuestionsProductDetails: React.FC<{
         return (
             <NavigationDialogue currentStep={currentStep} setCurrentStep={setCurrentStep}>
                 {chunkedItems.map(
-                    (itemChunk: Item[]) => {
+                    (itemChunk: Artikel[]) => {
                         return <Grid key={uuidv4()} container spacing={3}>
                             {itemChunk.map((item) => {
                                 return (
-                                    <DetailsCard key={uuidv4()} item={item} setItemsOut={setItemsOut} space={space}/>
+                                    <DetailsCard key={item.id} item={item} setItemsOut={setItemsOut} space={space}/>
                                 )
                             })}
                         </Grid>

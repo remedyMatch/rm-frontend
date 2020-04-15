@@ -22,7 +22,6 @@ export const QuestionsDonorSeeker: React.FC<{
     ({answers, setAnswers, currentStep, setCurrentStep}) => {
         const classes = useStyles();
 
-
         return (
             <Grid container spacing={3}>
                 <Grid item xs={6} className={classes.questionGrid}>

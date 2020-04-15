@@ -8,6 +8,7 @@ import {OneToTwelve} from "./QuestionsProductDetails";
 import {FormCheckbox} from "../../../../components/Form/FormCheckbox";
 import {KeyboardDatePicker, MuiPickersUtilsProvider} from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
+import {Artikel} from "../../../../Domain/Artikel";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -22,11 +23,11 @@ const useStyles = makeStyles((theme: Theme) =>
             width: "100%",
         },
     }));
-export const DetailsCard: React.FC<{ item: Item, setItemsOut: (item: Item) => void, space: OneToTwelve }> =
+export const DetailsCard: React.FC<{ item: Artikel, setItemsOut: (item: Artikel) => void, space: OneToTwelve }> =
     ({item, setItemsOut, space}) => {
         const classes = useStyles();
 
-        const [filledItem, setFilledItem] = useState<Item>(item);
+        const [filledItem, setFilledItem] = useState<Artikel>(item);
 
         const [checkedSize, setCheckedSize] = useState<string[]>([]);
         const sizes = ["S", "M", "L", "XL", "UNI"];
