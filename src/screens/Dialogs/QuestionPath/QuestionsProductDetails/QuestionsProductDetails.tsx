@@ -20,7 +20,7 @@ export const QuestionsProductDetails: React.FC<{
 
         const [filledItems, setFilledItems] = useState<Artikel[]>([]);
 
-        if (answers.exactType === undefined) {
+        if (answers.artikel === undefined) {
             return <div>Keine Artikel ausgewählt!</div>
         }
 

@@ -12,6 +12,8 @@ import {QuestionsSummary} from "../QuestionsSummary/QuestionsSummary";
 import {Prompt} from 'react-router-dom';
 import {ArtikelKategorie} from "../../../../Domain/ArtikelKategorie";
 import {Artikel} from "../../../../Domain/Artikel";
+import {ArtikelVariante} from "../../../../Domain/ArtikelVariante";
+import {QuestionsVariant} from "../QuestionsVariant/QuestionsVariant";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -40,8 +42,9 @@ const useStyles = makeStyles((theme: Theme) =>
 export interface Answers {
     isDonor: boolean | undefined;
     category: ArtikelKategorie | undefined;
-    exactType: Artikel[] | undefined;
-    number: number | undefined;
+    artikel: Artikel | undefined;
+    variant: ArtikelVariante[] | undefined;
+    details: number | undefined;
     location: string | undefined;
 }
 
@@ -74,12 +77,13 @@ export const QuestionsStepper: React.FC<{}> = () => {
     const initialAnswers: Answers = {
         isDonor: undefined,
         category: undefined,
-        exactType: undefined,
-        number: undefined,
+        artikel: undefined,
+        variant: undefined,
+        details: undefined,
         location: undefined,
     };
     const [answers, setAnswers] = useState<Answers>(initialAnswers);
-
+    console.log(answers)
 
     return (
         <div className={classes.root}>
@@ -133,12 +137,18 @@ export const QuestionsStepper: React.FC<{}> = () => {
                     return <div>Wähle zuerst eine Kategorie aus.</div>
                 }
             case 3:
+                return <QuestionsVariant answers={answers}
+                                       setAnswers={setAnswers}
+                                       currentStep={currentStep}
+                                       setCurrentStep={setCurrentStep}
+                />
+            case 4:
                 return <QuestionsProductDetails answers={answers}
                                                 setAnswers={setAnswers}
                                                 currentStep={currentStep}
                                                 setCurrentStep={setCurrentStep}
                 />;
-            case 4:
+            case 5:
                 return <QuestionsSummary answers={answers}
                                          currentStep={currentStep}
                                          setCurrentStep={setCurrentStep}/>;
@@ -149,5 +159,5 @@ export const QuestionsStepper: React.FC<{}> = () => {
 };
 
 function getStepNames() {
-    return ["Anbieter oder Suchender?", "Kategorie", "Artikel", "Anzahl und Produktdetails", "Zusammenfassung"];
+    return ["Anbieter oder Suchender?", "Kategorie", "Artikel", "Ausführung", "Anzahl und Produktdetails", "Zusammenfassung"];
 }
