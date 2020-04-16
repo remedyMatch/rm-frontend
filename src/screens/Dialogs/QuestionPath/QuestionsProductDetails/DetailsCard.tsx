@@ -1,14 +1,12 @@
-import React, {useEffect, useState} from "react";
-import {uuidv4} from "../utils/uuid";
-import {Card, Grid, Input} from "@material-ui/core";
-import {ToggleButton, ToggleButtonGroup} from "@material-ui/lab";
-import {Item, Options} from "../QuestionsStepper/QuestionsStepper";
+import React, {useState} from "react";
+import {Answers} from "../QuestionsStepper/QuestionsStepper";
 import {createStyles, makeStyles, Theme} from "@material-ui/core/styles";
-import {OneToTwelve} from "./QuestionsProductDetails";
-import {FormCheckbox} from "../../../../components/Form/FormCheckbox";
-import {KeyboardDatePicker, MuiPickersUtilsProvider} from "@material-ui/pickers";
-import DateFnsUtils from "@date-io/date-fns";
-import {Artikel} from "../../../../Domain/Artikel";
+import {ArtikelVariante} from "../../../../Domain/ArtikelVariante";
+import {Card, TextareaAutosize, TextField} from "@material-ui/core";
+import {FormLocationPicker} from "../../../../components/Form/FormLocationPicker";
+import {useSelector} from "react-redux";
+import {getInstitution} from "../../../../State/Selectors/InstitutionSelector";
+import {InstitutionStandort} from "../../../../Domain/InstitutionStandort";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -22,116 +20,97 @@ const useStyles = makeStyles((theme: Theme) =>
             height: "100%",
             width: "100%",
         },
+        formRow: {
+            marginTop: "16px"
+        },
+        comment: {
+            marginTop: "16px",
+            resize: "none",
+            fontSize: "14px",
+            padding: "16px",
+            "&:focus": {
+                outline: "none",
+                border: "2px solid " + theme.palette.primary.main
+            }
+        },
+        caption: {
+            textAlign: "right",
+            marginTop: "8px"
+        },
+        popup: {
+            border: "1px solid #CCC",
+            borderRadius: "4px",
+            backgroundColor: "#FCFCFC"
+        },
     }));
-export const DetailsCard: React.FC<{ item: Artikel, setItemsOut: (item: Artikel) => void, space: OneToTwelve }> =
-    ({item, setItemsOut, space}) => {
+
+export const DetailsCard: React.FC<{
+    itemVariant: ArtikelVariante | null,
+    currentStep: number, setCurrentStep: (step: number) => void,
+    answers: Answers, setAnswers: (answers: Answers) => void,
+}> =
+    ({
+         itemVariant,
+         currentStep, setCurrentStep,
+         answers, setAnswers
+     }) => {
         const classes = useStyles();
+        const chunkSize = 2;
 
-        const [filledItem, setFilledItem] = useState<Artikel>(item);
+        const [amount, setAmount] = useState<number>(1)
 
-        const [checkedSize, setCheckedSize] = useState<string[]>([]);
+        const institution = useSelector(getInstitution)
+        const availableSites = ([] as InstitutionStandort[]).concat(institution?.hauptstandort || []).concat(
+            institution?.standorte || [])
+        const [selectedSite, setSelectedSite] = useState<InstitutionStandort | null>(institution?.hauptstandort || null)
+
+        const [comment, setComment] = useState<string>("")
+
         const sizes = ["S", "M", "L", "XL", "UNI"];
-
         const [bestByDate, setBestByDate] = useState<Date | null>(null);
 
         const [isSterile, setIsSterile] = useState<boolean>(false);
+
         const [isOriginalPackaging, setIsOriginalPackaging] = useState<boolean>(false);
         const [isMedical, setIsMedical] = useState<boolean>(false);
+        if (answers.variant === undefined) {
 
-        useEffect(() => {
-            if (item.validOptions.isValidBestByDate && bestByDate !== null && filledItem.options.bestByDate !== bestByDate) {
-                updateOptions({bestByDate: bestByDate})
-            }
-            if (item.validOptions.isValidMedical && filledItem.options.isMedical !== isMedical) {
-                updateOptions({isMedical: isMedical})
-            }
-            if (item.validOptions.isValidSterile && filledItem.options.isSterile !== isSterile) {
-                updateOptions({isSterile: isSterile})
-            }
-            if (item.validOptions.isValidOriginalPackaging && filledItem.options.isOriginalPackaging !== isOriginalPackaging) {
-                updateOptions({isOriginalPackaging: isOriginalPackaging})
-            }
+            return <div>Keine Artikelvariante ausgewählt.</div>
+        }
 
-            function updateOptions(newOption: Partial<Options>): void {
-                setFilledItem(Object.assign(filledItem, Object.assign(item.options, newOption)))
-            }
-        }, [item, filledItem, setItemsOut, bestByDate, isMedical, isSterile, isOriginalPackaging,]);
+        if (itemVariant === null) {
+            return <div>This crashed here.</div>
+        }
 
         return (
-            <Grid key={uuidv4()} className={classes.questionGrid} item
-                  xs={space}>
-                <Card className={classes.questionCard}>
-                    <div>
-                        {item.itemName}
-                    </div>
-                    <ToggleButtonGroup color="primary"
-                                       aria-label="outlined primary button group">
-                        {sizes.map((size) => {
-                            return (
-                                <ToggleButton
-                                    key={uuidv4()}
-                                    value={size}
-                                    onClick={handleClick(size)}
-                                    selected={checkedSize.indexOf(size) !== -1}
-                                >
-                                    {size}
-                                </ToggleButton>
-                            )
-                        })}
-                    </ToggleButtonGroup>
-
-                    <div>
-                        <div>
-                            Anzahl
-                        </div>
-                        {checkedSize.map((size: string) => <div key={uuidv4()}>
-                            Anzahl für Größe {size}:
-                            <Input type={"number"}/>
-                        </div>)}
-                    </div>
-                    <div>
-                        <div>
-                            Mindeshaltbarkeitsdatum
-                        </div>
-                        <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                            <KeyboardDatePicker
-                                variant="inline"
-                                format="dd/MM/yyyy"
-                                label="Midesthaltbarkeitsdatum"
-                                value={bestByDate}
-                                onChange={handleDateChange}
-                            />
-                        </MuiPickersUtilsProvider>
-                    </div>
-                    <FormCheckbox checked={isSterile} onChange={() => {
-                        setIsSterile(!isSterile)
-                    }} label={"Steril"}/>
-                    <FormCheckbox checked={isMedical} onChange={() => {
-                        setIsMedical(!isMedical)
+            <Card>
+                <TextField
+                    label="Anzahl"
+                    type="number"
+                    variant="outlined"
+                    size="small"
+                    onChange={(event) => {
+                        let tmpAmount = parseFloat(event.target.value)
+                        tmpAmount = Math.floor(tmpAmount)
+                        setAmount(tmpAmount)
                     }}
-                                  label={"Medizinischer Artikel"}/>
-                    <FormCheckbox checked={isOriginalPackaging} onChange={() => {
-                        setIsOriginalPackaging(!isOriginalPackaging)
-                    }}
-                                  label={"Originalverpackt"}/>
-                </Card>
-            </Grid>
+                    InputProps={{inputProps: {min: 1}}}
+                    className={classes.formRow}
+                    value={amount}/>
+                <FormLocationPicker
+                    options={availableSites}
+                    onSelect={(site) => setSelectedSite(site)}
+                    className={classes.formRow}
+                    valueId={selectedSite?.id || undefined}/>
+                <TextareaAutosize
+                    rowsMin={3}
+                    rowsMax={8}
+                    placeholder="Kommentar"
+                    value={comment}
+                    className={classes.comment}
+                    onChange={(event) => {
+                        setComment(event.target.value)
+                    }}/>
+            </Card>
         );
-
-        function handleClick(size: string): () => void {
-            return () => {
-                let tmpChecked: string[];
-                if (checkedSize.indexOf(size) === -1) {
-                    tmpChecked = checkedSize.concat([size])
-                } else {
-                    tmpChecked = checkedSize.filter((listItem) => listItem !== size)
-                }
-                tmpChecked = sizes.filter((size: string) => tmpChecked.indexOf(size) !== -1);
-                setCheckedSize(tmpChecked);
-            }
-        }
-
-        function handleDateChange(date: Date | null) {
-            setBestByDate(date)
-        }
     };

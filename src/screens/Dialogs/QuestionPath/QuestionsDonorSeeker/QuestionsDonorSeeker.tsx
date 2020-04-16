@@ -28,10 +28,11 @@ export const QuestionsDonorSeeker: React.FC<{
                     <CardButton onClick={() => {
                         setAnswers({
                             isDonor: true,
-                            category: answers.category,
-                            exactType: answers.exactType,
-                            number: answers.number,
-                            location: answers.location,
+                            category: undefined,
+                            artikel: undefined,
+                            variant: undefined,
+                            details: undefined,
+                            location: undefined,
                         });
                         setCurrentStep(currentStep + 1)
                     }}>
@@ -46,10 +47,11 @@ export const QuestionsDonorSeeker: React.FC<{
                     <CardButton onClick={() => {
                         setAnswers({
                             isDonor: false,
-                            category: answers.category,
-                            exactType: answers.exactType,
-                            number: answers.number,
-                            location: answers.location,
+                            category: undefined,
+                            artikel: undefined,
+                            variant: undefined,
+                            details: undefined,
+                            location: undefined,
                         });
                         setCurrentStep(currentStep + 1)
                     }}>

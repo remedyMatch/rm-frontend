@@ -69,6 +69,8 @@ export interface ValidOptions {
     isValidMedical: boolean;
 }
 
+export type OneToTwelve = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
+
 export const QuestionsStepper: React.FC<{}> = () => {
     const classes = useStyles();
     const [currentStep, setCurrentStep] = useState<number>(0);
