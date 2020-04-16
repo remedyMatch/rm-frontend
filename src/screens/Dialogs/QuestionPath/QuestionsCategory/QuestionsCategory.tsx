@@ -6,6 +6,8 @@ import {loadArtikelKategorien} from "../../../../State/ArtikelKategorienState";
 import {useDispatch, useSelector} from "react-redux";
 import {getArtikelKategorien} from "../../../../State/Selectors/ArtikelKategorienSelector";
 import {ChunkedCardsFromOptions} from "../utils/ChunkedCardsFromOptions";
+import {loadAngebote} from "../../../../State/AngeboteState";
+import {loadBedarfe} from "../../../../State/BedarfeState";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -29,7 +31,9 @@ export const QuestionsCategory: React.FC<{
         const categories = useSelector(getArtikelKategorien);
 
         useEffect(() => {
-            dispatch(loadArtikelKategorien())
+            dispatch(loadArtikelKategorien());
+            dispatch(loadAngebote());
+            dispatch(loadBedarfe());
         }, [dispatch]);
 
         if (categories === undefined) {

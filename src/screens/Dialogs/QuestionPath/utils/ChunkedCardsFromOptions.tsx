@@ -8,6 +8,9 @@ import {createStyles, makeStyles, Theme} from "@material-ui/core/styles";
 import {Answers, OneToTwelve} from "../QuestionsStepper/QuestionsStepper";
 import {chunkArray} from "./chunkArray";
 import {ArtikelVariante} from "../../../../Domain/ArtikelVariante";
+import {useSelector} from "react-redux";
+import {getBedarfe} from "../../../../State/Selectors/BedarfeSelector";
+import {getAngebote} from "../../../../State/Selectors/AngeboteSelector";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -28,13 +31,15 @@ export const ChunkedCardsFromOptions: React.FC<{
     setCurrentStep: (step: number) => void,
 }> = ({children, optionsArray, type, chunkSize, answers, setAnswers, currentStep, setCurrentStep}) => {
     const classes = useStyles();
+    const bedarfe = useSelector(getBedarfe);
+    const angebote = useSelector(getAngebote);
+    console.log(bedarfe)
+    console.log(angebote)
 
     // @ts-ignore
     const space: OneToTwelve = Math.floor(12 / chunkSize);
     const chunkedArray = chunkArray(optionsArray, chunkSize);
 
-    console.log("Own children", children)
-    console.log("React children", React.Children.count(children))
     return (
         <div>
             {chunkedArray.map(
