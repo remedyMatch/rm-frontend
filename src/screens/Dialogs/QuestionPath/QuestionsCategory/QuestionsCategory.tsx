@@ -1,6 +1,5 @@
 import React, {useEffect} from "react";
 import {CircularProgress} from "@material-ui/core";
-import {createStyles, makeStyles, Theme} from "@material-ui/core/styles";
 import {Answers} from "../QuestionsStepper/QuestionsStepper";
 import {loadArtikelKategorien} from "../../../../State/ArtikelKategorienState";
 import {useDispatch, useSelector} from "react-redux";
@@ -8,15 +7,6 @@ import {getArtikelKategorien} from "../../../../State/Selectors/ArtikelKategorie
 import {ChunkedCardsFromOptions} from "../utils/ChunkedCardsFromOptions";
 import {loadAngebote} from "../../../../State/AngeboteState";
 import {loadBedarfe} from "../../../../State/BedarfeState";
-
-const useStyles = makeStyles((theme: Theme) =>
-    createStyles({
-        questionGrid: {
-            height: 500,
-            paddingTop: "100%",
-            position: "relative",
-        },
-    }));
 
 
 export const QuestionsCategory: React.FC<{

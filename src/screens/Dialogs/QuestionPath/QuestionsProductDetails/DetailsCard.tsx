@@ -1,5 +1,5 @@
-import React, {useState} from "react";
-import {Answers} from "../QuestionsStepper/QuestionsStepper";
+import React, {useEffect, useState} from "react";
+import {Answers, Details} from "../QuestionsStepper/QuestionsStepper";
 import {createStyles, makeStyles, Theme} from "@material-ui/core/styles";
 import {ArtikelVariante} from "../../../../Domain/ArtikelVariante";
 import {Card, TextareaAutosize, TextField} from "@material-ui/core";
@@ -7,6 +7,10 @@ import {FormLocationPicker} from "../../../../components/Form/FormLocationPicker
 import {useSelector} from "react-redux";
 import {getInstitution} from "../../../../State/Selectors/InstitutionSelector";
 import {InstitutionStandort} from "../../../../Domain/InstitutionStandort";
+import {FormCheckbox} from "../../../../components/Form/FormCheckbox";
+import {KeyboardDatePicker, MuiPickersUtilsProvider} from "@material-ui/pickers";
+import DateFnsUtils from "@date-io/date-fns";
+import {de} from "date-fns/locale";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -21,9 +25,12 @@ const useStyles = makeStyles((theme: Theme) =>
             width: "100%",
         },
         formRow: {
+            width: "100%",
             marginTop: "16px"
         },
         comment: {
+            display: "block",
+            width: "100%",
             marginTop: "16px",
             resize: "none",
             fontSize: "14px",
@@ -33,15 +40,10 @@ const useStyles = makeStyles((theme: Theme) =>
                 border: "2px solid " + theme.palette.primary.main
             }
         },
-        caption: {
-            textAlign: "right",
-            marginTop: "8px"
-        },
-        popup: {
-            border: "1px solid #CCC",
-            borderRadius: "4px",
-            backgroundColor: "#FCFCFC"
-        },
+        checkbox: {
+            display: "block",
+            marginRight: "auto"
+        }
     }));
 
 export const DetailsCard: React.FC<{
@@ -51,11 +53,9 @@ export const DetailsCard: React.FC<{
 }> =
     ({
          itemVariant,
-         currentStep, setCurrentStep,
          answers, setAnswers
      }) => {
         const classes = useStyles();
-        const chunkSize = 2;
 
         const [amount, setAmount] = useState<number>(1)
 
@@ -66,20 +66,47 @@ export const DetailsCard: React.FC<{
 
         const [comment, setComment] = useState<string>("")
 
-        const sizes = ["S", "M", "L", "XL", "UNI"];
-        const [bestByDate, setBestByDate] = useState<Date | null>(null);
+        const [bestByDate, setBestByDate] = useState<Date | null>(new Date());
 
         const [isSterile, setIsSterile] = useState<boolean>(false);
 
         const [isOriginalPackaging, setIsOriginalPackaging] = useState<boolean>(false);
         const [isMedical, setIsMedical] = useState<boolean>(false);
-        if (answers.variant === undefined) {
 
+        useEffect(() => {
+            if (answers.details === undefined) {
+                setAnswers(Object.assign(answers, {details: [] as Details[]}))
+            }
+            if (itemVariant !== undefined && itemVariant !== null && selectedSite !== null) {
+                const newDetails: Details = {
+                    variantId: itemVariant.id,
+                    isSterile: isSterile,
+                    isMedical: isMedical,
+                    isOriginalPackaging: isOriginalPackaging,
+                    location: selectedSite,
+                    bestByDate: answers.isDonor ? (bestByDate !== null ? bestByDate : undefined) : undefined,
+                    amount: amount,
+                };
+                const findDetails = answers.details?.find((detail: Details) => detail.variantId === newDetails.variantId);
+                if (answers.details !== undefined) {
+                    if (!findDetails) {
+                        const answersWithDetails = Object.assign(answers, {details: answers.details.concat([newDetails])});
+                        setAnswers(answersWithDetails)
+                    } else {
+                        const indexOldValue = answers.details.map((detail) => detail.variantId).indexOf(itemVariant.id);
+                        answers.details.splice(indexOldValue, 1, newDetails)
+                        setAnswers(answers)
+                    }
+                }
+            }
+        }, [isSterile, isMedical, isOriginalPackaging, selectedSite, bestByDate, amount, answers, setAnswers, itemVariant])
+
+        if (answers.variant === undefined) {
             return <div>Keine Artikelvariante ausgewählt.</div>
         }
 
         if (itemVariant === null) {
-            return <div>This crashed here.</div>
+            return <></>
         }
 
         return (
@@ -102,6 +129,46 @@ export const DetailsCard: React.FC<{
                     onSelect={(site) => setSelectedSite(site)}
                     className={classes.formRow}
                     valueId={selectedSite?.id || undefined}/>
+
+                <MuiPickersUtilsProvider utils={DateFnsUtils} locale={de}>
+                    {answers.isDonor ?
+                        <KeyboardDatePicker
+                            variant="inline"
+                            minDate={new Date()}
+                            format="dd.MM.yyyy"
+                            margin="normal"
+                            label="Haltbarkeitsdatum"
+                            inputVariant="outlined"
+                            value={bestByDate}
+                            size="small"
+                            className={classes.formRow}
+                            onChange={setBestByDate}
+                        /> : <></>}
+                </MuiPickersUtilsProvider>
+
+                <FormCheckbox
+                    className={classes.checkbox}
+                    checked={isSterile}
+                    onChange={setIsSterile}
+                    label={answers.isDonor ? "Produkt ist steril" : "Produkt muss steril sein"}
+                />
+
+                {answers.isDonor ?
+                    <FormCheckbox
+                        className={classes.checkbox}
+                        checked={isOriginalPackaging}
+                        onChange={setIsOriginalPackaging}
+                        label={"Produkt ist originalverpackt"}
+                    /> : <></>}
+
+                <FormCheckbox
+                    className={classes.checkbox}
+                    disabled={itemVariant.medizinischAuswaehlbar}
+                    checked={isMedical}
+                    onChange={setIsMedical}
+                    label={answers.isDonor ? "Produkt ist medizinisch" : "Produkt muss medizinisch sein"}
+                />
+
                 <TextareaAutosize
                     rowsMin={3}
                     rowsMax={8}
@@ -111,6 +178,7 @@ export const DetailsCard: React.FC<{
                     onChange={(event) => {
                         setComment(event.target.value)
                     }}/>
+
             </Card>
         );
     };

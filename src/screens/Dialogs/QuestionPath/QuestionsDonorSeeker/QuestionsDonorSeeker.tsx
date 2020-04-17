@@ -32,7 +32,6 @@ export const QuestionsDonorSeeker: React.FC<{
                             artikel: undefined,
                             variant: undefined,
                             details: undefined,
-                            location: undefined,
                         });
                         setCurrentStep(currentStep + 1)
                     }}>
@@ -51,7 +50,6 @@ export const QuestionsDonorSeeker: React.FC<{
                             artikel: undefined,
                             variant: undefined,
                             details: undefined,
-                            location: undefined,
                         });
                         setCurrentStep(currentStep + 1)
                     }}>

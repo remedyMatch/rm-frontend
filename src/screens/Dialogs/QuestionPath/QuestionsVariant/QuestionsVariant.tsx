@@ -58,7 +58,6 @@ export const QuestionsVariant: React.FC<{
                     artikel: answers.artikel,
                     variant: tmpChecked,
                     details: undefined,
-                    location: undefined,
                 });
             }
         }

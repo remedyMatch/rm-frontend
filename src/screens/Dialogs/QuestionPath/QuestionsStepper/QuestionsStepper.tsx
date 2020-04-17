@@ -14,6 +14,7 @@ import {ArtikelKategorie} from "../../../../Domain/ArtikelKategorie";
 import {Artikel} from "../../../../Domain/Artikel";
 import {ArtikelVariante} from "../../../../Domain/ArtikelVariante";
 import {QuestionsVariant} from "../QuestionsVariant/QuestionsVariant";
+import {InstitutionStandort} from "../../../../Domain/InstitutionStandort";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -44,34 +45,27 @@ export interface Answers {
     category: ArtikelKategorie | undefined;
     artikel: Artikel | undefined;
     variant: ArtikelVariante[] | undefined;
-    details: number | undefined;
-    location: string | undefined;
+    details: Details[] | undefined;
 }
 
-export interface Item {
-    itemName: string;
-    validOptions: ValidOptions;
-    options: Options;
+export interface Details {
+    variantId: string;
+    amount: number;
+    isMedical: boolean;
+    isOriginalPackaging: boolean;
+    isSterile: boolean;
+    location: InstitutionStandort;
+    bestByDate?: Date;
 }
 
-export interface Options {
-    bestByDate: Date | undefined;
-    isSterile: boolean | undefined;
-    isOriginalPackaging: boolean | undefined;
-    isMedical: boolean | undefined;
-    note: string | undefined;
-}
-
-export interface ValidOptions {
-    isValidBestByDate: boolean;
-    isValidSterile: boolean;
-    isValidOriginalPackaging: boolean;
-    isValidMedical: boolean;
+export interface SiteLocation {
+    id: string;
+    site: InstitutionStandort
 }
 
 export type OneToTwelve = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
 
-export const QuestionsStepper: React.FC<{}> = () => {
+export const QuestionsStepper: React.FC = () => {
     const classes = useStyles();
     const [currentStep, setCurrentStep] = useState<number>(0);
     const steps = getStepNames();
@@ -82,7 +76,6 @@ export const QuestionsStepper: React.FC<{}> = () => {
         artikel: undefined,
         variant: undefined,
         details: undefined,
-        location: undefined,
     };
     const [answers, setAnswers] = useState<Answers>(initialAnswers);
     console.log(answers)
@@ -140,9 +133,9 @@ export const QuestionsStepper: React.FC<{}> = () => {
                 }
             case 3:
                 return <QuestionsVariant answers={answers}
-                                       setAnswers={setAnswers}
-                                       currentStep={currentStep}
-                                       setCurrentStep={setCurrentStep}
+                                         setAnswers={setAnswers}
+                                         currentStep={currentStep}
+                                         setCurrentStep={setCurrentStep}
                 />
             case 4:
                 return <QuestionsProductDetails answers={answers}

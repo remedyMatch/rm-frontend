@@ -8,9 +8,6 @@ import {createStyles, makeStyles, Theme} from "@material-ui/core/styles";
 import {Answers, OneToTwelve} from "../QuestionsStepper/QuestionsStepper";
 import {chunkArray} from "./chunkArray";
 import {ArtikelVariante} from "../../../../Domain/ArtikelVariante";
-import {useSelector} from "react-redux";
-import {getBedarfe} from "../../../../State/Selectors/BedarfeSelector";
-import {getAngebote} from "../../../../State/Selectors/AngeboteSelector";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -31,10 +28,6 @@ export const ChunkedCardsFromOptions: React.FC<{
     setCurrentStep: (step: number) => void,
 }> = ({children, optionsArray, type, chunkSize, answers, setAnswers, currentStep, setCurrentStep}) => {
     const classes = useStyles();
-    const bedarfe = useSelector(getBedarfe);
-    const angebote = useSelector(getAngebote);
-    console.log(bedarfe)
-    console.log(angebote)
 
     // @ts-ignore
     const space: OneToTwelve = Math.floor(12 / chunkSize);
@@ -56,7 +49,6 @@ export const ChunkedCardsFromOptions: React.FC<{
                                                 artikel: undefined,
                                                 variant: undefined,
                                                 details: undefined,
-                                                location: undefined,
                                             });
                                         } else if (type === "Artikel") {
                                             setAnswers({
@@ -65,7 +57,6 @@ export const ChunkedCardsFromOptions: React.FC<{
                                                 artikel: option as Artikel,
                                                 variant: undefined,
                                                 details: undefined,
-                                                location: undefined,
                                             });
                                         }
                                         setCurrentStep(currentStep + 1)
@@ -74,11 +65,9 @@ export const ChunkedCardsFromOptions: React.FC<{
                                     </CardButton>
                                     : <div>
                                         {React.Children.map(children, child => {
-                                            console.log(children)
                                             if (React.isValidElement(child)) {
                                                 return React.cloneElement(child, {itemVariant: option})
                                             } else {
-                                                console.log("Not a valid child!")
                                                 return <></>
                                             }
                                         })}

@@ -1,7 +1,6 @@
-import React, {useState} from "react";
+import React from "react";
 import {Answers} from "../QuestionsStepper/QuestionsStepper";
 import {NavigationDialogue} from "../QuestionsStepper/NavigationDialogue";
-import {Artikel} from "../../../../Domain/Artikel";
 import {ChunkedCardsFromOptions} from "../utils/ChunkedCardsFromOptions";
 import {DetailsCard} from "./DetailsCard";
 
@@ -13,8 +12,6 @@ export const QuestionsProductDetails: React.FC<{
          answers, setAnswers,
          currentStep, setCurrentStep,
      }) => {
-
-        const [filledItems, setFilledItems] = useState<Artikel[]>([]);
 
         if (answers.artikel === undefined) {
             return <div>Kein Artikel ausgewählt!</div>
