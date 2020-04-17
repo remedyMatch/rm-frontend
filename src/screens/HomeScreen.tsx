@@ -10,7 +10,7 @@ import {ArtikelKategorie} from "../Domain/ArtikelKategorie";
 import {loadAngebote} from "../State/MeineAngeboteState";
 import {loadArtikelKategorien} from "../State/ArtikelKategorienState";
 import {loadArtikel} from "../State/ArtikelState";
-import {loadBedarfe} from "../State/BedarfeState";
+import {loadBedarfe} from "../State/MeineBedarfeState";
 import {loadEigeneInstitution} from "../State/EigeneInstitutionState";
 import {loadErhalteneAnfragen} from "../State/ErhalteneAnfragenState";
 import {loadGesendeteAnfragen} from "../State/GesendeteAnfragenState";
