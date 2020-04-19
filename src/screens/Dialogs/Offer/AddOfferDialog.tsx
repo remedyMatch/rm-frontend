@@ -162,7 +162,7 @@ class AddOfferDialog extends PureComponent<Props, State> {
                         )}
                     />
                     <Typography variant="caption" className={classes.caption}>
-                        <a href="mailto:info@remedymatch.io?subject=Fehlende%20Kategorie">
+                        <a href="mailto:info@remedymatch.io?subject=Fehlende%20Kategorie" target="_blank">
                             Kategorie oder Artikel nicht gefunden? Schreib uns eine E-Mail!
                         </a>
                     </Typography>
