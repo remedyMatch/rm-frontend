@@ -46,6 +46,10 @@ class OfferScreen extends Component<Props, State> {
         const classes = this.props.classes!;
         const institutionId = this.props.eigeneInstitution?.id || "";
 
+        const offerItem = this.props.angebote?.find(item => item.id === this.state.infoId);
+        const article = this.props.artikel?.find(article => article.id === offerItem?.artikelId);
+        const category = this.props.artikelKategorien?.find(category => category.id === article?.artikelKategorieId);
+
         return (
             <>
                 <div className={classes.tableHeader}>
@@ -76,7 +80,9 @@ class OfferScreen extends Component<Props, State> {
                 <OfferDetailsDialog
                     open={!!this.state.infoId}
                     onDone={this.onDetailsDone}
-                    item={this.props.angebote?.find(item => item.id === this.state.infoId)!}
+                    item={offerItem}
+                    artikel={article}
+                    artikelKategorie={category}
                     onContact={this.onDetailsContact}
                     eigeneInstitution={this.props.eigeneInstitution}/>
                 <RespondOfferDialog

@@ -46,6 +46,10 @@ class DemandScreen extends Component<Props, State> {
         const classes = this.props.classes!;
         const institutionId = this.props.eigeneInstitution?.id || "";
 
+        const demandItem = this.props.bedarfe?.find(item => item.id === this.state.infoId);
+        const article = this.props.artikel?.find(article => article.id === demandItem?.artikelId);
+        const category = this.props.artikelKategorien?.find(category => category.id === article?.artikelKategorieId);
+
         return (
             <>
                 <div className={classes.tableHeader}>
@@ -76,7 +80,9 @@ class DemandScreen extends Component<Props, State> {
                 <DemandDetailsDialog
                     open={!!this.state.infoId}
                     onDone={this.onDetailsDone}
-                    item={this.props.bedarfe?.find(item => item.id === this.state.infoId)!}
+                    artikel={article}
+                    item={demandItem}
+                    artikelKategorie={category}
                     onContact={this.onDetailsContact}
                     eigeneInstitution={this.props.eigeneInstitution}/>
                 <RespondDemandDialog

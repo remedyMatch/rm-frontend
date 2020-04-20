@@ -1,17 +1,13 @@
-import React, {Component} from "react";
-import {createStyles, Theme, withStyles} from "@material-ui/core/styles";
-import {WithStylesPublic} from "../util/WithStylesPublic";
 import {Typography} from "@material-ui/core";
-import EditInstitutionDialog from "./Dialogs/Institution/EditInstitutionDialog";
-import {RootDispatch, RootState} from "../State/Store";
-import {loadEigeneInstitution} from "../State/EigeneInstitutionState";
-import {connect, ConnectedProps} from "react-redux";
-import {loadInstitutionTypen} from "../State/InstitutionTypenState";
-import {FormButton} from "../components/Form/FormButton";
+import {createStyles, Theme, withStyles} from "@material-ui/core/styles";
 import clsx from "clsx";
-import EditLocationDialog from "./Dialogs/Institution/EditLocationDialog";
-import AddLocationDialog from "./Dialogs/Institution/AddLocationDialog";
-import DeleteLocationDialog from "./Dialogs/Institution/DeleteLocationDialog";
+import React, {Component} from "react";
+import {connect, ConnectedProps} from "react-redux";
+import {FormButton} from "../components/Form/FormButton";
+import {loadEigeneInstitution} from "../State/EigeneInstitutionState";
+import {loadInstitutionTypen} from "../State/InstitutionTypenState";
+import {RootDispatch, RootState} from "../State/Store";
+import {WithStylesPublic} from "../util/WithStylesPublic";
 
 interface Props extends WithStylesPublic<typeof styles>, PropsFromRedux {
 }
@@ -92,7 +88,7 @@ class InstitutionScreen extends Component<Props, State> {
         const classes = this.props.classes!;
 
         const standort = this.props.eigeneInstitution?.hauptstandort;
-        const standorte = this.props.eigeneInstitution?.standorte;
+        //const standorte = this.props.eigeneInstitution?.standorte;
 
         return (
             <div className={classes.content}>

@@ -124,7 +124,7 @@ class AddDemandDialog extends PureComponent<Props, State> {
 
     private setAmount = (event: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
         const amount = parseFloat(event.target.value);
-        if(isNaN(amount)) {
+        if(event.target.value.length > 0 && isNaN(amount)) {
             return;
         }
 

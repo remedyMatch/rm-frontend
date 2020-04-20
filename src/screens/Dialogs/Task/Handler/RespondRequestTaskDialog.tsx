@@ -97,7 +97,7 @@ class RespondRequestTaskDialog extends PureComponent<Props, State> {
     render() {
         const classes = this.props.classes!;
 
-        const item = this.props.item;
+        //const item = this.props.item;
         const request = this.props.request;
         const requestor = request?.institutionVon;
         const isOffer = request?.angebotId !== null;

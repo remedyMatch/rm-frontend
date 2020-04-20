@@ -211,7 +211,7 @@ class AddOfferDialog extends PureComponent<Props, State> {
                     <FormCheckbox
                         className={classes.checkbox}
                         disabled={this.state.disabled || !this.getArticleVariantOptions().find(n => n.id === this.state.articleVariant)?.medizinischAuswaehlbar}
-                        checked={this.state.medical}
+                        checked={(this.state.medical && this.getArticleVariantOptions().find(n => n.id === this.state.articleVariant)?.medizinischAuswaehlbar) || false}
                         onChange={this.setMedical}
                         label="Produkt ist medizinisch"
                     />
@@ -255,7 +255,7 @@ class AddOfferDialog extends PureComponent<Props, State> {
                 haltbarkeit: this.state.useBefore,
                 steril: this.state.sterile,
                 originalverpackt: this.state.sealed,
-                medizinisch: this.state.medical,
+                medizinisch: (this.getArticleVariantOptions().find(n => n.id === this.state.articleVariant)?.medizinischAuswaehlbar && this.state.medical) || false,
                 kommentar: this.state.comment
             }),
             initialState
@@ -288,7 +288,8 @@ class AddOfferDialog extends PureComponent<Props, State> {
 
     private setAmount = (event: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
         const amount = parseFloat(event.target.value);
-        if(isNaN(amount)) {
+
+        if(event.target.value.length > 0 && isNaN(amount)) {
             return;
         }
 

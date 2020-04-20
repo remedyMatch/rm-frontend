@@ -2,6 +2,7 @@ import {InstitutionStandort} from "./InstitutionStandort";
 
 export interface Angebot {
     id: string;
+    artikelKategorieId?: string;
     artikelId: string;
     artikelVarianteId: string;
     anzahl: number;
