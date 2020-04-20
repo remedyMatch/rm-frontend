@@ -162,8 +162,8 @@ class AddOfferDialog extends PureComponent<Props, State> {
                         )}
                     />
                     <Typography variant="caption" className={classes.caption}>
-                        <a href="mailto:info@remedymatch.io?subject=Fehlende%20Kategorie">
-                            Kategorie oder Artikel nicht gefunden? Schreib uns eine E-Mail!
+                        <a href="https://remedymatch.io/#contact-anchor" target="_blank">
+                            Kategorie oder Artikel nicht gefunden? Kontaktiere uns!
                         </a>
                     </Typography>
                     <TextField
@@ -289,7 +289,7 @@ class AddOfferDialog extends PureComponent<Props, State> {
     private setAmount = (event: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
         const amount = parseFloat(event.target.value);
 
-        if(event.target.value.length > 0 && isNaN(amount)) {
+        if (event.target.value.length > 0 && isNaN(amount)) {
             return;
         }
 
