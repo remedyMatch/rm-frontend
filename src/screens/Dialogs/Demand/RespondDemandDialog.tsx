@@ -71,8 +71,7 @@ class RespondDemandDialog extends PureComponent<Props, State> {
                 numberSize(this.state.amount, "Die Anzahl", 1),
                 stringLength(this.state.comment, "Der Kommentar", 1)
             ),
-            () => apiPost("/remedy/bedarf/bedienen", {
-                bedarfId: this.props.bedarf!.id,
+            () => apiPost(`/remedy/bedarf/${this.props.bedarf!.id}/anfrage`, {
                 kommentar: this.state.comment,
                 standortId: this.state.location,
                 anzahl: this.state.amount
