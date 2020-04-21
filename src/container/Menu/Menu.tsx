@@ -61,7 +61,7 @@ const Menu: React.FC<Props> = props => {
     const classes = useStyles();
 
     useEffect(() => {
-        if (!props.aufgabenLoading && (props.aufgabenLoadTime || 0) < new Date().getTime() - 10000) {
+        if (!props.aufgabenError && !props.aufgabenLoading && (props.aufgabenLoadTime || 0) < new Date().getTime() - 10000) {
             props.loadAufgaben();
         }
     });
@@ -121,6 +121,7 @@ const Menu: React.FC<Props> = props => {
 
 const mapStateToProps = (state: RootState) => ({
     aufgaben: state.aufgaben.value,
+    aufgabenError: state.aufgaben.error,
     aufgabenLoading: state.aufgaben.loading,
     aufgabenLoadTime: state.aufgaben.loadTime
 });
