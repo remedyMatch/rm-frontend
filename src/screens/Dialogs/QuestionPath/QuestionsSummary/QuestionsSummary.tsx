@@ -59,7 +59,7 @@ export const QuestionsSummary: React.FC<{
                     standort: correspondingDetails?.location || myInstitution.hauptstandort,
                     steril: correspondingDetails?.isSterile || false,
                     medizinisch: correspondingDetails?.isMedical || false,
-                    kommentar: "",
+                    kommentar: correspondingDetails?.comment || "",
                     entfernung: 0,
                 }
             })

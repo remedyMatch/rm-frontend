@@ -55,6 +55,7 @@ export interface Details {
     isOriginalPackaging: boolean;
     isSterile: boolean;
     location: InstitutionStandort;
+    comment: string;
     bestByDate?: Date;
 }
 

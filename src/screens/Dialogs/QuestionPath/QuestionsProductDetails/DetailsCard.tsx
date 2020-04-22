@@ -14,7 +14,7 @@ import {de} from "date-fns/locale";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
-        questionGrid: {
+        questionGridItem: {
             height: 500,
             paddingTop: "100%",
             position: "relative",
@@ -84,8 +84,9 @@ export const DetailsCard: React.FC<{
                     isMedical: isMedical,
                     isOriginalPackaging: isOriginalPackaging,
                     location: selectedSite,
-                    bestByDate: answers.isDonor ? (bestByDate !== null ? bestByDate : undefined) : undefined,
                     amount: amount,
+                    comment: comment,
+                    bestByDate: answers.isDonor ? (bestByDate !== null ? bestByDate : undefined) : undefined,
                 };
                 const findDetails = answers.details?.find((detail: Details) => detail.variantId === newDetails.variantId);
                 if (answers.details !== undefined) {
@@ -99,7 +100,8 @@ export const DetailsCard: React.FC<{
                     }
                 }
             }
-        }, [isSterile, isMedical, isOriginalPackaging, selectedSite, bestByDate, amount, answers, setAnswers, itemVariant])
+        }, [isSterile, isMedical, isOriginalPackaging, selectedSite, bestByDate, amount, comment, answers,
+            setAnswers, itemVariant])
 
         if (answers.variant === undefined) {
             return <div>Keine Artikelvariante ausgewählt.</div>

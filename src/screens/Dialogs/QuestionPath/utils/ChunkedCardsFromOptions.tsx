@@ -8,19 +8,24 @@ import {createStyles, makeStyles, Theme} from "@material-ui/core/styles";
 import {Answers, OneToTwelve} from "../QuestionsStepper/QuestionsStepper";
 import {chunkArray} from "./chunkArray";
 import {ArtikelVariante} from "../../../../Domain/ArtikelVariante";
+import {DonorSeeker} from "../QuestionsDonorSeeker/QuestionsDonorSeeker";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
-        questionGrid: {
-            height: 500,
+        questionGridContainer: {
+            width: "100%",
+            position: "relative",
+        },
+        questionGridItem: {
+            width: "100%",
             paddingTop: "100%",
             position: "relative",
         },
     }));
 
 export const ChunkedCardsFromOptions: React.FC<{
-    optionsArray: (ArtikelKategorie | Artikel | ArtikelVariante)[],
-    type: "ArtikelKategorie" | "Artikel" | "Details",
+    optionsArray: (ArtikelKategorie | Artikel | ArtikelVariante | DonorSeeker)[],
+    type: "ArtikelKategorie" | "Artikel" | "Details" | "DonorSeeker",
     chunkSize: OneToTwelve,
     answers: Answers,
     setAnswers: (answers: Answers) => void,
@@ -37,41 +42,56 @@ export const ChunkedCardsFromOptions: React.FC<{
         <div>
             {chunkedArray.map(
                 (chunk) => {
-                    return <Grid key={uuidv4()} container spacing={3}>
+                    return <Grid key={uuidv4()} container spacing={10} className={classes.questionGridContainer}>
                         {chunk.map((option) => {
-                            return <Grid key={uuidv4()} className={classes.questionGrid} item
+                            return <Grid key={option.id} className={classes.questionGridItem} item
                                          xs={space}>
-                                {(type === "Artikel" || type === "ArtikelKategorie") ? <CardButton onClick={() => {
-                                        if (type === "ArtikelKategorie") {
-                                            setAnswers({
-                                                isDonor: answers.isDonor,
-                                                category: option as ArtikelKategorie,
-                                                artikel: undefined,
-                                                variant: undefined,
-                                                details: undefined,
-                                            });
-                                        } else if (type === "Artikel") {
-                                            setAnswers({
-                                                isDonor: answers.isDonor,
-                                                category: answers.category,
-                                                artikel: option as Artikel,
-                                                variant: undefined,
-                                                details: undefined,
-                                            });
-                                        }
+                                {type === "DonorSeeker" ?
+                                    <CardButton onClick={() => {
+                                        setAnswers({
+                                            isDonor: option.isDonor,
+                                            category: undefined,
+                                            artikel: undefined,
+                                            variant: undefined,
+                                            details: undefined,
+                                        });
                                         setCurrentStep(currentStep + 1)
                                     }}>
-                                        {option.name}
+                                        <div>
+                                            {option.name}
+                                        </div>
                                     </CardButton>
-                                    : <div>
-                                        {React.Children.map(children, child => {
-                                            if (React.isValidElement(child)) {
-                                                return React.cloneElement(child, {itemVariant: option})
-                                            } else {
-                                                return <></>
+                                    : (type === "Artikel" || type === "ArtikelKategorie") ? <CardButton onClick={() => {
+                                            if (type === "ArtikelKategorie") {
+                                                setAnswers({
+                                                    isDonor: answers.isDonor,
+                                                    category: option as ArtikelKategorie,
+                                                    artikel: undefined,
+                                                    variant: undefined,
+                                                    details: undefined,
+                                                });
+                                            } else if (type === "Artikel") {
+                                                setAnswers({
+                                                    isDonor: answers.isDonor,
+                                                    category: answers.category,
+                                                    artikel: option as Artikel,
+                                                    variant: undefined,
+                                                    details: undefined,
+                                                });
                                             }
-                                        })}
-                                    </div>}
+                                            setCurrentStep(currentStep + 1)
+                                        }}>
+                                            {option.name}
+                                        </CardButton>
+                                        : <div>
+                                            {React.Children.map(children, child => {
+                                                if (React.isValidElement(child)) {
+                                                    return React.cloneElement(child, {itemVariant: option})
+                                                } else {
+                                                    return <></>
+                                                }
+                                            })}
+                                        </div>}
                             </Grid>
                         })}
                     </Grid>

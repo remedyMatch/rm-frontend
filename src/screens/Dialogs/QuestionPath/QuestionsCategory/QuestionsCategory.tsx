@@ -17,7 +17,7 @@ export const QuestionsCategory: React.FC<{
 }> =
     ({answers, setAnswers, currentStep, setCurrentStep,}) => {
         const dispatch = useDispatch();
-        const chunkSize = 2;
+        const chunkSize = 3;
         const categories = useSelector(getArtikelKategorien);
 
         useEffect(() => {
