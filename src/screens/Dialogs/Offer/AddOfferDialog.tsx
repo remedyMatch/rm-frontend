@@ -245,7 +245,7 @@ class AddOfferDialog extends PureComponent<Props, State> {
                 defined(this.state.article, "Es muss ein Artikel gewählt werden!"),
                 defined(this.state.articleVariant, "Es muss eine Variante gewählt werden!"),
                 defined(this.state.location, "Es muss ein Standort gewählt werden!"),
-                stringLength(this.state.comment, "Der Kommentar", 1),
+                stringLength(this.state.comment, "Der Kommentar", 1, 1024),
                 numberSize(this.state.amount, "Die Anzahl", 1)
             ),
             () => apiPost("/remedy/angebot", {
