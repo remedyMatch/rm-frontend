@@ -80,7 +80,7 @@ export const ChunkedCardsFromOptions: React.FC<{
                                                 });
                                             }
                                             setCurrentStep(currentStep + 1)
-                                        }}>
+                                        }} iconKey={type === "ArtikelKategorie" ? option.icon : undefined}>
                                             {option.name}
                                         </CardButton>
                                         : <div>

@@ -5,6 +5,8 @@ import {useDispatch, useSelector} from "react-redux";
 import {getArtikel} from "../../../../State/Selectors/ArtikelSelector";
 import {loadArtikel} from "../../../../State/ArtikelState";
 import {ChunkedCardsFromOptions} from "../utils/ChunkedCardsFromOptions";
+import {loadNumberOfferArticle} from "../../../../State/NumberOfferArticleState";
+import {getNumberOfferArticle} from "../../../../State/Selectors/NumberArticleSelector";
 
 export const QuestionsItems: React.FC<{
     answers: Answers, setAnswers: (answers: Answers) => void,
@@ -19,9 +21,12 @@ export const QuestionsItems: React.FC<{
         const items = useSelector(getArtikel)?.filter((item) => {
             return item.artikelKategorieId === answers.category?.id
         }) || undefined
+        const numberOfferArticle = useSelector(getNumberOfferArticle);
+        console.log(numberOfferArticle)
 
         useEffect(() => {
             dispatch(loadArtikel())
+            dispatch(loadNumberOfferArticle())
         }, [dispatch])
 
         if (items === undefined) {

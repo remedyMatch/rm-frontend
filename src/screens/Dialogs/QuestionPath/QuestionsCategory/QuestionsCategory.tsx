@@ -7,6 +7,8 @@ import {getArtikelKategorien} from "../../../../State/Selectors/ArtikelKategorie
 import {ChunkedCardsFromOptions} from "../utils/ChunkedCardsFromOptions";
 import {loadAngebote} from "../../../../State/AngeboteState";
 import {loadBedarfe} from "../../../../State/BedarfeState";
+import {loadNumberOfferCategory} from "../../../../State/NumberOfferCategoryState";
+import {getNumberOfferCategory} from "../../../../State/Selectors/NumberCategorySelector";
 
 
 export const QuestionsCategory: React.FC<{
@@ -19,11 +21,15 @@ export const QuestionsCategory: React.FC<{
         const dispatch = useDispatch();
         const chunkSize = 3;
         const categories = useSelector(getArtikelKategorien);
+        const numberOfferCategories = useSelector(getNumberOfferCategory);
+
+        console.log(numberOfferCategories)
 
         useEffect(() => {
             dispatch(loadArtikelKategorien());
             dispatch(loadAngebote());
             dispatch(loadBedarfe());
+            dispatch(loadNumberOfferCategory())
         }, [dispatch]);
 
         if (categories === undefined) {

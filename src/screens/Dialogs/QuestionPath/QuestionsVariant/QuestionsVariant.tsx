@@ -1,8 +1,11 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {Card, Checkbox, List, ListItem, ListItemIcon, ListItemText} from "@material-ui/core";
 import {Answers} from "../QuestionsStepper/QuestionsStepper";
 import {NavigationDialogue} from "../QuestionsStepper/NavigationDialogue";
 import {ArtikelVariante} from "../../../../Domain/ArtikelVariante";
+import {useDispatch, useSelector} from "react-redux";
+import {getNumberOfferArticleVariant} from "../../../../State/Selectors/NumberArticleVariantSelector";
+import {loadNumberOfferArticleVariant} from "../../../../State/NumberOfferArticleVariantState";
 
 export const QuestionsVariant: React.FC<{
     answers: Answers, setAnswers: (answers: Answers) => void,
@@ -12,7 +15,14 @@ export const QuestionsVariant: React.FC<{
          answers, setAnswers,
          currentStep, setCurrentStep,
      }) => {
+        const dispatch = useDispatch();
         const [checked, setChecked] = useState<ArtikelVariante[]>([]);
+        const numberOfferArticleVariant = useSelector(getNumberOfferArticleVariant)
+        console.log(numberOfferArticleVariant)
+
+        useEffect(() => {
+            dispatch(loadNumberOfferArticleVariant())
+        }, [dispatch])
 
         if (answers.artikel === undefined) {
             return <div>Kein Artikel ausgewählt.</div>

@@ -9,6 +9,9 @@ import {erhalteneAnfragenSlice} from "./ErhalteneAnfragenState";
 import {gesendeteAnfragenSlice} from "./GesendeteAnfragenState";
 import {institutionTypenSlice} from "./InstitutionTypenState";
 import {matchesSlice} from "./MatchesState";
+import {numberOfferCategorySlice} from "./NumberOfferCategoryState";
+import {numberOfferArticleSlice} from "./NumberOfferArticleState";
+import {numberOfferArticleVariantSlice} from "./NumberOfferArticleVariantState";
 
 const rootReducer = combineReducers({
     angebote: angeboteSlice.reducer,
@@ -20,7 +23,10 @@ const rootReducer = combineReducers({
     erhalteneAnfragen: erhalteneAnfragenSlice.reducer,
     gesendeteAnfragen: gesendeteAnfragenSlice.reducer,
     institutionTypen: institutionTypenSlice.reducer,
-    matches: matchesSlice.reducer
+    matches: matchesSlice.reducer,
+    numberOfferCategory: numberOfferCategorySlice.reducer,
+    numberOfferArticle: numberOfferArticleSlice.reducer,
+    numberOfferArticleVariant: numberOfferArticleVariantSlice.reducer,
 });
 
 export const ClearStore = {
@@ -30,7 +36,7 @@ export const ClearStore = {
 export const store = configureStore({
     // @ts-ignore TODO
     reducer: (state: RootState, action: { type: any }) => {
-        if(action === ClearStore) {
+        if (action === ClearStore) {
             return rootReducer(undefined, action);
         } else {
             return rootReducer(state, action);
