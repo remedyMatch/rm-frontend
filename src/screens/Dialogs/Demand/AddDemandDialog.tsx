@@ -152,9 +152,7 @@ class AddDemandDialog extends PureComponent<Props, State> {
     };
 
     private getLocationOptions = () => {
-        return ([] as InstitutionStandort[])
-            .concat(this.props.institution?.hauptstandort || [])
-            .concat(this.props.institution?.standorte || []);
+        return this.props.institution?.standorte || []
     };
 
     public render = () => {

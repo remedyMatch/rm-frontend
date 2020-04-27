@@ -101,9 +101,7 @@ class RespondDemandDialog extends PureComponent<Props, State> {
     };
 
     private getLocationOptions = () => {
-        return ([] as InstitutionStandort[])
-            .concat(this.props.eigeneInstitution?.hauptstandort || [])
-            .concat(this.props.eigeneInstitution?.standorte || []);
+        return this.props.eigeneInstitution?.standorte || []
     };
 
     public render = () => {
