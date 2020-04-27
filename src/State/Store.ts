@@ -9,6 +9,7 @@ import {erhalteneAnfragenSlice} from "./ErhalteneAnfragenState";
 import {gesendeteAnfragenSlice} from "./GesendeteAnfragenState";
 import {institutionTypenSlice} from "./InstitutionTypenState";
 import {matchesSlice} from "./MatchesState";
+import {userSlice} from "./UserState";
 
 const rootReducer = combineReducers({
     angebote: angeboteSlice.reducer,
@@ -20,7 +21,8 @@ const rootReducer = combineReducers({
     erhalteneAnfragen: erhalteneAnfragenSlice.reducer,
     gesendeteAnfragen: gesendeteAnfragenSlice.reducer,
     institutionTypen: institutionTypenSlice.reducer,
-    matches: matchesSlice.reducer
+    matches: matchesSlice.reducer,
+    user: userSlice.reducer,
 });
 
 export const ClearStore = {
