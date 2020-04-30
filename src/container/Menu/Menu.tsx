@@ -6,7 +6,7 @@ import LoginService from "../../util/LoginService";
 import {RootDispatch, RootState} from "../../State/Store";
 import {connect, ConnectedProps} from "react-redux";
 import {loadAufgaben} from "../../State/AufgabenState";
-import {Badge} from "@material-ui/core";
+import {Badge, Hidden} from "@material-ui/core";
 
 interface Props extends RouteComponentProps, PropsFromRedux {
 }
@@ -56,6 +56,8 @@ const useStyles = makeStyles((theme: Theme) => ({
         fontSize: "1rem"
     }
 }));
+
+
 
 const Menu: React.FC<Props> = props => {
     const classes = useStyles();

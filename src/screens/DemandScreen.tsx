@@ -13,6 +13,7 @@ import {loadArtikel} from "../State/ArtikelState";
 import {loadBedarfe} from "../State/BedarfeState";
 import {loadEigeneInstitution} from "../State/EigeneInstitutionState";
 import {connect, ConnectedProps} from "react-redux";
+import LoginService from "../util/LoginService";
 
 interface Props extends WithStylesPublic<typeof styles>, PropsFromRedux {
 }
@@ -50,6 +51,8 @@ class DemandScreen extends Component<Props, State> {
         const article = this.props.artikel?.find(article => article.id === demandItem?.artikelId);
         const category = this.props.artikelKategorien?.find(category => category.id === article?.artikelKategorieId);
 
+        const empfaenger = LoginService.hasRoleEmpfaenger();
+
         return (
             <>
                 <div className={classes.tableHeader}>
@@ -58,7 +61,7 @@ class DemandScreen extends Component<Props, State> {
                         label="Bedarf durchsuchen..."
                         changeListener={this.setFilter}
                         value={this.state.searchFilter}/>
-                    <FormButton
+                    <FormButton disabled={!empfaenger}
                         onClick={() => this.setState(state => ({addDialogOpen: !state.addDialogOpen}))}>
                         Bedarf anlegen
                     </FormButton>

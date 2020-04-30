@@ -8,6 +8,9 @@ import {loadEigeneInstitution} from "../State/EigeneInstitutionState";
 import {loadInstitutionTypen} from "../State/InstitutionTypenState";
 import {RootDispatch, RootState} from "../State/Store";
 import {WithStylesPublic} from "../util/WithStylesPublic";
+import InstitutionTable from "../components/Table/InstitutionTable";
+import { PersonInstitution } from "../Domain/PersonInstitution";
+import { loadPerson } from "../State/PersonState";
 
 interface Props extends WithStylesPublic<typeof styles>, PropsFromRedux {
 }
@@ -23,7 +26,7 @@ const styles = (theme: Theme) =>
     createStyles({
         content: {
             width: "calc(100vw - 32px)",
-            maxWidth: "500px",
+            maxWidth: "800px",
             placeSelf: "center",
             display: "flex",
             flexDirection: "column"
@@ -142,6 +145,16 @@ class InstitutionScreen extends Component<Props, State> {
                         </div>
                     }
                 </div>
+                
+                <div className={classes.container}>
+                    <Typography
+                        variant="subtitle1"
+                        className={classes.subtitle}>
+                        Institutionen
+                    </Typography>
+                    <InstitutionTable rows={this.props.person?.institutionen || []} onEditClicked={(inst: PersonInstitution) => console.log(inst)}></InstitutionTable>
+                </div>
+
                 {/*<div className={classes.container}>
                     <Typography
                         variant="subtitle1"
@@ -254,17 +267,20 @@ class InstitutionScreen extends Component<Props, State> {
     componentDidMount = async () => {
         this.props.loadEigeneInstitution();
         this.props.loadInstitutionTypen();
+        this.props.loadPerson();
     };
 }
 
 const mapStateToProps = (state: RootState) => ({
     eigeneInstitution: state.eigeneInstitution.value,
-    institutionTypen: state.institutionTypen.value
+    institutionTypen: state.institutionTypen.value,
+    person: state.person.value
 });
 
 const mapDispatchToProps = (dispatch: RootDispatch) => ({
     loadEigeneInstitution: () => dispatch(loadEigeneInstitution()),
-    loadInstitutionTypen: () => dispatch(loadInstitutionTypen())
+    loadInstitutionTypen: () => dispatch(loadInstitutionTypen()),
+    loadPerson: () => dispatch(loadPerson())
 });
 
 const connector = connect(mapStateToProps, mapDispatchToProps);

@@ -32,6 +32,21 @@ const doLogout = _kc.logout;
 
 const getToken = () => _kc.token;
 
+const getRealmAccess = () => _kc.realmAccess;
+
+const hasRole =  (role: string) => {
+    const realmAccess = getRealmAccess();
+    return realmAccess?.roles.find((value) => value === role) ? true : false;
+}
+
+const hasRoleEmpfaenger =  () => {
+  return hasRole("EMPFAENGER");
+}
+
+const hasRoleFreigeber =  () => {
+   return hasRole("FREIGEBER");
+}
+
 const updateToken = (successCallback: () => void) => {
     return _kc.updateToken(5)
         .success(successCallback)
@@ -43,5 +58,8 @@ export default {
     doLogin,
     doLogout,
     getToken,
+    getRealmAccess,
     updateToken,
+    hasRoleEmpfaenger,
+    hasRoleFreigeber
 }

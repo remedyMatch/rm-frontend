@@ -9,6 +9,7 @@ import PopupDialog from "../../../components/Dialog/PopupDialog";
 import {Artikel} from "../../../Domain/Artikel";
 import {ArtikelKategorie} from "../../../Domain/ArtikelKategorie";
 import {Institution} from "../../../Domain/Institution";
+import LoginService from "../../../util/LoginService";
 
 interface Props {
     open: boolean;
@@ -65,6 +66,8 @@ const formatDate = (date?: string) => {
 const OfferDetailsDialog: React.FC<Props> = props => {
     const classes = useStyles();
     const variante = props.artikel?.varianten?.find(variante => variante.id === props.item?.artikelVarianteId);
+
+    const empfaenger = LoginService.hasRoleEmpfaenger();
 
     return (
         <PopupDialog
@@ -132,7 +135,8 @@ const OfferDetailsDialog: React.FC<Props> = props => {
                 <div className={classes.footer}>
                     <FormButton
                         onClick={props.onContact}
-                        size="small">
+                        size="small"
+                        disabled={!empfaenger}>
                         Institution kontaktieren
                     </FormButton>
                 </div>
