@@ -1,12 +1,12 @@
 import React from "react";
 import {makeStyles, Theme} from "@material-ui/core/styles";
 import {Typography} from "@material-ui/core";
-import {Artikel} from "../../../Domain/Artikel";
-import {ArtikelKategorie} from "../../../Domain/ArtikelKategorie";
-import {Bedarf} from "../../../Domain/Bedarf";
+import {Artikel} from "../../../domain/old/Artikel";
+import {ArtikelKategorie} from "../../../domain/old/ArtikelKategorie";
+import {Bedarf} from "../../../domain/old/Bedarf";
 import {FormButton} from "../../../components/Form/FormButton";
 import PopupDialog from "../../../components/Dialog/PopupDialog";
-import {Institution} from "../../../Domain/Institution";
+import {Institution} from "../../../domain/old/Institution";
 
 interface Props {
     open: boolean;

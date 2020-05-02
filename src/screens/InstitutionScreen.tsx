@@ -4,13 +4,13 @@ import clsx from "clsx";
 import React, {Component} from "react";
 import {connect, ConnectedProps} from "react-redux";
 import {FormButton} from "../components/Form/FormButton";
-import {loadEigeneInstitution} from "../State/EigeneInstitutionState";
-import {loadInstitutionTypen} from "../State/InstitutionTypenState";
-import {RootDispatch, RootState} from "../State/Store";
+import {loadEigeneInstitution} from "../state/EigeneInstitutionState";
+import {loadInstitutionTypen} from "../state/old/InstitutionTypenState";
+import {RootDispatch, RootState} from "../state/Store";
 import {WithStylesPublic} from "../util/WithStylesPublic";
 import InstitutionTable from "../components/Table/InstitutionTable";
-import { PersonInstitution } from "../Domain/PersonInstitution";
-import { loadPerson } from "../State/PersonState";
+import { PersonInstitution } from "../domain/old/PersonInstitution";
+import { loadPerson } from "../state/old/PersonState";
 
 interface Props extends WithStylesPublic<typeof styles>, PropsFromRedux {
 }
@@ -108,6 +108,22 @@ class InstitutionScreen extends Component<Props, State> {
                     <div className={classes.row}>
                         <span className={classes.left}>Name:</span>
                         <span className={classes.right}>{this.props.eigeneInstitution?.name || <span className={clsx(classes.missingError, classes.missing)}>Nicht angegeben!</span>}</span>
+                    </div>
+                    <div className={classes.row}>
+                        <span className={classes.left}>Username:</span>
+                        <span className={classes.right}>{this.props.person?.username || <span className={clsx(classes.missingError, classes.missing)}>Nicht angegeben!</span>}</span>
+                    </div>
+                    <div className={classes.row}>
+                        <span className={classes.left}>Name:</span>
+                        <span className={classes.right}>{this.props.person ? this.props.person.vorname + this.props.person.nachname : <span className={clsx(classes.missingError, classes.missing)}>Nicht angegeben!</span>}</span>
+                    </div>
+                    <div className={classes.row}>
+                        <span className={classes.left}>E-Mail:</span>
+                        <span className={classes.right}>{this.props.person?.email || <span className={clsx(classes.missingError, classes.missing)}>Nicht angegeben!</span>}</span>
+                    </div>
+                    <div className={classes.row}>
+                        <span className={classes.left}>Telefon:</span>
+                        <span className={classes.right}>{this.props.person?.telefon || <span className={clsx(classes.missingError, classes.missing)}>Nicht angegeben!</span>}</span>
                     </div>
                     {/*<div className={classes.footer}>
                         <FormButton

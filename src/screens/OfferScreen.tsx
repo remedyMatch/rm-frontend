@@ -4,11 +4,12 @@ import {connect, ConnectedProps} from "react-redux";
 import {FormButton} from "../components/Form/FormButton";
 import {FormTextInput} from "../components/Form/FormTextInput";
 import EntryTable from "../components/Table/EntryTable";
-import {loadAngebote} from "../State/AngeboteState";
-import {loadArtikelKategorien} from "../State/ArtikelKategorienState";
-import {loadArtikel} from "../State/ArtikelState";
-import {loadEigeneInstitution} from "../State/EigeneInstitutionState";
-import {RootDispatch, RootState} from "../State/Store";
+import {loadAngebote} from "../state/old/AngeboteState";
+import {loadArtikelKategorien} from "../state/old/ArtikelKategorienState";
+import {loadArtikel} from "../state/old/ArtikelState";
+import {loadEigeneInstitution} from "../state/EigeneInstitutionState";
+import {loadPerson} from "../state/old/PersonState";
+import {RootDispatch, RootState} from "../state/Store";
 import {WithStylesPublic} from "../util/WithStylesPublic";
 import AddOfferDialog from "./Dialogs/Offer/AddOfferDialog";
 import OfferDetailsDialog from "./Dialogs/Offer/OfferDetailsDialog";
@@ -74,7 +75,7 @@ class OfferScreen extends Component<Props, State> {
                     open={this.state.addDialogOpen}
                     onCancelled={this.onAddCancelled}
                     onSaved={this.onAddSaved}
-                    institution={this.props.eigeneInstitution}
+                    person={this.props.person}
                     artikel={this.props.artikel || []}
                     artikelKategorien={this.props.artikelKategorien || []}/>
                 <OfferDetailsDialog
@@ -84,14 +85,13 @@ class OfferScreen extends Component<Props, State> {
                     artikel={article}
                     artikelKategorie={category}
                     onContact={this.onDetailsContact}
-                    eigeneInstitution={this.props.eigeneInstitution}/>
+                    eigeneInstitutionIds={this.props.person?.institutionen.map(institution => institution.institution.id) || []}/>
                 <RespondOfferDialog
                     open={!!this.state.contactId}
                     onCancelled={this.onContactCancelled}
                     onSaved={this.onContactSaved}
                     angebot={this.props.angebote?.find(item => item.id === this.state.contactId)}
-                    eigeneInstitution={this.props.eigeneInstitution}
-                />
+                    eigeneInstitutionIds={this.props.person?.institutionen.map(institution => institution.institution.id) || []}/>
             </>
         )
     }
@@ -100,7 +100,7 @@ class OfferScreen extends Component<Props, State> {
         this.props.loadArtikel();
         this.props.loadArtikelKategorien();
         this.props.loadAngebote();
-        this.props.loadEigeneInstitution();
+        this.props.loadPerson();
     };
 
     private onContactCancelled = () => {
@@ -156,14 +156,14 @@ const mapStateToProps = (state: RootState) => ({
     angebote: state.angebote.value,
     artikel: state.artikel.value,
     artikelKategorien: state.artikelKategorien.value,
-    eigeneInstitution: state.eigeneInstitution.value,
+    person: state.person.value
 });
 
 const mapDispatchToProps = (dispatch: RootDispatch) => ({
     loadAngebote: () => dispatch(loadAngebote()),
     loadArtikel: () => dispatch(loadArtikel()),
     loadArtikelKategorien: () => dispatch(loadArtikelKategorien()),
-    loadEigeneInstitution: () => dispatch(loadEigeneInstitution()),
+    loadPerson: () => dispatch(loadPerson())
 });
 
 const connector = connect(mapStateToProps, mapDispatchToProps);

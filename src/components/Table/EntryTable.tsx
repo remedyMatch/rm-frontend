@@ -19,10 +19,10 @@ import {Delete, Info} from "@material-ui/icons";
 import {Pagination} from "@material-ui/lab";
 import React from 'react';
 import {usePagination, useSortBy, useTable} from "react-table";
-import {Angebot} from "../../Domain/Angebot";
-import {Artikel} from "../../Domain/Artikel";
-import {ArtikelKategorie} from "../../Domain/ArtikelKategorie";
-import {Bedarf} from "../../Domain/Bedarf";
+import {Angebot} from "../../domain/old/Angebot";
+import {Artikel} from "../../domain/old/Artikel";
+import {ArtikelKategorie} from "../../domain/old/ArtikelKategorie";
+import {Bedarf} from "../../domain/old/Bedarf";
 
 declare type DataRow = {
     type: "offer" | "demand", data: {

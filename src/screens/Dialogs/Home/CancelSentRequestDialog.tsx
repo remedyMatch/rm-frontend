@@ -1,6 +1,6 @@
 import React, {Component} from "react";
 import {DialogContentText} from "@material-ui/core";
-import {Anfrage} from "../../../Domain/Anfrage";
+import {AngebotAnfrage} from "../../../domain/Anfrage";
 import {apiDelete} from "../../../util/ApiUtils";
 import PopupDialog from "../../../components/Dialog/PopupDialog";
 import {defined, validate} from "../../../util/ValidationUtils";
@@ -10,7 +10,7 @@ interface Props {
     open: boolean;
     onNo: () => void;
     onYes: () => void;
-    request?: Anfrage;
+    request?: AngebotAnfrage;
 }
 
 interface State {

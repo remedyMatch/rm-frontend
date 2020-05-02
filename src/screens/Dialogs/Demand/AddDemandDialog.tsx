@@ -2,17 +2,17 @@ import React, {ChangeEvent, PureComponent} from "react";
 import {createStyles, Theme, withStyles} from "@material-ui/core/styles";
 import {TextareaAutosize, TextField, Typography} from "@material-ui/core";
 import {Autocomplete} from "@material-ui/lab";
-import {ArtikelVariante} from "../../../Domain/ArtikelVariante";
+import {ArtikelVariante} from "../../../domain/old/ArtikelVariante";
 import {WithStylesPublic} from "../../../util/WithStylesPublic";
-import {Artikel} from "../../../Domain/Artikel";
-import {ArtikelKategorie} from "../../../Domain/ArtikelKategorie";
+import {Artikel} from "../../../domain/old/Artikel";
+import {ArtikelKategorie} from "../../../domain/old/ArtikelKategorie";
 import {apiPost} from "../../../util/ApiUtils";
 import {handleDialogButton} from "../../../util/DialogUtils";
 import {defined, numberSize, stringLength, validate} from "../../../util/ValidationUtils";
 import PopupDialog from "../../../components/Dialog/PopupDialog";
 import {FormLocationPicker} from "../../../components/Form/FormLocationPicker";
-import {InstitutionStandort} from "../../../Domain/InstitutionStandort";
-import {Institution} from "../../../Domain/Institution";
+import {InstitutionStandort} from "../../../domain/old/InstitutionStandort";
+import {Institution} from "../../../domain/old/Institution";
 
 interface Props extends WithStylesPublic<typeof styles> {
     open: boolean;

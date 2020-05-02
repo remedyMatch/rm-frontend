@@ -7,9 +7,9 @@ import {FormTextInput} from "../../../components/Form/FormTextInput";
 import {handleDialogButton} from "../../../util/DialogUtils";
 import {defined, numberSize, stringLength, validate} from "../../../util/ValidationUtils";
 import PopupDialog from "../../../components/Dialog/PopupDialog";
-import {InstitutionStandort} from "../../../Domain/InstitutionStandort";
-import {Bedarf} from "../../../Domain/Bedarf";
-import {Institution} from "../../../Domain/Institution";
+import {InstitutionStandort} from "../../../domain/old/InstitutionStandort";
+import {Bedarf} from "../../../domain/old/Bedarf";
+import {Institution} from "../../../domain/old/Institution";
 import {FormLocationPicker} from "../../../components/Form/FormLocationPicker";
 
 interface Props extends WithStylesPublic<typeof styles> {

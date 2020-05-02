@@ -3,10 +3,10 @@ import {createStyles, Theme, withStyles} from "@material-ui/core/styles";
 import {Email, LocalOffer, LocationOn, Search} from "@material-ui/icons";
 import React, {PureComponent} from "react";
 import PopupDialog from "../../../../components/Dialog/PopupDialog";
-import {Anfrage} from "../../../../Domain/Anfrage";
-import {Angebot} from "../../../../Domain/Angebot";
-import {Aufgabe} from "../../../../Domain/Aufgabe";
-import {Bedarf} from "../../../../Domain/Bedarf";
+import {AngebotAnfrage} from "../../../../domain/Anfrage";
+import {Angebot} from "../../../../domain/old/Angebot";
+import {Aufgabe} from "../../../../domain/old/Aufgabe";
+import {Bedarf} from "../../../../domain/old/Bedarf";
 import {apiPost} from "../../../../util/ApiUtils";
 import {handleDialogButton} from "../../../../util/DialogUtils";
 import {defined, validate} from "../../../../util/ValidationUtils";
@@ -16,7 +16,7 @@ interface Props extends WithStylesPublic<typeof styles> {
     onCancelled: () => void;
     onFinished: () => void;
     task?: Aufgabe;
-    request?: Anfrage;
+    request?: AngebotAnfrage;
     item?: Angebot | Bedarf;
 }
 

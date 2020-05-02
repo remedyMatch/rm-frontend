@@ -6,10 +6,10 @@ import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import {Anfrage} from "../../Domain/Anfrage";
+import {AngebotAnfrage} from "../../domain/Anfrage";
 import {IconButton} from "@material-ui/core";
 import {CallMade, CallReceived, Cancel} from "@material-ui/icons";
-import {Artikel} from "../../Domain/Artikel";
+import {Artikel} from "../../domain/old/Artikel";
 
 const useStyles = makeStyles({
     table: {
@@ -56,8 +56,8 @@ const useStyles = makeStyles({
 });
 
 interface Props {
-    erhalten: Anfrage[];
-    gesendet: Anfrage[];
+    erhalten: AngebotAnfrage[];
+    gesendet: AngebotAnfrage[];
     showType?: boolean;
     onCancel?: (id?: string) => void;
     artikel: Artikel[];

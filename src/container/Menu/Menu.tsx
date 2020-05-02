@@ -3,9 +3,9 @@ import {default as React, useEffect} from "react";
 import {ExitToApp} from "@material-ui/icons";
 import {NavLink, RouteComponentProps, withRouter} from "react-router-dom";
 import LoginService from "../../util/LoginService";
-import {RootDispatch, RootState} from "../../State/Store";
+import {RootDispatch, RootState} from "../../state/Store";
 import {connect, ConnectedProps} from "react-redux";
-import {loadAufgaben} from "../../State/AufgabenState";
+import {loadAufgaben} from "../../state/old/AufgabenState";
 import {Badge, Hidden} from "@material-ui/core";
 
 interface Props extends RouteComponentProps, PropsFromRedux {

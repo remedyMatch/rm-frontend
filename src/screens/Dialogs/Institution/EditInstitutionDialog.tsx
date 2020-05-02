@@ -4,7 +4,7 @@ import {TextField} from "@material-ui/core";
 import {WithStylesPublic} from "../../../util/WithStylesPublic";
 import {apiPut} from "../../../util/ApiUtils";
 import {Autocomplete} from "@material-ui/lab";
-import {Institution} from "../../../Domain/Institution";
+import {Institution} from "../../../domain/old/Institution";
 import {FormTextInput} from "../../../components/Form/FormTextInput";
 import PopupDialog from "../../../components/Dialog/PopupDialog";
 import {defined, stringLength, validate} from "../../../util/ValidationUtils";

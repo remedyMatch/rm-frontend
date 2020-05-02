@@ -8,7 +8,7 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import {IconButton} from "@material-ui/core";
 import {Edit} from "@material-ui/icons";
-import { PersonInstitution } from '../../Domain/PersonInstitution';
+import { PersonInstitution } from '../../domain/old/PersonInstitution';
 
 const useStyles = makeStyles({
     table: {

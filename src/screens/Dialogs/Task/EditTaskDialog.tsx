@@ -1,19 +1,19 @@
 import React from "react";
-import {Aufgabe} from "../../../Domain/Aufgabe";
+import {Aufgabe} from "../../../domain/old/Aufgabe";
 import RespondRequestTaskDialog from "./Handler/RespondRequestTaskDialog";
 import ConfirmReceiptTaskDialog from "./Handler/ConfirmReceiptTaskDialog";
-import {Anfrage} from "../../../Domain/Anfrage";
-import {Angebot} from "../../../Domain/Angebot";
-import {Bedarf} from "../../../Domain/Bedarf";
-import {Match} from "../../../Domain/Match";
-import {Artikel} from "../../../Domain/Artikel";
+import {AngebotAnfrage} from "../../../domain/Anfrage";
+import {Angebot} from "../../../domain/old/Angebot";
+import {Bedarf} from "../../../domain/old/Bedarf";
+import {Match} from "../../../domain/old/Match";
+import {Artikel} from "../../../domain/old/Artikel";
 
 interface Props {
     open: boolean;
     onCancelled: () => void;
     onFinished: () => void;
     task?: Aufgabe;
-    request?: Anfrage;
+    request?: AngebotAnfrage;
     item?: Angebot | Bedarf;
     match?: Match;
     article?: Artikel;

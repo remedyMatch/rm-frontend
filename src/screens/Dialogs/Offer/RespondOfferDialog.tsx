@@ -1,23 +1,23 @@
-import React, {ChangeEvent, PureComponent} from "react";
-import {createStyles, Theme, withStyles} from "@material-ui/core/styles";
 import {TextareaAutosize} from "@material-ui/core";
-import {WithStylesPublic} from "../../../util/WithStylesPublic";
-import {apiPost} from "../../../util/ApiUtils";
-import {FormTextInput} from "../../../components/Form/FormTextInput";
-import {handleDialogButton} from "../../../util/DialogUtils";
-import {defined, numberSize, stringLength, validate} from "../../../util/ValidationUtils";
+import {createStyles, Theme, withStyles} from "@material-ui/core/styles";
+import React, {ChangeEvent, PureComponent} from "react";
 import PopupDialog from "../../../components/Dialog/PopupDialog";
 import {FormLocationPicker} from "../../../components/Form/FormLocationPicker";
-import {InstitutionStandort} from "../../../Domain/InstitutionStandort";
-import {Angebot} from "../../../Domain/Angebot";
-import {Institution} from "../../../Domain/Institution";
+import {FormTextInput} from "../../../components/Form/FormTextInput";
+import {Angebot} from "../../../domain/old/Angebot";
+import {InstitutionStandort} from "../../../domain/old/InstitutionStandort";
+import {Person} from "../../../domain/old/Person";
+import {apiPost} from "../../../util/ApiUtils";
+import {handleDialogButton} from "../../../util/DialogUtils";
+import {defined, numberSize, stringLength, validate} from "../../../util/ValidationUtils";
+import {WithStylesPublic} from "../../../util/WithStylesPublic";
 
 interface Props extends WithStylesPublic<typeof styles> {
     open: boolean;
     onCancelled: () => void;
     onSaved: () => void;
     angebot?: Angebot;
-    eigeneInstitution?: Institution;
+    person?: Person;
 }
 
 interface State {
@@ -60,49 +60,6 @@ const styles = (theme: Theme) =>
 class RespondOfferDialog extends PureComponent<Props, State> {
     state: State = {...initialState};
 
-    private onSave = async () => {
-        handleDialogButton(
-            this.setState.bind(this),
-            this.props.onSaved,
-            () => validate(
-                defined(this.props.angebot, "Angebot nicht gesetzt!"),
-                defined(this.props.eigeneInstitution, "Eigene Institution nicht gesetzt!"),
-                defined(this.state.location, "Es muss ein Standort gesetzt werden!"),
-                numberSize(this.state.amount, "Die Anzahl", 1),
-                stringLength(this.state.comment, "Der Kommentar", 1, 1024)
-            ),
-            () => apiPost(`/remedy/angebot/${this.props.angebot!.id}/anfrage`, {
-                kommentar: this.state.comment,
-                standortId: this.state.location,
-                anzahl: this.state.amount
-            }),
-            initialState
-        );
-    };
-
-    private onCancel = () => {
-        this.onCloseError();
-        this.props.onCancelled();
-    };
-
-    private onCloseError = () => {
-        this.setState({error: undefined});
-    };
-
-    private setComment = (event: ChangeEvent<HTMLTextAreaElement>) => {
-        this.setState({comment: event.target.value});
-    };
-
-    private setLocation = (location: InstitutionStandort | null) => {
-        this.setState({location: location === null ? undefined : location.id});
-    };
-
-    private getLocationOptions = () => {
-        return ([] as InstitutionStandort[])
-            .concat(this.props.eigeneInstitution?.hauptstandort || [])
-            .concat(this.props.eigeneInstitution?.standorte || []);
-    };
-
     public render = () => {
         const classes = this.props.classes!;
 
@@ -142,6 +99,49 @@ class RespondOfferDialog extends PureComponent<Props, State> {
                     onChange={this.setComment}/>
             </PopupDialog>
         );
+    };
+
+    private onSave = async () => {
+        handleDialogButton(
+            this.setState.bind(this),
+            this.props.onSaved,
+            () => validate(
+                defined(this.props.angebot, "Angebot nicht gesetzt!"),
+                defined(this.props.person, "Person nicht gesetzt!"),
+                defined(this.state.location, "Es muss ein Standort gesetzt werden!"),
+                numberSize(this.state.amount, "Die Anzahl", 1),
+                stringLength(this.state.comment, "Der Kommentar", 1, 1024)
+            ),
+            () => apiPost(`/remedy/angebot/${this.props.angebot!.id}/anfrage`, {
+                kommentar: this.state.comment,
+                standortId: this.state.location,
+                anzahl: this.state.amount
+            }),
+            initialState
+        );
+    };
+
+    private onCancel = () => {
+        this.onCloseError();
+        this.props.onCancelled();
+    };
+
+    private onCloseError = () => {
+        this.setState({error: undefined});
+    };
+
+    private setComment = (event: ChangeEvent<HTMLTextAreaElement>) => {
+        this.setState({comment: event.target.value});
+    };
+
+    private setLocation = (location: InstitutionStandort | null) => {
+        this.setState({location: location === null ? undefined : location.id});
+    };
+
+    private getLocationOptions = () => {
+        return ([] as InstitutionStandort[])
+            .concat(this.props.person?.aktuelleInstitution?.institution.hauptstandort || [])
+            .concat(this.props.person?.aktuelleInstitution?.institution.standorte || []);
     };
 }
 

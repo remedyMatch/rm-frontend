@@ -2,7 +2,7 @@ import React, {Component} from "react";
 import {createStyles, Theme, withStyles} from "@material-ui/core/styles";
 import {WithStylesPublic} from "../../../util/WithStylesPublic";
 import {apiPost} from "../../../util/ApiUtils";
-import {Institution} from "../../../Domain/Institution";
+import {Institution} from "../../../domain/old/Institution";
 import {FormTextInput} from "../../../components/Form/FormTextInput";
 import PopupDialog from "../../../components/Dialog/PopupDialog";
 import {stringLength, validate} from "../../../util/ValidationUtils";

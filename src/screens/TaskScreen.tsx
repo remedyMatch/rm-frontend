@@ -2,22 +2,22 @@ import React, {Component} from "react";
 import {createStyles, Theme, withStyles} from "@material-ui/core/styles";
 import {WithStylesPublic} from "../util/WithStylesPublic";
 import {FormTextInput} from "../components/Form/FormTextInput";
-import {Aufgabe} from "../Domain/Aufgabe";
+import {Aufgabe} from "../domain/old/Aufgabe";
 import TaskTable from "../components/Table/TaskTable";
 import EditTaskDialog from "./Dialogs/Task/EditTaskDialog";
-import {RootDispatch, RootState} from "../State/Store";
-import {loadAngebote} from "../State/AngeboteState";
-import {loadBedarfe} from "../State/BedarfeState";
+import {RootDispatch, RootState} from "../state/Store";
+import {loadAngebote} from "../state/old/AngeboteState";
+import {loadBedarfe} from "../state/old/BedarfeState";
 import {connect, ConnectedProps} from "react-redux";
-import {loadAufgaben} from "../State/AufgabenState";
-import {loadErhalteneAnfragen} from "../State/ErhalteneAnfragenState";
-import {Anfrage} from "../Domain/Anfrage";
-import {Bedarf} from "../Domain/Bedarf";
-import {Angebot} from "../Domain/Angebot";
-import {Match} from "../Domain/Match";
-import {loadMatches} from "../State/MatchesState";
-import {loadArtikel} from "../State/ArtikelState";
-import {Artikel} from "../Domain/Artikel";
+import {loadAufgaben} from "../state/old/AufgabenState";
+import {loadErhalteneAnfragen} from "../state/old/ErhalteneAnfragenState";
+import {AngebotAnfrage} from "../domain/Anfrage";
+import {Bedarf} from "../domain/old/Bedarf";
+import {Angebot} from "../domain/old/Angebot";
+import {Match} from "../domain/old/Match";
+import {loadMatches} from "../state/old/MatchesState";
+import {loadArtikel} from "../state/old/ArtikelState";
+import {Artikel} from "../domain/old/Artikel";
 
 interface Props extends WithStylesPublic<typeof styles>, PropsFromRedux {
 }
@@ -25,7 +25,7 @@ interface Props extends WithStylesPublic<typeof styles>, PropsFromRedux {
 interface State {
     searchFilter: string;
     editTask?: Aufgabe;
-    editRequest?: Anfrage;
+    editRequest?: AngebotAnfrage;
     editItem?: Angebot | Bedarf;
     editMatch?: Match;
     editArticle?: Artikel;

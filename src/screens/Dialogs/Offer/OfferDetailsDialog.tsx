@@ -1,14 +1,13 @@
-import React from "react";
-import {makeStyles, Theme} from "@material-ui/core/styles";
 import {Typography} from "@material-ui/core";
-import {FormButton} from "../../../components/Form/FormButton";
-import {Angebot} from "../../../Domain/Angebot";
+import {makeStyles, Theme} from "@material-ui/core/styles";
 import {format} from "date-fns";
 import {de} from "date-fns/locale";
+import React from "react";
 import PopupDialog from "../../../components/Dialog/PopupDialog";
-import {Artikel} from "../../../Domain/Artikel";
-import {ArtikelKategorie} from "../../../Domain/ArtikelKategorie";
-import {Institution} from "../../../Domain/Institution";
+import {FormButton} from "../../../components/Form/FormButton";
+import {Angebot} from "../../../domain/old/Angebot";
+import {Artikel} from "../../../domain/old/Artikel";
+import {ArtikelKategorie} from "../../../domain/old/ArtikelKategorie";
 import LoginService from "../../../util/LoginService";
 
 interface Props {
@@ -16,7 +15,7 @@ interface Props {
     item?: Angebot;
     artikel?: Artikel;
     artikelKategorie?: ArtikelKategorie;
-    eigeneInstitution?: Institution;
+    eigeneInstitutionIds: string[];
     onContact?: () => void;
     onDone: () => void;
 }
@@ -131,7 +130,7 @@ const OfferDetailsDialog: React.FC<Props> = props => {
                 <span className={classes.left}>Kommentar</span>
                 <span className={classes.right}>{props.item?.kommentar || <span className={classes.emptyPlaceholder}>Keiner</span>}</span>
             </div>
-            {props.onContact && props.eigeneInstitution?.id !== props.item?.institutionId && (
+            {props.onContact && props.eigeneInstitutionIds.indexOf(props.item?.institutionId || "") === -1 && (
                 <div className={classes.footer}>
                     <FormButton
                         onClick={props.onContact}

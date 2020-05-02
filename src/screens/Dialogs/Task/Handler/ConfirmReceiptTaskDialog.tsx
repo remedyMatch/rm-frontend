@@ -1,15 +1,15 @@
 import React, {PureComponent} from "react";
 import {createStyles, Theme, withStyles} from "@material-ui/core/styles";
 import {WithStylesPublic} from "../../../../util/WithStylesPublic";
-import {Aufgabe} from "../../../../Domain/Aufgabe";
+import {Aufgabe} from "../../../../domain/old/Aufgabe";
 import {Button, Typography} from "@material-ui/core";
 import {apiPost} from "../../../../util/ApiUtils";
 import {handleDialogButton} from "../../../../util/DialogUtils";
 import {defined, validate} from "../../../../util/ValidationUtils";
 import PopupDialog from "../../../../components/Dialog/PopupDialog";
 import {LocalOffer, LocationOn, Search} from "@material-ui/icons";
-import {Match} from "../../../../Domain/Match";
-import {Artikel} from "../../../../Domain/Artikel";
+import {Match} from "../../../../domain/old/Match";
+import {Artikel} from "../../../../domain/old/Artikel";
 
 interface Props extends WithStylesPublic<typeof styles> {
     onCancelled: () => void;

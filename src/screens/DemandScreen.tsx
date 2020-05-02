@@ -1,19 +1,18 @@
-import React, {Component} from "react";
 import {createStyles, Theme, withStyles} from "@material-ui/core/styles";
-import {loadArtikelKategorien} from "../State/ArtikelKategorienState";
-import {WithStylesPublic} from "../util/WithStylesPublic";
-import {FormTextInput} from "../components/Form/FormTextInput";
+import React, {Component} from "react";
+import {connect, ConnectedProps} from "react-redux";
 import {FormButton} from "../components/Form/FormButton";
-import AddDemandDialog from "./Dialogs/Demand/AddDemandDialog";
+import {FormTextInput} from "../components/Form/FormTextInput";
 import EntryTable from "../components/Table/EntryTable";
+import {loadArtikelKategorien} from "../state/old/ArtikelKategorienState";
+import {loadArtikel} from "../state/old/ArtikelState";
+import {loadBedarfe} from "../state/old/BedarfeState";
+import {RootDispatch, RootState} from "../state/Store";
+import LoginService from "../util/LoginService";
+import {WithStylesPublic} from "../util/WithStylesPublic";
+import AddDemandDialog from "./Dialogs/Demand/AddDemandDialog";
 import DemandDetailsDialog from "./Dialogs/Demand/DemandDetailsDialog";
 import RespondDemandDialog from "./Dialogs/Demand/RespondDemandDialog";
-import {RootDispatch, RootState} from "../State/Store";
-import {loadArtikel} from "../State/ArtikelState";
-import {loadBedarfe} from "../State/BedarfeState";
-import {loadEigeneInstitution} from "../State/EigeneInstitutionState";
-import {connect, ConnectedProps} from "react-redux";
-import LoginService from "../util/LoginService";
 
 interface Props extends WithStylesPublic<typeof styles>, PropsFromRedux {
 }
@@ -45,7 +44,6 @@ class DemandScreen extends Component<Props, State> {
 
     render() {
         const classes = this.props.classes!;
-        const institutionId = this.props.eigeneInstitution?.id || "";
 
         const demandItem = this.props.bedarfe?.find(item => item.id === this.state.infoId);
         const article = this.props.artikel?.find(article => article.id === demandItem?.artikelId);
@@ -62,7 +60,7 @@ class DemandScreen extends Component<Props, State> {
                         changeListener={this.setFilter}
                         value={this.state.searchFilter}/>
                     <FormButton disabled={!empfaenger}
-                        onClick={() => this.setState(state => ({addDialogOpen: !state.addDialogOpen}))}>
+                                onClick={() => this.setState(state => ({addDialogOpen: !state.addDialogOpen}))}>
                         Bedarf anlegen
                     </FormButton>
                 </div>
@@ -97,6 +95,12 @@ class DemandScreen extends Component<Props, State> {
             </>
         )
     }
+
+    componentDidMount = async () => {
+        this.props.loadArtikel();
+        this.props.loadArtikelKategorien();
+        this.props.loadBedarfe();
+    };
 
     private onContactCancelled = () => {
         this.setState({
@@ -145,27 +149,18 @@ class DemandScreen extends Component<Props, State> {
         this.setState({addDialogOpen: false});
         this.props.loadBedarfe();
     };
-
-    componentDidMount = async () => {
-        this.props.loadArtikel();
-        this.props.loadArtikelKategorien();
-        this.props.loadBedarfe();
-        this.props.loadEigeneInstitution();
-    };
 }
 
 const mapStateToProps = (state: RootState) => ({
     artikel: state.artikel.value,
     artikelKategorien: state.artikelKategorien.value,
-    bedarfe: state.bedarfe.value,
-    eigeneInstitution: state.eigeneInstitution.value
+    bedarfe: state.bedarfe.value
 });
 
 const mapDispatchToProps = (dispatch: RootDispatch) => ({
     loadArtikel: () => dispatch(loadArtikel()),
     loadArtikelKategorien: () => dispatch(loadArtikelKategorien()),
-    loadBedarfe: () => dispatch(loadBedarfe()),
-    loadEigeneInstitution: () => dispatch(loadEigeneInstitution())
+    loadBedarfe: () => dispatch(loadBedarfe())
 });
 
 const connector = connect(mapStateToProps, mapDispatchToProps);
