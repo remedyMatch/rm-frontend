@@ -9,9 +9,6 @@ i18n
   .use(initReactI18next)
   .init({
     fallbackLng: "en",
-    debug: true,
-    // load: "currentOnly",
-    ns: ["translation", "val"],
     react: {
       wait: true,
     },
