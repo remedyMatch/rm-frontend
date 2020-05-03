@@ -1,6 +1,6 @@
-import {Hidden, Typography} from "@material-ui/core";
+import {Button, Hidden, Typography} from "@material-ui/core";
 import {createStyles, Theme, withStyles} from "@material-ui/core/styles";
-import {ArrowDropDown, LocationCity} from "@material-ui/icons";
+import {ArrowDropDown, ArrowForward, LocationCity} from "@material-ui/icons";
 import clsx from "clsx";
 import React, {Component} from "react";
 import {connect, ConnectedProps} from "react-redux";
@@ -96,9 +96,10 @@ const styles = (theme: Theme) =>
         },
         welcomeArea: {
             display: "flex",
-            marginTop: "8em"
+            marginTop: "6em"
         },
         welcomeAreaLeft: {
+            maxWidth: "700px",
             marginTop: "4em",
             display: "flex",
             flexDirection: "column",
@@ -121,6 +122,7 @@ const styles = (theme: Theme) =>
             }
         },
         institutionIcon: {
+            color: "#53284f",
             height: "1.5em",
             width: "1.5em"
         },
@@ -131,16 +133,85 @@ const styles = (theme: Theme) =>
             flexDirection: "column"
         },
         institutionName: {
-            font: "Montserrat, sans-serif",
+            fontFamily: "Montserrat, sans-serif",
             fontWeight: 600,
             fontSize: "14px"
         },
         institutionLocation: {
-            font: "Montserrat, sans-serif",
+            fontFamily: "Montserrat, sans-serif",
             fontSize: "12px"
         },
         institutionEdit: {
-            color: "black"
+            color: "#53284f"
+        },
+        cards: {
+            marginTop: "4em",
+            display: "flex",
+            flexWrap: "wrap",
+            justifyContent: "space-between"
+        },
+        card: {
+            width: "calc((100% - 1em) / 2)",
+            borderRadius: "8px",
+            border: "1px solid #CCC"
+        },
+        cardHeader: {
+            color: "#007c92",
+            fontFamily: "Montserrat, sans-serif",
+            fontSize: "16px",
+            fontWeight: 600,
+            padding: "24px 24px 0px 24px"
+        },
+        cardContent: {
+            padding: "12px 24px"
+        },
+        cardLink: {
+            textTransform: "none",
+            fontFamily: "Montserrat, sans-serif",
+            width: "100%",
+            transition: theme.transitions.create("background-color"),
+            justifyContent: "left",
+            padding: "12px 24px",
+            fontWeight: 600,
+            color: "#007c92",
+            "&:hover": {
+                backgroundColor: "rgba(0,0,0,0.04)"
+            }
+        },
+        cardFooterLink: {
+            borderTopLeftRadius: "0px",
+            borderTopRightRadius: "0px"
+        },
+        linkCards: {
+            marginTop: "1.5em",
+            display: "flex",
+            flexWrap: "wrap"
+        },
+        linkCard: {
+            backgroundColor: "#53284f",
+            width: "calc((100% - 3em) / 4)",
+            borderRadius: "8px",
+            height: "48px",
+            marginRight: "1em",
+            "&:hover": {
+                backgroundColor: "#42203f"
+            }
+        },
+        linkCardLink: {
+            color: "white"
+        },
+        footer: {
+            marginTop: "2em",
+            display: "flex"
+        },
+        footerText: {
+            color: "rgba(0, 0, 0, 0.54)",
+            marginRight: "auto"
+        },
+        footerLink: {
+            marginLeft: "1em",
+            textDecoration: "none",
+            color: "rgba(0, 0, 0, 0.54)"
         }
     });
 
@@ -174,7 +245,7 @@ class HomeScreen extends Component<Props, State> {
                             </Typography>
                         </div>
 
-                        <ArrowDropDown/>
+                        <ArrowDropDown className={classes.institutionEdit}/>
                     </div>
 
                 </div>
@@ -218,38 +289,85 @@ class HomeScreen extends Component<Props, State> {
 
                 </div>
 
-                <Typography variant="subtitle1" className={classes.subtitle}>Meine Matches</Typography>
+                <div className={classes.cards}>
 
-                <MatchTable
-                    articles={this.props.artikel || []}
-                    matches={this.props.matches || []}/>
+                    <div className={classes.card}>
 
-                <Typography variant="subtitle1" className={classes.subtitle}>Meine Anfragen</Typography>
+                        <Typography className={classes.cardHeader}>Meine Inserate</Typography>
 
-                <RequestTable
-                    erhalten={/* TODO */ []}
-                    gesendet={/* TODO */ []}
-                    showType
-                    artikel={this.props.artikel || []}
-                    onCancel={this.onCancelSentRequest}/>
+                        <div className={classes.cardContent}>
+                            <p>asd</p>
+                            <p>asd</p>
+                            <p>asd</p>
+                            <p>asd</p>
+                        </div>
 
-                <Typography variant="subtitle1" className={classes.subtitle}>Meine Anzeigen</Typography>
+                        <Button
+                            startIcon={<ArrowForward/>}
+                            variant="text"
+                            className={clsx(classes.cardLink, classes.cardFooterLink)}>
+                            Alle 47 Inserate anzeigen
+                        </Button>
 
-                <EntryTable
-                    hideDistance
-                    useSimplePagination
-                    artikel={this.props.artikel || []}
-                    artikelKategorien={this.props.artikelKategorien || []}
-                    angebote={this.filterOffer()}
-                    bedarfe={this.filterDemand()}
-                    delete={{
-                        onDelete: this.onDeleteEntry,
-                        eigeneInstitutionId: institutionId
-                    }}
-                    details={{
-                        onClick: this.onDetailsClicked,
-                        eigeneInstitutionId: institutionId
-                    }}/>
+                    </div>
+
+                    <div className={classes.card}>
+
+                        <Typography className={classes.cardHeader}>Meine offenen Anfragen</Typography>
+
+                        <div className={classes.cardContent}>
+                            <p>asd</p>
+                            <p>asd</p>
+                            <p>asd</p>
+                            <p>asd</p>
+                        </div>
+
+                        <Button
+                            startIcon={<ArrowForward/>}
+                            variant="text"
+                            className={clsx(classes.cardLink, classes.cardFooterLink)}>
+                            Alle 14 Anfragen anzeigen
+                        </Button>
+
+                    </div>
+
+                </div>
+
+                <div className={classes.linkCards}>
+
+                    <div className={classes.linkCard}>
+
+                        <Button
+                            startIcon={<ArrowForward/>}
+                            variant="text"
+                            className={clsx(classes.cardLink, classes.linkCardLink)}>
+                            Meine Matches anzeigen
+                        </Button>
+
+                    </div>
+
+                    <div className={classes.linkCard}>
+
+                        <Button
+                            startIcon={<ArrowForward/>}
+                            variant="text"
+                            className={clsx(classes.cardLink, classes.linkCardLink)}>
+                            Mein Konto anzeigen
+                        </Button>
+
+                    </div>
+
+                </div>
+
+                <div className={classes.footer}>
+                    <Typography className={classes.footerText}>
+                        &copy; RemedyMatch 2020
+                    </Typography>
+                    <a className={classes.footerLink} href="/de">Startseite</a>
+                    <a className={classes.footerLink} href="/de/presse">Presse</a>
+                    <a className={classes.footerLink} href="/de/impressum">Impressum</a>
+                    <a className={classes.footerLink} href="/de/datenschutz">Datenschutz</a>
+                </div>
 
                 <OfferDetailsDialog
                     open={!!this.state.info && this.state.info.isOffer}
