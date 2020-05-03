@@ -16,8 +16,8 @@ export const FormButton: React.FC<Props> = props => {
         return {
             root: {
                 textTransform: "none",
-                borderRadius: theme.spacing(0.5),
-                fontSize: "16px"
+                fontSize: "16px",
+                borderRadius: "8px"
             },
             focused: {}
         };

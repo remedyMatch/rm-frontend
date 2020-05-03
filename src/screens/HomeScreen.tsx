@@ -1,17 +1,23 @@
-import {Typography} from "@material-ui/core";
+import {Hidden, Typography} from "@material-ui/core";
 import {createStyles, Theme, withStyles} from "@material-ui/core/styles";
+import {ArrowDropDown, LocationCity} from "@material-ui/icons";
+import clsx from "clsx";
 import React, {Component} from "react";
 import {connect, ConnectedProps} from "react-redux";
+import {FormButton} from "../components/Form/FormButton";
 import EntryTable from "../components/Table/EntryTable";
 import MatchTable from "../components/Table/MatchTable";
 import RequestTable from "../components/Table/RequestTable";
 import {Artikel} from "../domain/artikel/Artikel";
 import {ArtikelKategorie} from "../domain/artikel/ArtikelKategorie";
+import home from "../resources/home.svg";
+import logo from "../resources/logo.svg";
 import {loadAngebote} from "../state/angebot/AngeboteState";
 import {loadArtikelKategorien} from "../state/artikel/ArtikelKategorienState";
 import {loadArtikel} from "../state/artikel/ArtikelState";
 import {loadBedarfe} from "../state/bedarf/BedarfeState";
 import {loadMatches} from "../state/match/MatchesState";
+import {loadPerson} from "../state/person/PersonState";
 import {RootDispatch, RootState} from "../state/Store";
 import {WithStylesPublic} from "../util/WithStylesPublic";
 import DemandDetailsDialog from "./Dialogs/Demand/DemandDetailsDialog";
@@ -44,6 +50,97 @@ const styles = (theme: Theme) =>
             fontWeight: 500,
             marginTop: "24px",
             marginBottom: "8px"
+        },
+        button: {
+            height: "48px",
+            fontFamily: "Montserrat, sans-serif",
+            maxWidth: "350px",
+            width: "100%",
+            fontWeight: 600,
+            marginTop: "16px"
+        },
+        buttonOffer: {
+            backgroundColor: "#007c92",
+            "&:hover": {
+                backgroundColor: "#006374"
+            }
+        },
+        buttonDemand: {
+            backgroundColor: "#53284f",
+            "&:hover": {
+                backgroundColor: "#42203f"
+            }
+        },
+        header: {
+            display: "flex"
+        },
+        logo: {
+            marginLeft: "-14px"
+        },
+        welcome: {
+            fontFamily: "Montserrat, sans-serif",
+            fontSize: "60px",
+            fontWeight: 600,
+            color: "#007c92"
+        },
+        welcomeSubtitle: {
+            fontFamily: "Montserrat, sans-serif",
+            fontSize: "16px",
+            lineHeight: "24px",
+            marginBottom: "4em"
+        },
+        mainImage: {
+            height: "auto",
+            width: "100%",
+            minWidth: "200px"
+        },
+        welcomeArea: {
+            display: "flex",
+            marginTop: "8em"
+        },
+        welcomeAreaLeft: {
+            marginTop: "4em",
+            display: "flex",
+            flexDirection: "column",
+            flexShrink: 0
+        },
+        welcomeAreaRight: {
+            marginLeft: "4em"
+        },
+        institution: {
+            cursor: "pointer",
+            border: "1px solid #CCC",
+            borderRadius: "8px",
+            padding: "4px 8px",
+            marginLeft: "auto",
+            display: "flex",
+            alignItems: "center",
+            transition: theme.transitions.create("background-color"),
+            "&:hover": {
+                backgroundColor: "rgba(0, 0, 0, 0.04)"
+            }
+        },
+        institutionIcon: {
+            height: "1.5em",
+            width: "1.5em"
+        },
+        institutionText: {
+            marginLeft: "12px",
+            marginRight: "12px",
+            display: "flex",
+            flexDirection: "column"
+        },
+        institutionName: {
+            font: "Montserrat, sans-serif",
+            fontWeight: 600,
+            fontSize: "14px"
+        },
+        institutionLocation: {
+            font: "Montserrat, sans-serif",
+            fontSize: "12px"
+        },
+        institutionEdit: {
+            color: "black"
         }
     });
 
@@ -54,8 +151,72 @@ class HomeScreen extends Component<Props, State> {
         const classes = this.props.classes!;
         const institutionId = ""; // TODO
 
+        const curInst = this.props.person?.aktuelleInstitution;
+
         return (
             <>
+                <div className={classes.header}>
+
+                    <img
+                        alt="RemedyMatch Logo"
+                        className={classes.logo}
+                        src={logo}/>
+
+                    <div className={classes.institution}>
+                        <LocationCity className={classes.institutionIcon}/>
+
+                        <div className={classes.institutionText}>
+                            <Typography className={classes.institutionName}>
+                                {curInst?.institution.name}
+                            </Typography>
+                            <Typography className={classes.institutionLocation}>
+                                {curInst?.standort.strasse} {curInst?.standort.hausnummer}, {curInst?.standort.plz} {curInst?.standort.ort}
+                            </Typography>
+                        </div>
+
+                        <ArrowDropDown/>
+                    </div>
+
+                </div>
+
+                <div className={classes.welcomeArea}>
+
+                    <div className={classes.welcomeAreaLeft}>
+
+                        <Typography
+                            className={classes.welcome}>
+                            Hallo, {this.props.person?.vorname}&nbsp;{this.props.person?.nachname}
+                        </Typography>
+
+                        <Typography
+                            className={classes.welcomeSubtitle}>
+                            Willkommen zurück bei RemedyMatch.
+                        </Typography>
+
+                        <FormButton
+                            className={clsx(classes.button, classes.buttonOffer)}
+                            variant="contained">
+                            Material spenden
+                        </FormButton>
+
+                        <FormButton
+                            className={clsx(classes.button, classes.buttonDemand)}
+                            variant="contained">
+                            Material suchen
+                        </FormButton>
+
+                    </div>
+
+                    <Hidden smDown>
+                        <div className={classes.welcomeAreaRight}>
+                            <img
+                                alt="RemedyMatch Bild"
+                                className={classes.mainImage}
+                                src={home}/>
+                        </div>
+                    </Hidden>
+
+                </div>
 
                 <Typography variant="subtitle1" className={classes.subtitle}>Meine Matches</Typography>
 
@@ -131,6 +292,7 @@ class HomeScreen extends Component<Props, State> {
         this.props.loadAngebote();
         this.props.loadBedarfe();
         this.props.loadMatches();
+        this.props.loadPerson();
     };
 
     private onCancelSentRequest = (id?: string) => {
@@ -218,7 +380,8 @@ const mapStateToProps = (state: RootState) => ({
     artikel: state.artikel.value,
     artikelKategorien: state.artikelKategorien.value,
     bedarfe: state.bedarfe.value,
-    matches: state.matches.value
+    matches: state.matches.value,
+    person: state.person.value
 });
 
 const mapDispatchToProps = (dispatch: RootDispatch) => ({
@@ -226,7 +389,8 @@ const mapDispatchToProps = (dispatch: RootDispatch) => ({
     loadArtikel: () => dispatch(loadArtikel()),
     loadArtikelKategorien: () => dispatch(loadArtikelKategorien()),
     loadBedarfe: () => dispatch(loadBedarfe()),
-    loadMatches: () => dispatch(loadMatches())
+    loadMatches: () => dispatch(loadMatches()),
+    loadPerson: () => dispatch(loadPerson())
 });
 
 const connector = connect(mapStateToProps, mapDispatchToProps);
