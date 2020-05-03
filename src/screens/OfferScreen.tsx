@@ -4,11 +4,10 @@ import {connect, ConnectedProps} from "react-redux";
 import {FormButton} from "../components/Form/FormButton";
 import {FormTextInput} from "../components/Form/FormTextInput";
 import EntryTable from "../components/Table/EntryTable";
-import {loadAngebote} from "../state/old/AngeboteState";
-import {loadArtikelKategorien} from "../state/old/ArtikelKategorienState";
-import {loadArtikel} from "../state/old/ArtikelState";
-import {loadEigeneInstitution} from "../state/EigeneInstitutionState";
-import {loadPerson} from "../state/old/PersonState";
+import {loadAngebote} from "../state/angebot/AngeboteState";
+import {loadArtikelKategorien} from "../state/artikel/ArtikelKategorienState";
+import {loadArtikel} from "../state/artikel/ArtikelState";
+import {loadPerson} from "../state/person/PersonState";
 import {RootDispatch, RootState} from "../state/Store";
 import {WithStylesPublic} from "../util/WithStylesPublic";
 import AddOfferDialog from "./Dialogs/Offer/AddOfferDialog";
@@ -45,53 +44,57 @@ class OfferScreen extends Component<Props, State> {
 
     render() {
         const classes = this.props.classes!;
-        const institutionId = this.props.eigeneInstitution?.id || "";
+        const institutionId = ""; // TODO
 
         const offerItem = this.props.angebote?.find(item => item.id === this.state.infoId);
-        const article = this.props.artikel?.find(article => article.id === offerItem?.artikelId);
-        const category = this.props.artikelKategorien?.find(category => category.id === article?.artikelKategorieId);
 
         return (
             <>
+
                 <div className={classes.tableHeader}>
+
                     <FormTextInput
                         className={classes.searchInput}
                         label="Angebote durchsuchen..."
-                        changeListener={this.setFilter}
+                        onChange={this.setFilter}
                         value={this.state.searchFilter}/>
+
                     <FormButton
                         onClick={() => this.setState(state => ({addDialogOpen: !state.addDialogOpen}))}>
                         Angebot anlegen
                     </FormButton>
+
                 </div>
+
                 <EntryTable
                     hideType
-                    angebote={this.filter()}
                     artikel={this.props.artikel || []}
                     artikelKategorien={this.props.artikelKategorien || []}
+                    angebote={this.filter()}
                     bedarfe={[]}
                     details={{onClick: this.onDetailsClicked, eigeneInstitutionId: institutionId}}/>
+
                 <AddOfferDialog
                     open={this.state.addDialogOpen}
                     onCancelled={this.onAddCancelled}
                     onSaved={this.onAddSaved}
-                    person={this.props.person}
                     artikel={this.props.artikel || []}
                     artikelKategorien={this.props.artikelKategorien || []}/>
+
                 <OfferDetailsDialog
                     open={!!this.state.infoId}
                     onDone={this.onDetailsDone}
-                    item={offerItem}
-                    artikel={article}
-                    artikelKategorie={category}
                     onContact={this.onDetailsContact}
-                    eigeneInstitutionIds={this.props.person?.institutionen.map(institution => institution.institution.id) || []}/>
+                    angebot={offerItem}
+                    artikel={this.props.artikel || []}
+                    artikelKategorien={this.props.artikelKategorien || []}/>
+
                 <RespondOfferDialog
                     open={!!this.state.contactId}
                     onCancelled={this.onContactCancelled}
                     onSaved={this.onContactSaved}
-                    angebot={this.props.angebote?.find(item => item.id === this.state.contactId)}
-                    eigeneInstitutionIds={this.props.person?.institutionen.map(institution => institution.institution.id) || []}/>
+                    angebot={this.props.angebote?.find(d => d.id === this.state.contactId)}/>
+
             </>
         )
     }

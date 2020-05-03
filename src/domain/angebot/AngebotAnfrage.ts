@@ -9,5 +9,5 @@ export interface AngebotAnfrage {
     anzahl: number;
     kommentar: string;
     status: AngebotAnfrageStatus;
-    entferung: number;
+    entfernung: number;
 }

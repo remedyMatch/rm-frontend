@@ -1,4 +1,3 @@
-import React from 'react';
 import {makeStyles} from '@material-ui/core/styles';
 import MUITable from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -6,10 +5,10 @@ import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import {AngebotAnfrage} from "../../domain/Anfrage";
-import {IconButton} from "@material-ui/core";
-import {CallMade, CallReceived, Cancel} from "@material-ui/icons";
-import {Artikel} from "../../domain/old/Artikel";
+import {CallMade, CallReceived} from "@material-ui/icons";
+import React from 'react';
+import {AngebotAnfrage} from "../../domain/angebot/AngebotAnfrage";
+import {Artikel} from "../../domain/artikel/Artikel";
 
 const useStyles = makeStyles({
     table: {
@@ -76,18 +75,14 @@ const RequestTable: React.FC<Props> = props => {
                     <TableRow>
                         {props.showType && (<TableCell className={classes.typeColumn}>Typ</TableCell>)}
                         <TableCell className={classes.contactColumn}>Absender / Empfänger</TableCell>
-                        <TableCell className={classes.articleColumn}>Anzeige</TableCell>
                         <TableCell className={classes.distanceColumn}>Entfernung</TableCell>
                         <TableCell className={classes.statusColumn}>Status</TableCell>
-                        {props.onCancel && (<TableCell className={classes.cancelColumn}/>)}
                     </TableRow>
                 </TableHead>
                 <TableBody>
                     {data.map(entry => {
                         const row = entry.data;
-                        const institution = entry.type === "sent" ? row.institutionAn : row.institutionVon;
-                        const item = props.artikel.find(item => item.id === row.artikelId);
-                        const onCancel = props.onCancel;
+                        const institution = row.institution;
 
                         return (
                             <TableRow key={row.id}>
@@ -102,23 +97,11 @@ const RequestTable: React.FC<Props> = props => {
                                 <TableCell className={classes.contactColumn}>
                                     {(entry.type === "sent" ? "An " : "Von ") + institution.name}
                                 </TableCell>
-                                <TableCell className={classes.articleColumn}>
-                                    {(row.bedarfId ? "Bedarf: " : "Angebot: ") + row?.anzahl + " " + item?.name}
-                                </TableCell>
                                 <TableCell className={classes.distanceColumn}>
                                     {row.entfernung.toFixed(1) + " km"}
                                 </TableCell>
                                 <TableCell className={classes.statusColumn}>
                                     {row.status}
-                                </TableCell>
-                                <TableCell className={classes.cancelColumn}>
-                                    {onCancel && entry.type === "sent" && row.status === "Offen" && (
-                                        <IconButton
-                                            className={classes.iconButton}
-                                            onClick={() => onCancel(item?.id)}>
-                                            <Cancel/>
-                                        </IconButton>
-                                    )}
                                 </TableCell>
                             </TableRow>
                         )

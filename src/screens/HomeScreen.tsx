@@ -5,21 +5,18 @@ import {connect, ConnectedProps} from "react-redux";
 import EntryTable from "../components/Table/EntryTable";
 import MatchTable from "../components/Table/MatchTable";
 import RequestTable from "../components/Table/RequestTable";
-import {Artikel} from "../domain/old/Artikel";
-import {ArtikelKategorie} from "../domain/old/ArtikelKategorie";
-import {loadAngebote} from "../state/old/MeineAngeboteState";
-import {loadArtikelKategorien} from "../state/old/ArtikelKategorienState";
-import {loadArtikel} from "../state/old/ArtikelState";
-import {loadBedarfe} from "../state/old/MeineBedarfeState";
-import {loadEigeneInstitution} from "../state/EigeneInstitutionState";
-import {loadErhalteneAnfragen} from "../state/old/ErhalteneAnfragenState";
-import {loadGesendeteAnfragen} from "../state/old/GesendeteAnfragenState";
-import {loadMatches} from "../state/old/MatchesState";
+import {Artikel} from "../domain/artikel/Artikel";
+import {ArtikelKategorie} from "../domain/artikel/ArtikelKategorie";
+import {loadAngebote} from "../state/angebot/AngeboteState";
+import {loadArtikelKategorien} from "../state/artikel/ArtikelKategorienState";
+import {loadArtikel} from "../state/artikel/ArtikelState";
+import {loadBedarfe} from "../state/bedarf/BedarfeState";
+import {loadMatches} from "../state/match/MatchesState";
 import {RootDispatch, RootState} from "../state/Store";
 import {WithStylesPublic} from "../util/WithStylesPublic";
 import DemandDetailsDialog from "./Dialogs/Demand/DemandDetailsDialog";
+import CancelEntryDialog from "./Dialogs/Home/CancelEntryDialog";
 import CancelSentRequestDialog from "./Dialogs/Home/CancelSentRequestDialog";
-import DeleteEntryDialog from "./Dialogs/Home/DeleteEntryDialog";
 import OfferDetailsDialog from "./Dialogs/Offer/OfferDetailsDialog";
 
 interface Props extends WithStylesPublic<typeof styles>, PropsFromRedux {
@@ -55,27 +52,31 @@ class HomeScreen extends Component<Props, State> {
 
     render() {
         const classes = this.props.classes!;
-        const institutionId = this.props.eigeneInstitution?.id || "";
+        const institutionId = ""; // TODO
 
         return (
             <>
+
                 <Typography variant="subtitle1" className={classes.subtitle}>Meine Matches</Typography>
+
                 <MatchTable
                     articles={this.props.artikel || []}
                     matches={this.props.matches || []}/>
+
                 <Typography variant="subtitle1" className={classes.subtitle}>Meine Anfragen</Typography>
+
                 <RequestTable
-                    erhalten={this.props.erhalteneAnfragen || []}
-                    gesendet={this.props.gesendeteAnfragen || []}
+                    erhalten={/* TODO */ []}
+                    gesendet={/* TODO */ []}
                     showType
                     artikel={this.props.artikel || []}
                     onCancel={this.onCancelSentRequest}/>
+
                 <Typography variant="subtitle1" className={classes.subtitle}>Meine Anzeigen</Typography>
+
                 <EntryTable
                     hideDistance
-                    showDetailedAmount
                     useSimplePagination
-                    useAdvancedLocation
                     artikel={this.props.artikel || []}
                     artikelKategorien={this.props.artikelKategorien || []}
                     angebote={this.filterOffer()}
@@ -88,26 +89,30 @@ class HomeScreen extends Component<Props, State> {
                         onClick: this.onDetailsClicked,
                         eigeneInstitutionId: institutionId
                     }}/>
+
                 <OfferDetailsDialog
                     open={!!this.state.info && this.state.info.isOffer}
                     onDone={this.onDetailsDone}
-                    eigeneInstitution={this.props.eigeneInstitution}
-                    artikel={this.state.info?.article}
-                    artikelKategorie={this.state.info?.category}
-                    item={this.props.angebote?.find(item => item.id === this.state.info?.id)}/>
+                    angebot={this.props.angebote?.find(item => item.id === this.state.info?.id)}
+                    artikel={this.props.artikel || []}
+                    artikelKategorien={this.props.artikelKategorien || []}/>
+
                 <DemandDetailsDialog
                     open={!!this.state.info && !this.state.info.isOffer}
                     onDone={this.onDetailsDone}
-                    eigeneInstitution={this.props.eigeneInstitution}
-                    artikel={this.state.info?.article}
-                    artikelKategorie={this.state.info?.category}
-                    item={this.props.bedarfe?.find(item => item.id === this.state.info?.id)}/>
+                    bedarf={this.props.bedarfe?.find(item => item.id === this.state.info?.id)}
+                    artikel={this.props.artikel || []}
+                    artikelKategorien={this.props.artikelKategorien || []}/>
+
                 <CancelSentRequestDialog
                     open={!!this.state.cancelSentRequestId}
-                    request={this.props.gesendeteAnfragen?.find(sr => (sr.angebotId || sr.bedarfId) === this.state.cancelSentRequestId)}
+                    requestId={this.state.cancelSentRequestId}
+                    isDemand={/*TODO*/ false}
+                    institutionName={/*TODO*/ "Keiner"}
                     onNo={this.onCancelSentRequestNo}
                     onYes={this.onCancelSentRequestYes}/>
-                <DeleteEntryDialog
+
+                <CancelEntryDialog
                     open={!!this.state.deleteEntry}
                     onNo={this.onDeleteEntryNo}
                     onYes={this.onDeleteEntryYes}
@@ -115,6 +120,7 @@ class HomeScreen extends Component<Props, State> {
                     articleName={this.state.deleteEntry?.name}
                     amount={this.state.deleteEntry?.amount}
                     requestId={this.state.deleteEntry?.id}/>
+
             </>
         )
     }
@@ -124,9 +130,6 @@ class HomeScreen extends Component<Props, State> {
         this.props.loadArtikelKategorien();
         this.props.loadAngebote();
         this.props.loadBedarfe();
-        this.props.loadErhalteneAnfragen();
-        this.props.loadGesendeteAnfragen();
-        this.props.loadEigeneInstitution();
         this.props.loadMatches();
     };
 
@@ -148,7 +151,6 @@ class HomeScreen extends Component<Props, State> {
         this.setState({
             cancelSentRequestId: undefined
         });
-        this.props.loadGesendeteAnfragen();
     };
 
     private onDetailsDone = () => {
@@ -174,8 +176,7 @@ class HomeScreen extends Component<Props, State> {
     };
 
     private filterDemand = () => {
-        return (this.props.bedarfe || [])
-            .filter(bedarf => bedarf.institutionId === this.props.eigeneInstitution?.id);
+        return (this.props.bedarfe || []); // TODO: FILTER
     };
 
     private onDeleteEntry = (id: string) => {
@@ -188,7 +189,7 @@ class HomeScreen extends Component<Props, State> {
                 id: id,
                 isDemand: !!demand,
                 name: article?.name || "",
-                amount: demand?.rest || offer?.anzahl || 0
+                amount: demand?.verfuegbareAnzahl || 0
             }
         });
     };
@@ -208,8 +209,7 @@ class HomeScreen extends Component<Props, State> {
     };
 
     private filterOffer = () => {
-        return (this.props.angebote || [])
-            .filter(angebot => angebot.institutionId === this.props.eigeneInstitution?.id);
+        return (this.props.angebote || []); // TODO: Filter
     };
 }
 
@@ -218,9 +218,6 @@ const mapStateToProps = (state: RootState) => ({
     artikel: state.artikel.value,
     artikelKategorien: state.artikelKategorien.value,
     bedarfe: state.bedarfe.value,
-    eigeneInstitution: state.eigeneInstitution.value,
-    erhalteneAnfragen: state.erhalteneAnfragen.value,
-    gesendeteAnfragen: state.gesendeteAnfragen.value,
     matches: state.matches.value
 });
 
@@ -229,9 +226,6 @@ const mapDispatchToProps = (dispatch: RootDispatch) => ({
     loadArtikel: () => dispatch(loadArtikel()),
     loadArtikelKategorien: () => dispatch(loadArtikelKategorien()),
     loadBedarfe: () => dispatch(loadBedarfe()),
-    loadEigeneInstitution: () => dispatch(loadEigeneInstitution()),
-    loadErhalteneAnfragen: () => dispatch(loadErhalteneAnfragen()),
-    loadGesendeteAnfragen: () => dispatch(loadGesendeteAnfragen()),
     loadMatches: () => dispatch(loadMatches())
 });
 

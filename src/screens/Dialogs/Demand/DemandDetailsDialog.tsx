@@ -1,21 +1,20 @@
-import React from "react";
-import {makeStyles, Theme} from "@material-ui/core/styles";
 import {Typography} from "@material-ui/core";
-import {Artikel} from "../../../domain/old/Artikel";
-import {ArtikelKategorie} from "../../../domain/old/ArtikelKategorie";
-import {Bedarf} from "../../../domain/old/Bedarf";
-import {FormButton} from "../../../components/Form/FormButton";
+import {makeStyles, Theme} from "@material-ui/core/styles";
+import React from "react";
 import PopupDialog from "../../../components/Dialog/PopupDialog";
-import {Institution} from "../../../domain/old/Institution";
+import {FormButton} from "../../../components/Form/FormButton";
+import {Artikel} from "../../../domain/artikel/Artikel";
+import {ArtikelKategorie} from "../../../domain/artikel/ArtikelKategorie";
+import {Bedarf} from "../../../domain/bedarf/Bedarf";
 
 interface Props {
     open: boolean;
-    eigeneInstitution?: Institution;
-    item?: Bedarf;
-    artikel?: Artikel;
-    artikelKategorie?: ArtikelKategorie;
     onContact?: () => void;
     onDone: () => void;
+
+    bedarf?: Bedarf;
+    artikel: Artikel[];
+    artikelKategorien: ArtikelKategorie[];
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -53,7 +52,10 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 const DemandDetailsDialog: React.FC<Props> = props => {
     const classes = useStyles();
-    const variante = props.artikel?.varianten?.find(variante => variante.id === props.item?.artikelVarianteId);
+
+    const category = props.artikelKategorien.find(kategorie => kategorie.id === props.bedarf?.artikelKategorieId);
+    const article = props.artikel.find(artikel => artikel.id === props.bedarf?.artikelId);
+    const variant = article?.varianten?.find(variant => variant.id === props.bedarf?.artikelVarianteId);
 
     return (
         <PopupDialog
@@ -65,44 +67,46 @@ const DemandDetailsDialog: React.FC<Props> = props => {
             <Typography variant="subtitle1" className={classes.subtitle}>Benötigter Artikel</Typography>
             <div className={classes.row}>
                 <span className={classes.left}>Kategorie</span>
-                <span className={classes.right}>{props.artikelKategorie?.name}</span>
+                <span className={classes.right}>{category?.name}</span>
             </div>
             <div className={classes.row}>
                 <span className={classes.left}>Artikel</span>
-                <span className={classes.right}>{props.artikel?.name}</span>
+                <span className={classes.right}>{article?.name}</span>
             </div>
             <div className={classes.row}>
                 <span className={classes.left}>Beschreibung</span>
-                <span className={classes.right}>{props.artikel?.beschreibung}</span>
+                <span className={classes.right}>{article?.beschreibung}</span>
             </div>
             <Typography variant="subtitle1" className={classes.subtitle}>Benötigte Variante</Typography>
             <div className={classes.row}>
                 <span className={classes.left}>Name</span>
-                <span className={classes.right}>{variante?.variante}</span>
+                <span className={classes.right}>{variant?.variante}</span>
             </div>
             <div className={classes.row}>
                 <span className={classes.left}>Beschreibung</span>
-                <span className={classes.right}>{variante?.beschreibung}</span>
+                <span className={classes.right}>{variant?.beschreibung}</span>
             </div>
             <div className={classes.row}>
                 <span className={classes.left}>Norm</span>
-                <span className={classes.right}>{variante?.norm}</span>
+                <span className={classes.right}>{variant?.norm}</span>
             </div>
             <Typography variant="subtitle1" className={classes.subtitle}>Weitere Details</Typography>
             <div className={classes.row}>
                 <span className={classes.left}>Standort</span>
-                <span className={classes.right}>{props.item?.standort.ort}</span>
+                <span className={classes.right}>{props.bedarf?.ort}</span>
             </div>
             <div className={classes.row}>
                 <span className={classes.left}>Anzahl</span>
-                <span className={classes.right}>{props.item?.rest}</span>
+                <span className={classes.right}>{props.bedarf?.verfuegbareAnzahl}</span>
             </div>
             <div className={classes.row}>
                 <span className={classes.left}>Kommentar</span>
-                <span className={classes.right}>{props.item?.kommentar ||
-                <span className={classes.emptyPlaceholder}>Keiner</span>}</span>
+                <span className={classes.right}>
+                    {props.bedarf?.kommentar ||
+                    <span className={classes.emptyPlaceholder}>Keiner</span>}
+                </span>
             </div>
-            {props.onContact && props.eigeneInstitution?.id !== props.item?.institutionId && (
+            {props.onContact && (
                 <div className={classes.footer}>
                     <FormButton
                         onClick={props.onContact}

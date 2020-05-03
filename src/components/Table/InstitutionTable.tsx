@@ -1,4 +1,4 @@
-import React from 'react';
+import {IconButton} from "@material-ui/core";
 import {makeStyles} from '@material-ui/core/styles';
 import MUITable from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -6,9 +6,9 @@ import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import {IconButton} from "@material-ui/core";
 import {Edit} from "@material-ui/icons";
-import { PersonInstitution } from '../../domain/old/PersonInstitution';
+import React from 'react';
+import {Person2Institution} from "../../domain/person/Person2Institution";
 
 const useStyles = makeStyles({
     table: {
@@ -37,9 +37,10 @@ const useStyles = makeStyles({
 });
 
 interface Props {
-    rows: PersonInstitution[];
-    onEditClicked: (institution: PersonInstitution) => void;
+    rows: Person2Institution[];
+    onEditClicked: (institution: Person2Institution) => void;
 }
+
 const InstitutionTable: React.FC<Props> = props => {
     const classes = useStyles();
 

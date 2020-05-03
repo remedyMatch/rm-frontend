@@ -4,9 +4,10 @@ import {connect, ConnectedProps} from "react-redux";
 import {FormButton} from "../components/Form/FormButton";
 import {FormTextInput} from "../components/Form/FormTextInput";
 import EntryTable from "../components/Table/EntryTable";
-import {loadArtikelKategorien} from "../state/old/ArtikelKategorienState";
-import {loadArtikel} from "../state/old/ArtikelState";
-import {loadBedarfe} from "../state/old/BedarfeState";
+import {loadArtikelKategorien} from "../state/artikel/ArtikelKategorienState";
+import {loadArtikel} from "../state/artikel/ArtikelState";
+import {loadBedarfe} from "../state/bedarf/BedarfeState";
+import {loadPerson} from "../state/person/PersonState";
 import {RootDispatch, RootState} from "../state/Store";
 import LoginService from "../util/LoginService";
 import {WithStylesPublic} from "../util/WithStylesPublic";
@@ -44,54 +45,56 @@ class DemandScreen extends Component<Props, State> {
 
     render() {
         const classes = this.props.classes!;
-
         const demandItem = this.props.bedarfe?.find(item => item.id === this.state.infoId);
-        const article = this.props.artikel?.find(article => article.id === demandItem?.artikelId);
-        const category = this.props.artikelKategorien?.find(category => category.id === article?.artikelKategorieId);
-
         const empfaenger = LoginService.hasRoleEmpfaenger();
 
         return (
             <>
+
                 <div className={classes.tableHeader}>
+
                     <FormTextInput
                         className={classes.searchInput}
                         label="Bedarf durchsuchen..."
-                        changeListener={this.setFilter}
+                        onChange={this.setFilter}
                         value={this.state.searchFilter}/>
+
                     <FormButton disabled={!empfaenger}
                                 onClick={() => this.setState(state => ({addDialogOpen: !state.addDialogOpen}))}>
                         Bedarf anlegen
                     </FormButton>
+
                 </div>
+
                 <EntryTable
                     hideType
                     artikel={this.props.artikel || []}
                     artikelKategorien={this.props.artikelKategorien || []}
                     bedarfe={this.filter()}
                     angebote={[]}
-                    details={{onClick: this.onDetailsClicked, eigeneInstitutionId: institutionId}}/>
+                    details={{onClick: this.onDetailsClicked, eigeneInstitutionId: this.props.person?.aktuelleInstitution.institution.id || ""}}/>
+
                 <AddDemandDialog
                     open={this.state.addDialogOpen}
                     onCancelled={this.onAddCancelled}
                     onSaved={this.onAddSaved}
                     artikel={this.props.artikel || []}
-                    artikelKategorien={this.props.artikelKategorien || []}
-                    institution={this.props.eigeneInstitution}/>
+                    artikelKategorien={this.props.artikelKategorien || []}/>
+
                 <DemandDetailsDialog
                     open={!!this.state.infoId}
                     onDone={this.onDetailsDone}
-                    artikel={article}
-                    item={demandItem}
-                    artikelKategorie={category}
                     onContact={this.onDetailsContact}
-                    eigeneInstitution={this.props.eigeneInstitution}/>
+                    bedarf={demandItem}
+                    artikel={this.props.artikel || []}
+                    artikelKategorien={this.props.artikelKategorien || []}/>
+
                 <RespondDemandDialog
                     open={!!this.state.contactId}
                     onCancelled={this.onContactCancelled}
                     onSaved={this.onContactSaved}
-                    bedarf={this.props.bedarfe?.find(d => d.id === this.state.contactId)}
-                    eigeneInstitution={this.props.eigeneInstitution}/>
+                    bedarf={this.props.bedarfe?.find(d => d.id === this.state.contactId)}/>
+
             </>
         )
     }
@@ -100,6 +103,7 @@ class DemandScreen extends Component<Props, State> {
         this.props.loadArtikel();
         this.props.loadArtikelKategorien();
         this.props.loadBedarfe();
+        this.props.loadPerson();
     };
 
     private onContactCancelled = () => {
@@ -154,13 +158,15 @@ class DemandScreen extends Component<Props, State> {
 const mapStateToProps = (state: RootState) => ({
     artikel: state.artikel.value,
     artikelKategorien: state.artikelKategorien.value,
-    bedarfe: state.bedarfe.value
+    bedarfe: state.bedarfe.value,
+    person: state.person.value
 });
 
 const mapDispatchToProps = (dispatch: RootDispatch) => ({
     loadArtikel: () => dispatch(loadArtikel()),
     loadArtikelKategorien: () => dispatch(loadArtikelKategorien()),
-    loadBedarfe: () => dispatch(loadBedarfe())
+    loadBedarfe: () => dispatch(loadBedarfe()),
+    loadPerson: () => dispatch(loadPerson())
 });
 
 const connector = connect(mapStateToProps, mapDispatchToProps);

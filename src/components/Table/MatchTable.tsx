@@ -1,4 +1,3 @@
-import React from 'react';
 import {makeStyles} from '@material-ui/core/styles';
 import MUITable from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -7,8 +6,9 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import {CallMade, CallReceived} from "@material-ui/icons";
-import {Match} from "../../domain/old/Match";
-import {Artikel} from "../../domain/old/Artikel";
+import React from 'react';
+import {Artikel} from "../../domain/artikel/Artikel";
+import {Match} from "../../domain/match/Match";
 
 const useStyles = makeStyles({
     table: {
@@ -35,9 +35,6 @@ const useStyles = makeStyles({
     },
     typeColumn: {
         width: "99%"
-    },
-    statusColumn: {
-        whiteSpace: "nowrap"
     }
 });
 
@@ -55,7 +52,6 @@ const MatchTable: React.FC<Props> = props => {
                 <TableHead>
                     <TableRow>
                         <TableCell className={classes.typeColumn}>Betreff</TableCell>
-                        <TableCell className={classes.statusColumn}>Status</TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
@@ -68,9 +64,6 @@ const MatchTable: React.FC<Props> = props => {
                                         <CallMade className={classes.typeIcon}/>}
                                     Anfrage zu Lieferung
                                     von {match.anzahl} {article?.name} {match.anfrageTyp === "Angebot" ? "durch " + match.institutionVon.name : "an " + match.institutionAn.name}
-                                </TableCell>
-                                <TableCell className={classes.statusColumn}>
-                                    {match.status}
                                 </TableCell>
                             </TableRow>
                         )

@@ -1,9 +1,9 @@
 import {makeStyles} from "@material-ui/core/styles";
 import React from "react";
-import {InstitutionStandort} from "../../domain/old/InstitutionStandort";
 import {Autocomplete, createFilterOptions} from "@material-ui/lab";
 import {Grid, TextField} from "@material-ui/core";
 import {LocationOn} from "@material-ui/icons";
+import {InstitutionStandort} from "../../domain/institution/InstitutionStandort";
 
 interface Props {
     label?: string;
@@ -77,4 +77,3 @@ export const FormLocationPicker: React.FC<Props> = props => {
         />
     );
 };
-

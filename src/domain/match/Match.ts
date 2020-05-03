@@ -14,4 +14,5 @@ export interface Match {
     artikelId: string;
     artikelVarianteId: string;
     anzahl: number;
+    anfrageTyp: string;
 }

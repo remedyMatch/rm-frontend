@@ -1,25 +1,17 @@
 import {Typography} from "@material-ui/core";
 import {createStyles, Theme, withStyles} from "@material-ui/core/styles";
-import clsx from "clsx";
 import React, {Component} from "react";
 import {connect, ConnectedProps} from "react-redux";
-import {FormButton} from "../components/Form/FormButton";
-import {loadEigeneInstitution} from "../state/EigeneInstitutionState";
-import {loadInstitutionTypen} from "../state/old/InstitutionTypenState";
+import InstitutionTable from "../components/Table/InstitutionTable";
+import {Person2Institution} from "../domain/person/Person2Institution";
+import {loadPerson} from "../state/person/PersonState";
 import {RootDispatch, RootState} from "../state/Store";
 import {WithStylesPublic} from "../util/WithStylesPublic";
-import InstitutionTable from "../components/Table/InstitutionTable";
-import { PersonInstitution } from "../domain/old/PersonInstitution";
-import { loadPerson } from "../state/old/PersonState";
 
 interface Props extends WithStylesPublic<typeof styles>, PropsFromRedux {
 }
 
 interface State {
-    editDialogOpen: boolean;
-    editLocationDialogOpen: boolean;
-    addLocationDialogOpen: boolean;
-    deleteLocationId?: string;
 }
 
 const styles = (theme: Theme) =>
@@ -62,13 +54,6 @@ const styles = (theme: Theme) =>
             textAlign: "right",
             marginTop: "16px"
         },
-        missing: {
-            fontWeight: 500,
-            marginTop: "16px"
-        },
-        missingError: {
-            color: "red"
-        },
         additionalAddress: {
             margin: "16px 0px"
         },
@@ -80,222 +65,91 @@ const styles = (theme: Theme) =>
     });
 
 class InstitutionScreen extends Component<Props, State> {
-    state: State = {
-        editDialogOpen: false,
-        addLocationDialogOpen: false,
-        editLocationDialogOpen: false,
-        deleteLocationId: undefined
-    };
+    state: State = {};
 
     render() {
         const classes = this.props.classes!;
 
-        const standort = this.props.eigeneInstitution?.hauptstandort;
-        //const standorte = this.props.eigeneInstitution?.standorte;
-
         return (
             <div className={classes.content}>
+
                 <div className={classes.container}>
+
                     <Typography
                         variant="subtitle1"
                         className={classes.subtitle}>
                         Mein Konto
                     </Typography>
-                    <div className={classes.row}>
-                        <span className={classes.left}>Typ:</span>
-                        <span className={classes.right}>{this.props.eigeneInstitution?.typ || <span className={clsx(classes.missingError, classes.missing)}>Nicht angegeben!</span>}</span>
-                    </div>
-                    <div className={classes.row}>
-                        <span className={classes.left}>Name:</span>
-                        <span className={classes.right}>{this.props.eigeneInstitution?.name || <span className={clsx(classes.missingError, classes.missing)}>Nicht angegeben!</span>}</span>
-                    </div>
+
                     <div className={classes.row}>
                         <span className={classes.left}>Username:</span>
-                        <span className={classes.right}>{this.props.person?.username || <span className={clsx(classes.missingError, classes.missing)}>Nicht angegeben!</span>}</span>
+                        <span className={classes.right}>{this.props.person?.username}</span>
                     </div>
+
                     <div className={classes.row}>
                         <span className={classes.left}>Name:</span>
-                        <span className={classes.right}>{this.props.person ? this.props.person.vorname + this.props.person.nachname : <span className={clsx(classes.missingError, classes.missing)}>Nicht angegeben!</span>}</span>
+                        <span
+                            className={classes.right}>{this.props.person?.vorname + " " + this.props.person?.nachname}</span>
                     </div>
+
                     <div className={classes.row}>
                         <span className={classes.left}>E-Mail:</span>
-                        <span className={classes.right}>{this.props.person?.email || <span className={clsx(classes.missingError, classes.missing)}>Nicht angegeben!</span>}</span>
+                        <span className={classes.right}>{this.props.person?.email}</span>
                     </div>
+
                     <div className={classes.row}>
                         <span className={classes.left}>Telefon:</span>
-                        <span className={classes.right}>{this.props.person?.telefon || <span className={clsx(classes.missingError, classes.missing)}>Nicht angegeben!</span>}</span>
+                        <span className={classes.right}>{this.props.person?.telefon}</span>
                     </div>
-                    {/*<div className={classes.footer}>
-                        <FormButton
-                            onClick={this.onEditClicked}
-                            variant="text">
-                            Bearbeiten
-                        </FormButton>
-                    </div>*/}
+
                 </div>
+
                 <div className={classes.container}>
+
                     <Typography
                         variant="subtitle1"
                         className={classes.subtitle}>
-                        Hauptstandort
+                        Ausgewählte Institution
                     </Typography>
-                    {standort && (
-                        <div className={classes.address}>
-                            <p>{standort.name}</p>
-                            <p>{standort.strasse} {standort.hausnummer}</p>
-                            <p>{standort.plz} {standort.ort}</p>
-                            <p>{standort.land}</p>
-                        </div>
-                    )}
-                    {!standort && (
-                        <span className={clsx(classes.missingError, classes.missing)}>Noch nicht eingetragen!<br/>Bitte auf Bearbeiten klicken.</span>
-                    )}
-                    {
-                        <div className={classes.footer}>
-                        <FormButton
-                        /*onClick={this.onEditLocationClicked}*/
-                        onClick={() => {alert('Bitte senden Sie eine E-Mail an info@remedymatch.io um Ihren Standort zu ändern.')}}
-                        variant="text">
-                        Bearbeiten
-                        </FormButton>
-                        </div>
-                    }
+
+                    <div className={classes.address}>
+                        <p>{this.props.person?.aktuelleInstitution.institution.name}</p>
+                        <p>{this.props.person?.aktuelleInstitution.standort.name}</p>
+                        <p>{this.props.person?.aktuelleInstitution.standort.strasse} {this.props.person?.aktuelleInstitution.standort.hausnummer}</p>
+                        <p>{this.props.person?.aktuelleInstitution.standort.plz} {this.props.person?.aktuelleInstitution.standort.ort}</p>
+                        <p>{this.props.person?.aktuelleInstitution.standort.land}</p>
+                    </div>
+
                 </div>
-                
+
                 <div className={classes.container}>
+
                     <Typography
                         variant="subtitle1"
                         className={classes.subtitle}>
                         Institutionen
                     </Typography>
-                    <InstitutionTable rows={this.props.person?.institutionen || []} onEditClicked={(inst: PersonInstitution) => console.log(inst)}></InstitutionTable>
+
+                    <InstitutionTable
+                        rows={this.props.person?.institutionen || []}
+                        onEditClicked={(inst: Person2Institution) => console.log(inst)}/>
+
                 </div>
 
-                {/*<div className={classes.container}>
-                    <Typography
-                        variant="subtitle1"
-                        className={classes.subtitle}>
-                        Weitere Standorte
-                    </Typography>
-                    {standorte?.map(standort => (
-                        <div className={clsx(classes.address, classes.additionalAddress)} key={standort.id}>
-                            <p>{standort.name}</p>
-                            <p>{standort.strasse} {standort.hausnummer}</p>
-                            <p>{standort.plz} {standort.ort}</p>
-                            <p>{standort.land}</p>
-                            <FormButton
-                                onClick={() => this.onDeleteLocationClicked(standort.id)}
-                                variant="text">
-                                Standort löschen
-                            </FormButton>
-                        </div>
-                    ))}
-                    {(!standorte || standorte.length === 0) && (
-                        <span className={classes.missing}>Keine weiteren Standorte vorhanden.<br />Bitte bei Bedarf auf Hinzufügen klicken.</span>
-                    )}
-                    <div className={classes.footer}>
-                        <FormButton
-                            onClick={this.onAddLocationClicked}
-                            variant="text">
-                            Hinzufügen
-                        </FormButton>
-                    </div>
-                </div>*/}
-                {/*
-                 <EditInstitutionDialog
-                    onSaved={this.onEditSaved}
-                    onCancelled={this.onEditCancelled}
-                    open={this.state.editDialogOpen}
-                    typeOptions={this.props.institutionTypen || []}
-                    institution={this.props.eigeneInstitution}/>
-                <EditLocationDialog
-                    onSaved={this.onEditLocationSaved}
-                    onCancelled={this.onEditLocationCancelled}
-                    open={this.state.editLocationDialogOpen}
-                    institution={this.props.eigeneInstitution}/>
-                <AddLocationDialog
-                    onSaved={this.onAddLocationSaved}
-                    onCancelled={this.onAddLocationCancelled}
-                    open={this.state.addLocationDialogOpen}
-                    institution={this.props.eigeneInstitution}/>
-                <DeleteLocationDialog
-                    onDeleted={this.onDeleteLocationDeleted}
-                    onCancelled={this.onDeleteLocationCancelled}
-                    open={!!this.state.deleteLocationId}
-                    locationId={this.state.deleteLocationId}/>
-                    */}
             </div>
         )
     }
 
-    private onEditClicked = () => {
-        this.setState({editDialogOpen: true});
-    };
-
-    private onEditCancelled = () => {
-        this.setState({editDialogOpen: false});
-    };
-
-    private onEditSaved = () => {
-        this.setState({editDialogOpen: false});
-        this.props.loadEigeneInstitution();
-    };
-
-    private onEditLocationClicked = () => {
-        this.setState({editLocationDialogOpen: true});
-    };
-
-    private onEditLocationCancelled = () => {
-        this.setState({editLocationDialogOpen: false});
-    };
-
-    private onEditLocationSaved = () => {
-        this.setState({editLocationDialogOpen: false});
-        this.props.loadEigeneInstitution();
-    };
-
-    private onAddLocationClicked = () => {
-        this.setState({addLocationDialogOpen: true});
-    };
-
-    private onAddLocationCancelled = () => {
-        this.setState({addLocationDialogOpen: false});
-    };
-
-    private onAddLocationSaved = () => {
-        this.setState({addLocationDialogOpen: false});
-        this.props.loadEigeneInstitution();
-    };
-
-    private onDeleteLocationClicked = (id: string) => {
-        this.setState({deleteLocationId: id});
-    };
-
-    private onDeleteLocationCancelled = () => {
-        this.setState({deleteLocationId: undefined});
-    };
-
-    private onDeleteLocationDeleted = () => {
-        this.setState({deleteLocationId: undefined});
-        this.props.loadEigeneInstitution();
-    };
-
     componentDidMount = async () => {
-        this.props.loadEigeneInstitution();
-        this.props.loadInstitutionTypen();
         this.props.loadPerson();
     };
 }
 
 const mapStateToProps = (state: RootState) => ({
-    eigeneInstitution: state.eigeneInstitution.value,
-    institutionTypen: state.institutionTypen.value,
     person: state.person.value
 });
 
 const mapDispatchToProps = (dispatch: RootDispatch) => ({
-    loadEigeneInstitution: () => dispatch(loadEigeneInstitution()),
-    loadInstitutionTypen: () => dispatch(loadInstitutionTypen()),
     loadPerson: () => dispatch(loadPerson())
 });
 

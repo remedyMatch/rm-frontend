@@ -1,7 +1,7 @@
 import {DialogContentText} from "@material-ui/core";
 import React, {useCallback, useState} from "react";
 import PopupDialog from "../../../components/Dialog/PopupDialog";
-import {apiDelete} from "../../../util/ApiUtils";
+import {apiPost} from "../../../util/ApiUtils";
 import {defined, validate} from "../../../util/ValidationUtils";
 
 interface Props {
@@ -11,16 +11,12 @@ interface Props {
 
     requestId?: string;
     isDemand?: boolean;
-    institutionName?: string;
+    amount?: number;
+    articleName?: string;
 }
 
-interface State {
-    disabled: boolean;
-    error?: string;
-}
-
-const CancelSentOfferDialog: React.FC<Props> = props => {
-    const {onNo, onYes, requestId, isDemand, institutionName} = props;
+const CancelEntryDialog: React.FC<Props> = props => {
+    const {onNo, onYes, requestId, isDemand, amount, articleName} = props;
 
     const [disabled, setDisabled] = useState<boolean>(false);
     const [error, setError] = useState<string | undefined>(undefined);
@@ -36,7 +32,8 @@ const CancelSentOfferDialog: React.FC<Props> = props => {
         const error = validate(
             defined(requestId, "Anfrage nicht gesetzt!"),
             defined(isDemand, "Anfrage-Typ nicht gesetzt!"),
-            defined(institutionName, "Institutionsname nicht gesetzt!"),
+            defined(amount, "Anzahl nicht gesetzt!"),
+            defined(articleName, "Artikel-Name nicht gesetzt!")
         );
 
         if (error) {
@@ -47,7 +44,7 @@ const CancelSentOfferDialog: React.FC<Props> = props => {
         setError(undefined);
         setDisabled(true);
 
-        const result = await apiDelete("/remedy/" + (isDemand ? "bedarf" : "angebot") + "/anfrage/" + requestId);
+        const result = await apiPost("/remedy/" + (isDemand ? "bedarf/" : "angebot/") + requestId + "/schliessen");
 
         setDisabled(false);
         if (result.error) {
@@ -55,26 +52,31 @@ const CancelSentOfferDialog: React.FC<Props> = props => {
         } else {
             onYes();
         }
-    }, [onYes, isDemand, requestId, institutionName]);
+    }, [onYes, isDemand, requestId, amount, articleName]);
 
     return (
         <PopupDialog
             open={props.open}
             error={error}
-            title="Anfrage stornieren"
+            title={isDemand ? "Bedarf schließen" : "Angebot schließen"}
             disabled={disabled}
             firstTitle="Abbrechen"
-            secondTitle="Stornieren"
+            secondTitle="Löschen"
             onFirst={onNoClicked}
             onSecond={onYesClicked}
             onCloseError={onCloseError}>
 
             <DialogContentText>
-                Soll die Anfrage an {props.institutionName} wirklich storniert werden?
+                Soll
+                {isDemand && " der Bedarf nach "}
+                {!isDemand && " das Angebot über "}
+                {amount + " "}
+                {articleName + " "}
+                wirklich geschlossen werden?
             </DialogContentText>
 
         </PopupDialog>
     );
 };
 
-export default CancelSentOfferDialog;
+export default CancelEntryDialog;
