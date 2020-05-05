@@ -4,7 +4,7 @@ import clsx from "clsx";
 import React, {Component} from "react";
 import {connect, ConnectedProps} from "react-redux";
 import {RouteComponentProps, withRouter} from "react-router-dom";
-import {FormButton} from "../components/Form/FormButton";
+import {FormButton} from "../components/Form/old/FormButton";
 import ContentCard from "../components/Layout/ContentCard";
 import LinkCard from "../components/Layout/LinkCard";
 import home from "../resources/home.svg";

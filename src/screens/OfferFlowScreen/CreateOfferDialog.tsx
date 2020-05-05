@@ -4,8 +4,8 @@ import {makeStyles, Theme} from "@material-ui/core/styles";
 import {KeyboardDatePicker, MuiPickersUtilsProvider} from "@material-ui/pickers";
 import React, {useState} from "react";
 import PopupDialog from "../../components/Dialog/PopupDialog";
-import {FormCheckbox} from "../../components/Form/FormCheckbox";
-import {FormNumberInput} from "../../components/Form/FormNumberInput";
+import NumberInput from "../../components/Form/NumberInput";
+import {FormCheckbox} from "../../components/Form/old/FormCheckbox";
 
 interface Props {
     open: boolean;
@@ -64,13 +64,12 @@ const CreateOfferDialog: React.FC<Props> = props => {
 
                 <div className={classes.dialogContent}>
 
-                    <FormNumberInput
+                    <NumberInput
                         label="Anzahl"
                         disabled={disabled}
                         onChange={setAmount}
                         className={classes.formRow}
-                        value={amount}
-                        min={0}/>
+                        value={amount}/>
 
                     <MuiPickersUtilsProvider utils={DateFnsUtils}>
                         <KeyboardDatePicker

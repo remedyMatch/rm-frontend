@@ -4,7 +4,7 @@ import {format} from "date-fns";
 import {de} from "date-fns/locale";
 import React from "react";
 import PopupDialog from "../../../../components/Dialog/PopupDialog";
-import {FormButton} from "../../../../components/Form/FormButton";
+import {FormButton} from "../../../../components/Form/old/FormButton";
 import {Angebot} from "../../../../domain/angebot/Angebot";
 import {Artikel} from "../../../../domain/artikel/Artikel";
 import {ArtikelKategorie} from "../../../../domain/artikel/ArtikelKategorie";

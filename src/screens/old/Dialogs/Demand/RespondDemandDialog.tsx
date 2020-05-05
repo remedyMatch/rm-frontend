@@ -2,7 +2,7 @@ import {TextareaAutosize} from "@material-ui/core";
 import {makeStyles, Theme} from "@material-ui/core/styles";
 import React, {useCallback, useState} from "react";
 import PopupDialog from "../../../../components/Dialog/PopupDialog";
-import {FormNumberInput} from "../../../../components/Form/FormNumberInput";
+import {FormNumberInput} from "../../../../components/Form/old/FormNumberInput";
 import {Bedarf} from "../../../../domain/bedarf/Bedarf";
 import {apiPost} from "../../../../util/ApiUtils";
 import {defined, numberSize, stringLength, validate} from "../../../../util/ValidationUtils";

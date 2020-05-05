@@ -1,4 +1,6 @@
+import {IconButton} from "@material-ui/core";
 import TextField from "@material-ui/core/TextField";
+import {Add, Remove} from "@material-ui/icons";
 import React, {ChangeEvent, useCallback, useState} from "react";
 
 interface Props {
@@ -28,7 +30,6 @@ export const FormNumberInput: React.FC<Props> = props => {
         <TextField
             size="small"
             variant="outlined"
-            type="number"
             onFocus={onFocus}
             onBlur={onBlur}
             value={focussed ? props.value || "" : new Intl.NumberFormat('de-DE').format(props.value || 0)}
@@ -36,9 +37,8 @@ export const FormNumberInput: React.FC<Props> = props => {
             onChange={setValueSafe}
             disabled={props.disabled || false}
             InputProps={{
-                inputProps: {
-                    min: props.min
-                }
+                startAdornment: <IconButton onClick={() => onChange((props.value || 0) - 1)} disabled={(props.value || 0) === 0}><Remove /></IconButton>,
+                endAdornment: <IconButton onClick={() => onChange((props.value || 0) + 1)}><Add /></IconButton>
             }}
         />
     );

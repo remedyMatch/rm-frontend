@@ -2,7 +2,7 @@ import {Typography} from "@material-ui/core";
 import {makeStyles, Theme} from "@material-ui/core/styles";
 import React from "react";
 import PopupDialog from "../../../../components/Dialog/PopupDialog";
-import {FormButton} from "../../../../components/Form/FormButton";
+import {FormButton} from "../../../../components/Form/old/FormButton";
 import {Artikel} from "../../../../domain/artikel/Artikel";
 import {ArtikelKategorie} from "../../../../domain/artikel/ArtikelKategorie";
 import {Bedarf} from "../../../../domain/bedarf/Bedarf";
