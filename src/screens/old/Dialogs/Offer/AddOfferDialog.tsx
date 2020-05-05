@@ -1,6 +1,6 @@
 import {TextareaAutosize, Typography} from "@material-ui/core";
 import {makeStyles, Theme} from "@material-ui/core/styles";
-import {KeyboardDatePicker} from "@material-ui/pickers";
+import {DatePicker} from "@material-ui/pickers";
 import React, {useCallback, useMemo, useState} from "react";
 import PopupDialog from "../../../../components/Dialog/PopupDialog";
 import FormAutocomplete from "../../../../components/Form/old/FormAutocomplete";
@@ -173,14 +173,13 @@ const AddOfferDialog: React.FC<Props> = props => {
                 value={amount}
                 min={0}/>
 
-            <KeyboardDatePicker
-                variant="inline"
+            <DatePicker
+                variant="outlined"
                 minDate={new Date()}
-                format="dd.MM.yyyy"
+                inputFormat="dd.MM.yyyy"
                 disabled={disabled}
                 margin="normal"
                 label="Haltbarkeitsdatum"
-                inputVariant="outlined"
                 value={useBefore}
                 size="small"
                 className={classes.formRow}

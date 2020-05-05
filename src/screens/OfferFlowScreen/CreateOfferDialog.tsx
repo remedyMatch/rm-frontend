@@ -1,9 +1,8 @@
-import DateFnsUtils from "@date-io/date-fns";
 import {TextareaAutosize} from "@material-ui/core";
 import {makeStyles, Theme} from "@material-ui/core/styles";
-import {KeyboardDatePicker, MuiPickersUtilsProvider} from "@material-ui/pickers";
 import React, {useState} from "react";
 import PopupDialog from "../../components/Dialog/PopupDialog";
+import DateInput from "../../components/Form/DateInput";
 import NumberInput from "../../components/Form/NumberInput";
 import {FormCheckbox} from "../../components/Form/old/FormCheckbox";
 
@@ -43,7 +42,7 @@ const CreateOfferDialog: React.FC<Props> = props => {
     const classes = useStyles();
 
     const [amount, setAmount] = useState<number>(0);
-    const [useBefore, setUseBefore] = useState<Date | null>(null);
+    const [useBefore, setUseBefore] = useState<Date | undefined>(undefined);
     const [sterile, setSterile] = useState<boolean>(false);
     const [sealed, setSealed] = useState<boolean>(false);
     const [medical, setMedical] = useState<boolean>(false);
@@ -65,27 +64,20 @@ const CreateOfferDialog: React.FC<Props> = props => {
                 <div className={classes.dialogContent}>
 
                     <NumberInput
-                        label="Anzahl"
+                        label="Wie viele Artikel besitzen Sie?"
                         disabled={disabled}
                         onChange={setAmount}
                         className={classes.formRow}
                         value={amount}/>
 
-                    <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                        <KeyboardDatePicker
-                            variant="inline"
-                            minDate={new Date()}
-                            format="dd.MM.yyyy"
-                            disabled={disabled}
-                            margin="normal"
-                            label="Haltbarkeitsdatum"
-                            inputVariant="outlined"
-                            value={useBefore}
-                            size="small"
-                            className={classes.formRow}
-                            onChange={setUseBefore}
-                        />
-                    </MuiPickersUtilsProvider>
+                    <DateInput
+                        className={classes.formRow}
+                        disabled={disabled}
+                        value={useBefore}
+                        disablePast
+                        label="Wie lange sind die Artikel haltbar?"
+                        placeholder="Bitte auswählen oder eintippen"
+                        onChange={setUseBefore}/>
 
                     <FormCheckbox
                         className={classes.checkbox}
