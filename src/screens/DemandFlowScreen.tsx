@@ -18,6 +18,7 @@ import {loadArtikelKategorien} from "../state/artikel/ArtikelKategorienState";
 import {loadArtikel} from "../state/artikel/ArtikelState";
 import {RootDispatch, RootState} from "../state/Store";
 import {apiGet} from "../util/ApiUtils";
+import CreateDemandDialog from "./DemandFlowScreen/CreateDemandDialog";
 import CreateOfferDialog from "./OfferFlowScreen/CreateOfferDialog";
 
 interface Props extends WithStyles<typeof styles>, PropsFromRedux {
@@ -170,7 +171,7 @@ class DemandFlowScreen extends Component<Props, State> {
                         title: "Wir haben 4 passende Angebote gefunden.",
                         subtitle: "Sie können die gewünschten Spender kontaktieren, um sie auf Ihren Bedarf aufmerksam zu machen, oder Sie können ein Inserat erstellen, damit sich Spender bei Ihnen melden können.",
                         action: "Inserat erstellen",
-                        onActionClicked: this.onCreateOfferClicked,
+                        onActionClicked: this.onCreateDemandClicked,
                         icon: this.getIcon(this.state.selectedCategory?.name || ""),
                         iconAlt: "Kategorie " + this.state.selectedCategory?.name,
                         content: (
@@ -183,11 +184,11 @@ class DemandFlowScreen extends Component<Props, State> {
                                     angebote={this.state.results}
                                     bedarfe={[]}/>
 
-                                <CreateOfferDialog
+                                <CreateDemandDialog
                                     variantId={this.state.selectedVariant?.id}
                                     open={this.state.createDemandDialogOpen}
-                                    onCancelled={this.onCancelCreateOfferClicked}
-                                    onCreated={this.onCancelCreateOfferClicked}/>
+                                    onCancelled={this.onCancelCreateDemandClicked}
+                                    onCreated={this.onCancelCreateDemandClicked}/>
                             </>
                         )
                     }}/>
@@ -235,13 +236,13 @@ class DemandFlowScreen extends Component<Props, State> {
         }, this.queryResults);
     };
 
-    private onCreateOfferClicked = () => {
+    private onCreateDemandClicked = () => {
         this.setState({
             createDemandDialogOpen: true
         });
     };
 
-    private onCancelCreateOfferClicked = () => {
+    private onCancelCreateDemandClicked = () => {
         this.setState({
             createDemandDialogOpen: false
         });
