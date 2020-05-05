@@ -1,9 +1,10 @@
-import {Angebot} from "../../Domain/Angebot";
-import {Bedarf} from "../../Domain/Bedarf";
-
 import * as PIXI from 'pixi.js'
 import 'leaflet-pixi-overlay' // Must be called before the 'leaflet' import
 import L, {LatLng, Map, Point} from 'leaflet';
+import {Angebot} from "../../domain/angebot/Angebot";
+import {Bedarf} from "../../domain/bedarf/Bedarf";
+import {AngebotAnfrage} from "../../domain/angebot/AngebotAnfrage";
+import {BedarfAnfrage} from "../../domain/bedarf/BedarfAnfrage";
 
 
 
@@ -27,10 +28,10 @@ export const createContainer = (input: any[], mapRef: Map) => {
   let spriteTexture: PIXI.Texture = textures.orange
 
   input.map((mapFeature: any) => {
-    if ((mapFeature as Angebot).originalverpackt) {
+    if (mapFeature.type == "Angebot") {
       spriteTexture = textures.blue
     }
-    if((mapFeature as Bedarf).rest) {
+    if(mapFeature.type == "Bedarf") {
       spriteTexture = textures.orange
     }
 

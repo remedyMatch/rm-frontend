@@ -4,6 +4,7 @@ import {InstitutionStandort} from "../institution/InstitutionStandort";
 export type BedarfAnfrageStatus = "ANGENOMMEN" | "ABGELEHNT" | "STORNIERT" | "OFFEN";
 export interface BedarfAnfrage {
     id: string;
+    type: string;
     institution: Institution;
     standort: InstitutionStandort;
     anzahl: number;

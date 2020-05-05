@@ -1,6 +1,6 @@
 {
   "realm": "rmio",
-  "auth-server-url": "http://localhost:8008/auth/",
+  "auth-server-url": "http://localhost:8080/auth/",
   "ssl-required": "external",
   "resource": "spring-cloud-gateway-client",
   "public-client": true,

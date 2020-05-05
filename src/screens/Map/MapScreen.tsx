@@ -1,16 +1,18 @@
 import React, {useEffect, useRef, useState} from "react";
 import {Map, TileLayer} from "react-leaflet";
-import {Angebot} from "../../Domain/Angebot";
 import {createContainer, createOverlay, loadTextures} from "./MapRenderer";
-import {Bedarf} from "../../Domain/Bedarf";
+import {AngebotAnfrage, AngebotAnfrageStatus} from "../../domain/angebot/AngebotAnfrage";
+import {BedarfAnfrage, BedarfAnfrageStatus} from "../../domain/bedarf/BedarfAnfrage";
 
 function MapScreen() {
   const [mapReady, setMapReady] = useState(false);
   const [markerTexturesLoaded, setMarkerTexturesLoaded] = useState(false);
 
-  let one: Angebot = {
+  let one: AngebotAnfrage = {
     id: "fooo",
-    artikelId: "",
+    type: "Angebot",
+    institution: {id:"", name: "", standorte: [], typ:"ANDERE"},
+    status: "OFFEN",
     standort: {
       ort: "TestOrt",
       strasse: "TestStrasse",
@@ -23,19 +25,15 @@ function MapScreen() {
       id: "12345"
     },
     anzahl: 10,
-    artikelKategorieId: undefined,
-    artikelVarianteId: "",
     entfernung: 12,
-    haltbarkeit: "",
-    institutionId: "",
-    kommentar: "",
-    medizinisch: true,
-    originalverpackt: true,
-    steril: true
+    kommentar: ""
   }
-  let two: Bedarf = {
+
+  let two: BedarfAnfrage = {
     id: "foo2",
-    artikelId: "",
+    type: "Bedarf",
+    institution: {id:"", name: "", standorte: [], typ:"ANDERE"},
+    status: "OFFEN",
     standort: {
       ort: "TestStadt",
       strasse: "Test22Strasse",
@@ -48,14 +46,8 @@ function MapScreen() {
       id: "12345"
     },
     anzahl: 10,
-    artikelKategorieId: undefined,
-    artikelVarianteId: "",
     entfernung: 12,
-    rest: 12,
-    institutionId: "",
-    kommentar: "",
-    medizinisch: true,
-    steril: true
+    kommentar: ""
   }
 
   const [mapFeatures, setMapFeatures] = useState<any[]>([one, two])

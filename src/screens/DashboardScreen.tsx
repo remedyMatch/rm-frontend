@@ -127,6 +127,13 @@ class DashboardScreen extends Component<Props, State> {
                             Material suchen
                         </FormButton>
 
+                        <FormButton
+                          onClick={this.onMapOpenClicked}
+                          className={clsx(classes.button, classes.buttonDemand)}
+                          variant="contained">
+                          Karte ansehen
+                        </FormButton>
+
                     </div>
 
                     <Hidden smDown>
@@ -207,6 +214,10 @@ class DashboardScreen extends Component<Props, State> {
 
     private onCreateOfferClicked = () => {
         this.props.history.push("/angebot");
+    };
+
+    private onMapOpenClicked = () => {
+      this.props.history.push("/map");
     };
 }
 
