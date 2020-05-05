@@ -1,10 +1,11 @@
-import {TextareaAutosize} from "@material-ui/core";
 import {makeStyles, Theme} from "@material-ui/core/styles";
 import React, {useCallback, useState} from "react";
 import PopupDialog from "../../components/Dialog/PopupDialog";
+import Checkbox from "../../components/Form/Checkbox";
+import CheckboxGroup from "../../components/Form/CheckboxGroup";
 import DateInput from "../../components/Form/DateInput";
 import NumberInput from "../../components/Form/NumberInput";
-import {FormCheckbox} from "../../components/Form/old/FormCheckbox";
+import TextArea from "../../components/Form/TextArea";
 import {apiPost} from "../../util/ApiUtils";
 import {defined, numberSize, stringLength, validate} from "../../util/ValidationUtils";
 
@@ -23,21 +24,17 @@ const useStyles = makeStyles((theme: Theme) => ({
         display: "flex",
         flexDirection: "column"
     },
+    row: {
+        display: "flex",
+        flexDirection: "row",
+        margin: "1em -1.5em"
+    },
+    rowEntry: {
+        width: "calc((100% - 4.5em) / 2)",
+        margin: "0px auto"
+    },
     formRow: {
-        marginTop: "16px"
-    },
-    checkbox: {
-        marginRight: "auto"
-    },
-    comment: {
-        marginTop: "16px",
-        resize: "none",
-        fontSize: "14px",
-        padding: "16px",
-        "&:focus": {
-            outline: "none",
-            border: "2px solid " + theme.palette.primary.main
-        }
+        margin: "1em 0em 2em 0em"
     }
 }));
 
@@ -120,62 +117,75 @@ const CreateOfferDialog: React.FC<Props> = props => {
 
                 <div className={classes.dialogContent}>
 
-                    <NumberInput
-                        label="Wie viele Artikel besitzen Sie?"
-                        disabled={disabled}
-                        onChange={setAmount}
+                    <div className={classes.row}>
+
+                        <NumberInput
+                            label="Wie viele besitzen Sie?"
+                            disabled={disabled}
+                            onChange={setAmount}
+                            className={classes.rowEntry}
+                            value={amount}/>
+
+                        <DateInput
+                            className={classes.rowEntry}
+                            disabled={disabled}
+                            value={useBefore}
+                            disablePast
+                            label="Wie ist das Haltbarkeitsdatum?"
+                            placeholder="Bitte auswählen"
+                            onChange={setUseBefore}/>
+
+                    </div>
+
+                    <div className={classes.row}>
+
+                        <CheckboxGroup
+                            className={classes.rowEntry}
+                            label="Wie ist der Zustand?">
+
+                            <Checkbox
+                                disabled={disabled}
+                                checked={sterile}
+                                onChange={setSterile}
+                                label="Steril"/>
+
+                            <Checkbox
+                                disabled={disabled}
+                                checked={sealed}
+                                onChange={setSealed}
+                                label="Originalverpackt"/>
+
+                            <Checkbox
+                                disabled={disabled}
+                                checked={medical}
+                                onChange={setMedical}
+                                label="Medizinisch"/>
+
+                        </CheckboxGroup>
+
+                        <TextArea
+                            label="Ihre Nachricht"
+                            onChange={setComment}
+                            className={classes.rowEntry}
+                            disabled={disabled}
+                            minLines={4}
+                            maxLines={4}
+                            placeholder="Bitte eintippen..."
+                            value={comment}/>
+
+                    </div>
+
+                    <CheckboxGroup
                         className={classes.formRow}
-                        value={amount}/>
+                        label="Möchten Sie Anfragen zu diesem Angebot erhalten?">
 
-                    <DateInput
-                        className={classes.formRow}
-                        disabled={disabled}
-                        value={useBefore}
-                        disablePast
-                        label="Wie lange sind die Artikel haltbar?"
-                        placeholder="Bitte auswählen oder eintippen"
-                        onChange={setUseBefore}/>
+                        <Checkbox
+                            disabled={disabled}
+                            checked={publicOffer}
+                            onChange={setPublicOffer}
+                            label="Angebot ist öffentlich"/>
 
-                    <FormCheckbox
-                        className={classes.checkbox}
-                        disabled={disabled}
-                        checked={publicOffer}
-                        onChange={setPublicOffer}
-                        label="Angebot ist öffentlich"
-                    />
-
-                    <FormCheckbox
-                        className={classes.checkbox}
-                        disabled={disabled}
-                        checked={sterile}
-                        onChange={setSterile}
-                        label="Produkt ist steril"
-                    />
-
-                    <FormCheckbox
-                        className={classes.checkbox}
-                        disabled={disabled}
-                        checked={sealed}
-                        onChange={setSealed}
-                        label="Produkt ist originalverpackt"
-                    />
-
-                    <FormCheckbox
-                        className={classes.checkbox}
-                        disabled={disabled}
-                        checked={medical}
-                        onChange={setMedical}
-                        label="Produkt ist medizinisch"
-                    />
-
-                    <TextareaAutosize
-                        rowsMin={3}
-                        rowsMax={8}
-                        placeholder="Kommentar"
-                        value={comment}
-                        disabled={disabled}
-                        className={classes.comment}
-                        onChange={e => setComment(e.target.value)}/>
+                    </CheckboxGroup>
 
                 </div>
 
