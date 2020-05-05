@@ -23,6 +23,7 @@ import {Angebot} from "../../domain/angebot/Angebot";
 import {Artikel} from "../../domain/artikel/Artikel";
 import {ArtikelKategorie} from "../../domain/artikel/ArtikelKategorie";
 import {Bedarf} from "../../domain/bedarf/Bedarf";
+import clsx from "clsx";
 
 declare type DataRow = {
     type: "offer" | "demand", data: {
@@ -128,6 +129,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 interface Props {
+    className?: string;
     artikel: Artikel[];
     artikelKategorien: ArtikelKategorie[];
     angebote: Angebot[];
@@ -281,7 +283,7 @@ const EntryTable: React.FC<Props> = props => {
         });
 
     return (
-        <TableContainer className={classes.tableContainer}>
+        <TableContainer className={clsx(classes.tableContainer, props.className)}>
             <MUITable {...getTableProps()} stickyHeader className={classes.table}>
                 <TableHead>
                     {headerGroups.map(headerGroup => (

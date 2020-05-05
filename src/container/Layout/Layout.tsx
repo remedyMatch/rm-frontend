@@ -1,13 +1,16 @@
+import {WithStyles} from "@material-ui/core";
 import {createStyles, Theme, withStyles} from "@material-ui/core/styles";
 import {Component, default as React} from "react";
 import {Redirect, Route, Switch} from "react-router-dom";
-import SearchScreen from "../../screens/DemandScreen";
-import HomeScreen from "../../screens/HomeScreen";
-import InstitutionScreen from "../../screens/InstitutionScreen";
-import OfferScreen from "../../screens/OfferScreen";
-import {WithStylesPublic} from "../../util/WithStylesPublic";
+import Footer from "../../components/Layout/Footer";
+import OfferFlowScreen from "../../screens/OfferFlowScreen";
+import SearchScreen from "../../screens/old/DemandScreen";
+import DashboardScreen from "../../screens/DashboardScreen";
+import InstitutionScreen from "../../screens/old/InstitutionScreen";
+import OfferScreen from "../../screens/old/OfferScreen";
+import Menu from "./Menu";
 
-interface Props extends WithStylesPublic<typeof styles> {
+interface Props extends WithStyles<typeof styles> {
 }
 
 interface State {
@@ -19,7 +22,7 @@ const styles = (theme: Theme) =>
             flexGrow: 1,
             display: "flex",
             flexDirection: "column",
-            minHeight: "calc(100vh - 60px)",
+            minHeight: "100vh",
             width: "100vw",
             minWidth: "600px",
             maxWidth: "1200px",
@@ -47,18 +50,21 @@ const styles = (theme: Theme) =>
 
 class Layout extends Component<Props, State> {
     render() {
-        const classes = this.props.classes!;
+        const classes = this.props.classes;
 
         return (
             <React.Fragment>
                 <div className={classes.content}>
+                    <Menu/>
                     <Switch>
                         <Route path="/bedarf" component={SearchScreen}/>
                         <Route path="/angebote" component={OfferScreen}/>
                         <Route path="/konto" component={InstitutionScreen}/>
-                        <Route path="/" exact component={HomeScreen}/>
+                        <Route path="/angebot" component={OfferFlowScreen} />
+                        <Route path="/" exact component={DashboardScreen}/>
                         <Redirect to="/"/>
                     </Switch>
+                    <Footer/>
                 </div>
             </React.Fragment>
         );

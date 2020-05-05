@@ -1,5 +1,5 @@
 import TextField from "@material-ui/core/TextField";
-import React, {ChangeEvent, useCallback} from "react";
+import React, {ChangeEvent, useCallback, useState} from "react";
 
 interface Props {
     label: string;
@@ -13,6 +13,7 @@ interface Props {
 export const FormNumberInput: React.FC<Props> = props => {
     const {onChange} = props;
 
+    const [focussed, setFocussed] = useState<boolean>(false);
     const setValueSafe = useCallback((e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const amount = parseFloat(e.target.value);
         if(!isNaN(amount) || e.target.value.length === 0) {
@@ -20,13 +21,17 @@ export const FormNumberInput: React.FC<Props> = props => {
         }
     }, [onChange]);
 
+    const onFocus = useCallback(() => setFocussed(true), []);
+    const onBlur = useCallback(() => setFocussed(false), []);
+
     return (
         <TextField
             size="small"
             variant="outlined"
             type="number"
-            label={props.label}
-            value={props.value || 0}
+            onFocus={onFocus}
+            onBlur={onBlur}
+            value={focussed ? props.value || "" : new Intl.NumberFormat('de-DE').format(props.value || 0)}
             className={props.className}
             onChange={setValueSafe}
             disabled={props.disabled || false}

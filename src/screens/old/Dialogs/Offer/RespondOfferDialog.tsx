@@ -1,18 +1,18 @@
 import {TextareaAutosize} from "@material-ui/core";
 import {makeStyles, Theme} from "@material-ui/core/styles";
 import React, {useCallback, useState} from "react";
-import PopupDialog from "../../../components/Dialog/PopupDialog";
-import {FormNumberInput} from "../../../components/Form/FormNumberInput";
-import {Bedarf} from "../../../domain/bedarf/Bedarf";
-import {apiPost} from "../../../util/ApiUtils";
-import {defined, numberSize, stringLength, validate} from "../../../util/ValidationUtils";
+import PopupDialog from "../../../../components/Dialog/PopupDialog";
+import {FormNumberInput} from "../../../../components/Form/FormNumberInput";
+import {Angebot} from "../../../../domain/angebot/Angebot";
+import {apiPost} from "../../../../util/ApiUtils";
+import {defined, numberSize, stringLength, validate} from "../../../../util/ValidationUtils";
 
 interface Props {
     open: boolean;
     onCancelled: () => void;
     onSaved: () => void;
 
-    bedarf?: Bedarf;
+    angebot?: Angebot;
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -35,10 +35,10 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
 }));
 
-const RespondDemandDialog: React.FC<Props> = props => {
+const RespondOfferDialog: React.FC<Props> = props => {
     const classes = useStyles();
 
-    const {onCancelled, onSaved, bedarf} = props;
+    const {onCancelled, onSaved, angebot} = props;
 
     const [comment, setComment] = useState<string>("");
     const [amount, setAmount] = useState<number>(0);
@@ -49,7 +49,7 @@ const RespondDemandDialog: React.FC<Props> = props => {
 
     const onSave = useCallback(async () => {
         const error = validate(
-            defined(bedarf, "Bedarf nicht gesetzt!"),
+            defined(angebot, "Angebot nicht gesetzt!"),
             numberSize(amount, "Die Anzahl", 1),
             stringLength(comment, "Der Kommentar", 1, 1024)
         );
@@ -62,7 +62,7 @@ const RespondDemandDialog: React.FC<Props> = props => {
         setError(undefined);
         setDisabled(true);
 
-        const result = await apiPost(`/remedy/bedarf/${bedarf!.id}/anfrage`, {
+        const result = await apiPost(`/remedy/angebot/${angebot!.id}/anfrage`, {
             kommentar: comment,
             anzahl: amount
         });
@@ -75,7 +75,7 @@ const RespondDemandDialog: React.FC<Props> = props => {
             setComment("");
             onSaved();
         }
-    }, [onSaved, bedarf, comment, amount]);
+    }, [onSaved, angebot, comment, amount]);
 
     const onCancel = useCallback(() => {
         setError(undefined);
@@ -97,7 +97,7 @@ const RespondDemandDialog: React.FC<Props> = props => {
 
             <FormNumberInput
                 min={0}
-                label="Verfügbare Anzahl"
+                label="Benötigte Anzahl"
                 onChange={setAmount}
                 className={classes.formRow}
                 disabled={disabled}/>
@@ -115,4 +115,4 @@ const RespondDemandDialog: React.FC<Props> = props => {
     );
 };
 
-export default RespondDemandDialog;
+export default RespondOfferDialog;

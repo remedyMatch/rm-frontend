@@ -1,10 +1,13 @@
 import {combineReducers, configureStore} from "@reduxjs/toolkit";
 import {angeboteSlice} from "./angebot/AngeboteState";
+import {gestellteAngebotAnfragenSlice} from "./angebot/GestellteAngebotAnfragenState";
 import {institutionAngeboteSlice} from "./angebot/InstitutionAngeboteState";
 import {artikelKategorienSlice} from "./artikel/ArtikelKategorienState";
 import {artikelSlice} from "./artikel/ArtikelState";
 import {bedarfeSlice} from "./bedarf/BedarfeState";
+import {gestellteBedarfAnfragenSlice} from "./bedarf/GestellteBedarfAnfragenState";
 import {institutionBedarfeSlice} from "./bedarf/InstitutionBedarfeState";
+import {benachrichtigungenSlice} from "./benachrichtigung/BenachrichtigungenState";
 import {institutionAntraegeSlice} from "./institution/InstitutionAntraegeState";
 import {institutionSlice} from "./institution/InstitutionState";
 import {matchesSlice} from "./match/MatchesState";
@@ -15,6 +18,9 @@ const rootReducer = combineReducers({
     artikel: artikelSlice.reducer,
     artikelKategorien: artikelKategorienSlice.reducer,
     bedarfe: bedarfeSlice.reducer,
+    benachrichtigungen: benachrichtigungenSlice.reducer,
+    gestellteAngebotAnfragen: gestellteAngebotAnfragenSlice.reducer,
+    gestellteBedarfAnfragen: gestellteBedarfAnfragenSlice.reducer,
     institution: institutionSlice.reducer,
     institutionAngebote: institutionAngeboteSlice.reducer,
     institutionAntraege: institutionAntraegeSlice.reducer,

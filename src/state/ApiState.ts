@@ -7,18 +7,46 @@ import {apiGet} from "../util/ApiUtils";
 const baseUrl = "/remedy";
 
 /**
+ * Prepends a slash to the passed path parameter, if not existing.
+ *
+ * @param path The path to prepend with a slash
+ */
+const prependSlash = (path: string) => {
+    return path.startsWith("/") ? path : ("/" + path);
+}
+
+/**
  * Creates the absolute url of the request. Adds the base url if necessary.
  *
  * @param url The relative or absolute url
  * @returns The absolute url to use
  */
-const constructUrl = (url: string) => {
-    if (url.startsWith("http")) {
-        return url;
+const constructUrl = (url: string | Url) => {
+    if(typeof url === "string") {
+        if (url.startsWith("http")) {
+            return url;
+        }
+
+        return baseUrl + prependSlash(url);
     }
 
-    return baseUrl + (url.startsWith("/") ? url : "/" + url);
+    return prependSlash(url.baseUrl) + prependSlash(url.url);
 };
+
+/**
+ * The representation of an url, that does not use the default base url.
+ */
+export interface Url {
+    /**
+     * The base url to use.
+     */
+    baseUrl: string;
+
+    /**
+     * The url to use.
+     */
+    url: string;
+}
 
 /**
  * The representation of a redux store state.
@@ -144,7 +172,7 @@ const reduceLoadSucceeded = <T>(state: ApiState<T>, action: PayloadAction<LoadSu
  *
  * @return A tuple containing the redux slice and the action to trigger an api request
  */
-const createApiState = <T, R = T>(name: string, url: string, extractor?: (response: R) => T) => {
+const createApiState = <T, R = T>(name: string, url: string | Url, extractor?: (response: R) => T) => {
     const loadStartedAction = name + LoadStarted;
     const loadFailedAction = name + LoadFailed;
     const loadSucceededAction = name + LoadSucceeded;

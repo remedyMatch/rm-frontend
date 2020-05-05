@@ -1,8 +1,8 @@
 import {DialogContentText} from "@material-ui/core";
 import React, {useCallback, useState} from "react";
-import PopupDialog from "../../../components/Dialog/PopupDialog";
-import {apiDelete} from "../../../util/ApiUtils";
-import {defined, validate} from "../../../util/ValidationUtils";
+import PopupDialog from "../../../../components/Dialog/PopupDialog";
+import {apiDelete} from "../../../../util/ApiUtils";
+import {defined, validate} from "../../../../util/ValidationUtils";
 
 interface Props {
     open: boolean;

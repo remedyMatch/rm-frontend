@@ -1,7 +1,8 @@
+import {Artikel} from "../artikel/Artikel";
+
 export interface Angebot {
     id: string;
-    artikelKategorieId: string;
-    artikelId: string;
+    artikel: Artikel;
     artikelVarianteId: string;
     verfuegbareAnzahl: number;
     ort: string;

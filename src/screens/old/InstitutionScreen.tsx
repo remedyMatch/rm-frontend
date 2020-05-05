@@ -1,14 +1,13 @@
-import {Typography} from "@material-ui/core";
+import {Typography, WithStyles} from "@material-ui/core";
 import {createStyles, Theme, withStyles} from "@material-ui/core/styles";
 import React, {Component} from "react";
 import {connect, ConnectedProps} from "react-redux";
-import InstitutionTable from "../components/Table/InstitutionTable";
-import {Person2Institution} from "../domain/person/Person2Institution";
-import {loadPerson} from "../state/person/PersonState";
-import {RootDispatch, RootState} from "../state/Store";
-import {WithStylesPublic} from "../util/WithStylesPublic";
+import InstitutionTable from "../../components/Table/InstitutionTable";
+import {Person2Institution} from "../../domain/person/Person2Institution";
+import {loadPerson} from "../../state/person/PersonState";
+import {RootDispatch, RootState} from "../../state/Store";
 
-interface Props extends WithStylesPublic<typeof styles>, PropsFromRedux {
+interface Props extends WithStyles<typeof styles>, PropsFromRedux {
 }
 
 interface State {
@@ -68,7 +67,7 @@ class InstitutionScreen extends Component<Props, State> {
     state: State = {};
 
     render() {
-        const classes = this.props.classes!;
+        const classes = this.props.classes;
 
         return (
             <div className={classes.content}>

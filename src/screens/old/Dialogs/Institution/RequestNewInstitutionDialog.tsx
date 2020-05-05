@@ -1,12 +1,12 @@
 import {makeStyles} from "@material-ui/core/styles";
 import React, {useCallback, useState} from "react";
-import PopupDialog from "../../../components/Dialog/PopupDialog";
-import FormAutocomplete from "../../../components/Form/FormAutocomplete";
-import {FormTextInput} from "../../../components/Form/FormTextInput";
-import {InstitutionTyp} from "../../../domain/institution/Institution";
-import {InstitutionRolle} from "../../../domain/institution/InstitutionAntrag";
-import {apiPost} from "../../../util/ApiUtils";
-import {defined, stringLength, validate} from "../../../util/ValidationUtils";
+import PopupDialog from "../../../../components/Dialog/PopupDialog";
+import FormAutocomplete from "../../../../components/Form/FormAutocomplete";
+import {FormTextInput} from "../../../../components/Form/FormTextInput";
+import {InstitutionTyp} from "../../../../domain/institution/Institution";
+import {InstitutionRolle} from "../../../../domain/institution/InstitutionAntrag";
+import {apiPost} from "../../../../util/ApiUtils";
+import {defined, stringLength, validate} from "../../../../util/ValidationUtils";
 
 interface Props {
     open: boolean;

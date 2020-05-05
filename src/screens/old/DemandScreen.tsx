@@ -1,21 +1,21 @@
+import {WithStyles} from "@material-ui/core";
 import {createStyles, Theme, withStyles} from "@material-ui/core/styles";
 import React, {Component} from "react";
 import {connect, ConnectedProps} from "react-redux";
-import {FormButton} from "../components/Form/FormButton";
-import {FormTextInput} from "../components/Form/FormTextInput";
-import EntryTable from "../components/Table/EntryTable";
-import {loadArtikelKategorien} from "../state/artikel/ArtikelKategorienState";
-import {loadArtikel} from "../state/artikel/ArtikelState";
-import {loadBedarfe} from "../state/bedarf/BedarfeState";
-import {loadPerson} from "../state/person/PersonState";
-import {RootDispatch, RootState} from "../state/Store";
-import LoginService from "../util/LoginService";
-import {WithStylesPublic} from "../util/WithStylesPublic";
+import {FormButton} from "../../components/Form/FormButton";
+import {FormTextInput} from "../../components/Form/FormTextInput";
+import EntryTable from "../../components/Table/EntryTable";
+import {loadArtikelKategorien} from "../../state/artikel/ArtikelKategorienState";
+import {loadArtikel} from "../../state/artikel/ArtikelState";
+import {loadBedarfe} from "../../state/bedarf/BedarfeState";
+import {loadPerson} from "../../state/person/PersonState";
+import {RootDispatch, RootState} from "../../state/Store";
+import LoginService from "../../util/LoginService";
 import AddDemandDialog from "./Dialogs/Demand/AddDemandDialog";
 import DemandDetailsDialog from "./Dialogs/Demand/DemandDetailsDialog";
 import RespondDemandDialog from "./Dialogs/Demand/RespondDemandDialog";
 
-interface Props extends WithStylesPublic<typeof styles>, PropsFromRedux {
+interface Props extends WithStyles<typeof styles>, PropsFromRedux {
 }
 
 interface State {
@@ -44,7 +44,7 @@ class DemandScreen extends Component<Props, State> {
     };
 
     render() {
-        const classes = this.props.classes!;
+        const classes = this.props.classes;
         const demandItem = this.props.bedarfe?.find(item => item.id === this.state.infoId);
         const empfaenger = LoginService.hasRoleEmpfaenger();
 

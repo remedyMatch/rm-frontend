@@ -3,11 +3,11 @@ import {makeStyles, Theme} from "@material-ui/core/styles";
 import {format} from "date-fns";
 import {de} from "date-fns/locale";
 import React from "react";
-import PopupDialog from "../../../components/Dialog/PopupDialog";
-import {FormButton} from "../../../components/Form/FormButton";
-import {Angebot} from "../../../domain/angebot/Angebot";
-import {Artikel} from "../../../domain/artikel/Artikel";
-import {ArtikelKategorie} from "../../../domain/artikel/ArtikelKategorie";
+import PopupDialog from "../../../../components/Dialog/PopupDialog";
+import {FormButton} from "../../../../components/Form/FormButton";
+import {Angebot} from "../../../../domain/angebot/Angebot";
+import {Artikel} from "../../../../domain/artikel/Artikel";
+import {ArtikelKategorie} from "../../../../domain/artikel/ArtikelKategorie";
 
 interface Props {
     open: boolean;
@@ -64,9 +64,8 @@ const formatDate = (date?: string) => {
 const OfferDetailsDialog: React.FC<Props> = props => {
     const classes = useStyles();
 
-    const category = props.artikelKategorien.find(kategorie => kategorie.id === props.angebot?.artikelKategorieId);
-    const article = props.artikel.find(artikel => artikel.id === props.angebot?.artikelId);
-    const variant = article?.varianten?.find(variant => variant.id === props.angebot?.artikelVarianteId);
+    const category = props.artikelKategorien.find(kategorie => kategorie.id === props.angebot?.artikel?.artikelKategorieId);
+    const variant = props.angebot?.artikel.varianten.find(variant => variant.id === props.angebot?.artikelVarianteId);
 
     return (
         <PopupDialog
@@ -82,11 +81,11 @@ const OfferDetailsDialog: React.FC<Props> = props => {
             </div>
             <div className={classes.row}>
                 <span className={classes.left}>Artikel</span>
-                <span className={classes.right}>{article?.name}</span>
+                <span className={classes.right}>{props.angebot?.artikel?.name}</span>
             </div>
             <div className={classes.row}>
                 <span className={classes.left}>Beschreibung</span>
-                <span className={classes.right}>{article?.beschreibung}</span>
+                <span className={classes.right}>{props.angebot?.artikel?.beschreibung}</span>
             </div>
             <Typography variant="subtitle1" className={classes.subtitle}>Benötigte Variante</Typography>
             <div className={classes.row}>

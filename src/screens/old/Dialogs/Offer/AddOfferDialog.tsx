@@ -1,14 +1,16 @@
 import {TextareaAutosize, Typography} from "@material-ui/core";
 import {makeStyles, Theme} from "@material-ui/core/styles";
+import {KeyboardDatePicker} from "@material-ui/pickers";
 import React, {useCallback, useMemo, useState} from "react";
-import PopupDialog from "../../../components/Dialog/PopupDialog";
-import FormAutocomplete from "../../../components/Form/FormAutocomplete";
-import {FormNumberInput} from "../../../components/Form/FormNumberInput";
-import {Artikel} from "../../../domain/artikel/Artikel";
-import {ArtikelKategorie} from "../../../domain/artikel/ArtikelKategorie";
-import {ArtikelVariante} from "../../../domain/artikel/ArtikelVariante";
-import {apiPost} from "../../../util/ApiUtils";
-import {defined, numberSize, stringLength, validate} from "../../../util/ValidationUtils";
+import PopupDialog from "../../../../components/Dialog/PopupDialog";
+import FormAutocomplete from "../../../../components/Form/FormAutocomplete";
+import {FormCheckbox} from "../../../../components/Form/FormCheckbox";
+import {FormNumberInput} from "../../../../components/Form/FormNumberInput";
+import {Artikel} from "../../../../domain/artikel/Artikel";
+import {ArtikelKategorie} from "../../../../domain/artikel/ArtikelKategorie";
+import {ArtikelVariante} from "../../../../domain/artikel/ArtikelVariante";
+import {apiPost} from "../../../../util/ApiUtils";
+import {defined, numberSize, stringLength, validate} from "../../../../util/ValidationUtils";
 
 interface Props {
     open: boolean;
@@ -36,18 +38,25 @@ const useStyles = makeStyles((theme: Theme) => ({
     caption: {
         textAlign: "right",
         marginTop: "8px"
+    },
+    checkbox: {
+        marginRight: "auto"
     }
 }));
 
-const AddDemandDialog: React.FC<Props> = props => {
+const AddOfferDialog: React.FC<Props> = props => {
     const classes = useStyles();
 
-    const {onSaved, onCancelled} = props;
+    const {onCancelled, onSaved} = props;
 
     const [category, setCategory] = useState<ArtikelKategorie | undefined>(undefined);
     const [article, setArticle] = useState<Artikel | undefined>(undefined);
     const [variant, setVariant] = useState<ArtikelVariante | undefined>(undefined);
     const [amount, setAmount] = useState<number>(0);
+    const [useBefore, setUseBefore] = useState<Date | undefined>(undefined);
+    const [sterile, setSterile] = useState<boolean>(false);
+    const [sealed, setSealed] = useState<boolean>(false);
+    const [medical, setMedical] = useState<boolean>(false);
     const [comment, setComment] = useState<string>("");
 
     const [disabled, setDisabled] = useState<boolean>(false);
@@ -60,8 +69,8 @@ const AddDemandDialog: React.FC<Props> = props => {
             defined(category, "Es muss eine Kategorie gewählt werden!"),
             defined(article, "Es muss ein Artikel gewählt werden!"),
             defined(variant, "Es muss eine Variante gewählt werden!"),
-            stringLength(comment, "Der Kommentar", 1, 1024),
-            numberSize(amount, "Die Anzahl", 1)
+            numberSize(amount, "Die Anzahl", 1),
+            stringLength(comment, "Der Kommentar", 1, 1024)
         );
 
         if (error) {
@@ -76,9 +85,11 @@ const AddDemandDialog: React.FC<Props> = props => {
             artikelId: article!.id,
             artikelVarianteId: variant!.id,
             anzahl: amount,
-            steril: false,
-            medizinisch: false,
-            kommentar: comment
+            kommentar: comment,
+            haltbarkeit: useBefore,
+            steril: sterile,
+            medizinisch: medical,
+            originalverpackt: sealed
         });
 
         setDisabled(false);
@@ -89,10 +100,14 @@ const AddDemandDialog: React.FC<Props> = props => {
             setArticle(undefined);
             setVariant(undefined);
             setAmount(0);
+            setUseBefore(undefined);
+            setSterile(false);
+            setSealed(false);
+            setMedical(false);
             setComment("");
             onSaved();
         }
-    }, [onSaved, article, variant, amount, comment, category]);
+    }, [onSaved, article, variant, amount, comment, useBefore, sterile, medical, sealed, category]);
 
     const onCancel = useCallback(() => {
         setError(undefined);
@@ -158,6 +173,44 @@ const AddDemandDialog: React.FC<Props> = props => {
                 value={amount}
                 min={0}/>
 
+            <KeyboardDatePicker
+                variant="inline"
+                minDate={new Date()}
+                format="dd.MM.yyyy"
+                disabled={disabled}
+                margin="normal"
+                label="Haltbarkeitsdatum"
+                inputVariant="outlined"
+                value={useBefore}
+                size="small"
+                className={classes.formRow}
+                onChange={setUseBefore}
+            />
+
+            <FormCheckbox
+                className={classes.checkbox}
+                disabled={disabled}
+                checked={sterile}
+                onChange={setSterile}
+                label="Produkt ist steril"
+            />
+
+            <FormCheckbox
+                className={classes.checkbox}
+                disabled={disabled}
+                checked={sealed}
+                onChange={setSealed}
+                label="Produkt ist originalverpackt"
+            />
+
+            <FormCheckbox
+                className={classes.checkbox}
+                disabled={disabled || !variant?.medizinischAuswaehlbar}
+                checked={(medical && variant?.medizinischAuswaehlbar) || false}
+                onChange={setMedical}
+                label="Produkt ist medizinisch"
+            />
+
             <TextareaAutosize
                 rowsMin={3}
                 rowsMax={8}
@@ -171,4 +224,4 @@ const AddDemandDialog: React.FC<Props> = props => {
     );
 };
 
-export default AddDemandDialog;
+export default AddOfferDialog;

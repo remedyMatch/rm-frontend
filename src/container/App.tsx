@@ -1,8 +1,8 @@
 import {CssBaseline} from "@material-ui/core";
 import {makeStyles, Theme, ThemeProvider} from "@material-ui/core/styles";
 import {default as React} from "react";
-import defaultTheme from "../../theme";
-import Layout from "../Layout/Layout";
+import defaultTheme from "../theme";
+import Layout from "./Layout/Layout";
 
 const useStyles = makeStyles((theme: Theme) => ({
     root: {

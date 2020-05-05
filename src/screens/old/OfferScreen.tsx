@@ -1,20 +1,20 @@
+import {WithStyles} from "@material-ui/core";
 import {createStyles, Theme, withStyles} from "@material-ui/core/styles";
 import React, {Component} from "react";
 import {connect, ConnectedProps} from "react-redux";
-import {FormButton} from "../components/Form/FormButton";
-import {FormTextInput} from "../components/Form/FormTextInput";
-import EntryTable from "../components/Table/EntryTable";
-import {loadAngebote} from "../state/angebot/AngeboteState";
-import {loadArtikelKategorien} from "../state/artikel/ArtikelKategorienState";
-import {loadArtikel} from "../state/artikel/ArtikelState";
-import {loadPerson} from "../state/person/PersonState";
-import {RootDispatch, RootState} from "../state/Store";
-import {WithStylesPublic} from "../util/WithStylesPublic";
+import {FormButton} from "../../components/Form/FormButton";
+import {FormTextInput} from "../../components/Form/FormTextInput";
+import EntryTable from "../../components/Table/EntryTable";
+import {loadAngebote} from "../../state/angebot/AngeboteState";
+import {loadArtikelKategorien} from "../../state/artikel/ArtikelKategorienState";
+import {loadArtikel} from "../../state/artikel/ArtikelState";
+import {loadPerson} from "../../state/person/PersonState";
+import {RootDispatch, RootState} from "../../state/Store";
 import AddOfferDialog from "./Dialogs/Offer/AddOfferDialog";
 import OfferDetailsDialog from "./Dialogs/Offer/OfferDetailsDialog";
 import RespondOfferDialog from "./Dialogs/Offer/RespondOfferDialog";
 
-interface Props extends WithStylesPublic<typeof styles>, PropsFromRedux {
+interface Props extends WithStyles<typeof styles>, PropsFromRedux {
 }
 
 interface State {
@@ -43,7 +43,7 @@ class OfferScreen extends Component<Props, State> {
     };
 
     render() {
-        const classes = this.props.classes!;
+        const classes = this.props.classes;
         const institutionId = ""; // TODO
 
         const offerItem = this.props.angebote?.find(item => item.id === this.state.infoId);
