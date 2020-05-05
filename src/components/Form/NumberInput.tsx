@@ -22,13 +22,13 @@ const useStyles = makeStyles((theme: Theme) => ({
             },
             "&>fieldset": {
                 transition: theme.transitions.create("border"),
-                border: "2px solid #CCC",
+                border: "2px solid #666",
                 "&:hover": {
                     border: "2px solid #53284f"
                 }
             },
             "&>button": {
-                color: "#CCC"
+                color: "#666"
             },
             "&:hover>button": {
                 color: "#53284f"

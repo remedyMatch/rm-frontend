@@ -319,9 +319,10 @@ class OfferFlowScreen extends Component<Props, State> {
                     </Fade>
 
                     <CreateOfferDialog
+                        variantId={this.state.selectedVariant?.id}
                         open={this.state.createOfferDialogOpen}
-                        onCancel={this.onCancelCreateOfferClicked}
-                        onCreate={this.onCancelCreateOfferClicked}/>
+                        onCancelled={this.onCancelCreateOfferClicked}
+                        onCreated={this.onCancelCreateOfferClicked}/>
 
                 </div>
             </>

@@ -25,13 +25,13 @@ const useStyles = makeStyles((theme: Theme) => ({
             },
             "&>fieldset": {
                 transition: theme.transitions.create("border"),
-                border: "2px solid #CCC",
+                border: "2px solid #666",
                 "&:hover": {
                     border: "2px solid #53284f"
                 }
             },
             "&>div>button": {
-                color: "#CCC"
+                color: "#666"
             },
             "&:hover>div>button": {
                 color: "#53284f"
@@ -67,7 +67,7 @@ const DateInput: React.FC<Props> = props => {
 
     const onFocus = useCallback(() => setFocussed(true), []);
     const onBlur = useCallback(() => setFocussed(false), []);
-    const onChangeListener = useCallback((value: Date | null) => onChange(value === null ? undefined : value), [onChange]);
+    const onChangeListener = useCallback((value: Date | null, other: any) => onChange(value === null ? undefined : value), [onChange]);
 
     return (
         <div className={props.className}>
@@ -79,6 +79,7 @@ const DateInput: React.FC<Props> = props => {
                     variant="outlined"
                     disablePast={disablePast}
                     inputFormat="dd.MM.yyyy"
+                    mask="__.__.____"
                     onFocus={onFocus}
                     minDate={disablePast ? new Date() : undefined}
                     onBlur={onBlur}

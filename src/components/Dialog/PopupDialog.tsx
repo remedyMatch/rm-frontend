@@ -20,13 +20,13 @@ interface Props {
     firstTitle?: string;
     secondTitle?: string;
     onCloseError?: () => void;
+    paperClassName?: string;
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
     children: {
         display: "flex",
-        flexDirection: "column",
-        padding: "16px"
+        flexDirection: "column"
     },
     backdrop: {
         backgroundColor: "rgba(0,0,0,0.25)",
@@ -97,7 +97,7 @@ const PopupDialog: React.FC<Props> = props => {
                 className: classes.backdrop
             }}
             PaperProps={{
-                className: classes.paper,
+                className: clsx(classes.paper, props.paperClassName),
                 elevation: undefined
             }}
             open={props.open}
