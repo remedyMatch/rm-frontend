@@ -1,15 +1,18 @@
 import {TextareaAutosize} from "@material-ui/core";
 import {makeStyles, Theme} from "@material-ui/core/styles";
-import React, {useState} from "react";
+import React, {useCallback, useState} from "react";
 import PopupDialog from "../../components/Dialog/PopupDialog";
 import DateInput from "../../components/Form/DateInput";
 import NumberInput from "../../components/Form/NumberInput";
 import {FormCheckbox} from "../../components/Form/old/FormCheckbox";
+import {apiPost} from "../../util/ApiUtils";
+import {defined, numberSize, stringLength, validate} from "../../util/ValidationUtils";
 
 interface Props {
     open: boolean;
-    onCreate: () => void;
-    onCancel: () => void;
+    onCreated: () => void;
+    onCancelled: () => void;
+    variantId?: string;
 }
 
 interface State {
@@ -41,23 +44,77 @@ const useStyles = makeStyles((theme: Theme) => ({
 const CreateOfferDialog: React.FC<Props> = props => {
     const classes = useStyles();
 
+    const {onCancelled, onCreated, variantId} = props;
+
     const [amount, setAmount] = useState<number>(0);
     const [useBefore, setUseBefore] = useState<Date | undefined>(undefined);
+    const [publicOffer, setPublicOffer] = useState<boolean>(true);
     const [sterile, setSterile] = useState<boolean>(false);
     const [sealed, setSealed] = useState<boolean>(false);
     const [medical, setMedical] = useState<boolean>(false);
     const [comment, setComment] = useState<string>("");
 
     const [disabled, setDisabled] = useState<boolean>(false);
+    const [error, setError] = useState<string | undefined>(undefined);
+
+    const onCloseError = useCallback(() => setError(undefined), []);
+
+    const onCreate = useCallback(async () => {
+        const error = validate(
+            defined(variantId, "Es muss eine Variante gewählt werden!"),
+            numberSize(amount, "Die Anzahl", 1),
+            stringLength(comment, "Der Kommentar", 1, 1024)
+        );
+
+        if (error) {
+            setError(error);
+            return;
+        }
+
+        setError(undefined);
+        setDisabled(true);
+
+        const result = await apiPost("/remedy/angebot", {
+            artikelVarianteId: props.variantId,
+            anzahl: amount,
+            kommentar: comment,
+            haltbarkeit: useBefore,
+            steril: sterile,
+            medizinisch: medical,
+            originalverpackt: sealed,
+            oeffentlich: publicOffer
+        });
+
+        setDisabled(false);
+        if (result.error) {
+            setError(result.error);
+        } else {
+            setAmount(0);
+            setUseBefore(undefined);
+            setPublicOffer(true);
+            setSterile(false);
+            setSealed(false);
+            setMedical(false);
+            setComment("");
+            onCreated();
+        }
+    }, [onCreated, variantId, amount, comment, useBefore, sterile, medical, sealed]);
+
+    const onCancel = useCallback(() => {
+        setError(undefined);
+        onCancelled();
+    }, [onCancelled]);
 
     return (
         <>
             <PopupDialog
                 open={props.open}
+                error={error}
+                onCloseError={onCloseError}
                 firstTitle="Abbrechen"
-                onFirst={props.onCancel}
+                onFirst={onCancel}
                 secondTitle="Erstellen"
-                onSecond={props.onCreate}
+                onSecond={onCreate}
                 title="Inserat erstellen"
                 subtitle="Um ein Inserat zu erstellen, benötigen wir noch ein paar weitere Informationen von Ihnen.">
 
@@ -78,6 +135,14 @@ const CreateOfferDialog: React.FC<Props> = props => {
                         label="Wie lange sind die Artikel haltbar?"
                         placeholder="Bitte auswählen oder eintippen"
                         onChange={setUseBefore}/>
+
+                    <FormCheckbox
+                        className={classes.checkbox}
+                        disabled={disabled}
+                        checked={publicOffer}
+                        onChange={setPublicOffer}
+                        label="Angebot ist öffentlich"
+                    />
 
                     <FormCheckbox
                         className={classes.checkbox}
