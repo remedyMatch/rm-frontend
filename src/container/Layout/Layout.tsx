@@ -9,6 +9,7 @@ import DashboardScreen from "../../screens/DashboardScreen";
 import InstitutionScreen from "../../screens/old/InstitutionScreen";
 import OfferScreen from "../../screens/old/OfferScreen";
 import Menu from "./Menu";
+import MapScreen from "../../screens/Map/MapScreen";
 
 interface Props extends WithStyles<typeof styles> {
 }
@@ -62,6 +63,7 @@ class Layout extends Component<Props, State> {
                         <Route path="/konto" component={InstitutionScreen}/>
                         <Route path="/angebot" component={OfferFlowScreen} />
                         <Route path="/" exact component={DashboardScreen}/>
+                        <Route path="/map" component={MapScreen}/>
                         <Redirect to="/"/>
                     </Switch>
                     <Footer/>
