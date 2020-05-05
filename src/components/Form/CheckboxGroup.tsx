@@ -14,7 +14,7 @@ const useStyles = makeStyles((theme: Theme) => ({
         fontWeight: 600,
         color: "#333",
         lineHeight: 1.5,
-        marginBottom: "8px",
+        marginBottom: "16px",
         display: "flex"
     },
     group: {

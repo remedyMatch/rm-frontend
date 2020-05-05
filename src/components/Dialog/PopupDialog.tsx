@@ -56,6 +56,7 @@ const useStyles = makeStyles((theme: Theme) => ({
         padding: "0px 24px 24px 24px"
     },
     buttons: {
+        margin: "16px",
         display: "flex",
         justifyContent: "center",
         flexDirection: "row"
@@ -121,6 +122,7 @@ const PopupDialog: React.FC<Props> = props => {
                 className={classes.buttons}>
                 {props.onFirst && (
                     <Button
+                        disableElevation
                         className={clsx(classes.button, classes.buttonSecondary)}
                         onClick={props.onFirst}
                         variant="outlined"
@@ -130,6 +132,7 @@ const PopupDialog: React.FC<Props> = props => {
                 )}
                 {props.onSecond && (
                     <Button
+                        disableElevation
                         className={clsx(classes.button, classes.buttonPrimary)}
                         onClick={props.onSecond}
                         variant="contained"

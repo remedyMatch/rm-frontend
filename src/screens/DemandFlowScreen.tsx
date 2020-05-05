@@ -5,10 +5,10 @@ import React, {Component} from "react";
 import {connect, ConnectedProps} from "react-redux";
 import Flow from "../components/Flow/Flow";
 import EntryTable from "../components/Table/EntryTable";
+import {Angebot} from "../domain/angebot/Angebot";
 import {Artikel} from "../domain/artikel/Artikel";
 import {ArtikelKategorie} from "../domain/artikel/ArtikelKategorie";
 import {ArtikelVariante} from "../domain/artikel/ArtikelVariante";
-import {Bedarf} from "../domain/bedarf/Bedarf";
 import kategorie_behelfsmaske from "../resources/kategorie_behelfsmaske.svg";
 import kategorie_desinfektion from "../resources/kategorie_desinfektion.svg";
 import kategorie_schutzkleidung from "../resources/kategorie_schutzkleidung.svg";
@@ -24,13 +24,13 @@ interface Props extends WithStyles<typeof styles>, PropsFromRedux {
 }
 
 interface State {
-    createOfferDialogOpen: boolean;
+    createDemandDialogOpen: boolean;
     currentPage: number;
     selectedCategory?: ArtikelKategorie;
     selectedArticle?: Artikel;
     selectedVariant?: ArtikelVariante;
     variantSkipped?: boolean;
-    results: Bedarf[];
+    results: Angebot[];
 }
 
 const styles = (theme: Theme) =>
@@ -102,10 +102,10 @@ const styles = (theme: Theme) =>
         }
     });
 
-class OfferFlowScreen extends Component<Props, State> {
+class DemandFlowScreen extends Component<Props, State> {
     state: State = {
         currentPage: 0,
-        createOfferDialogOpen: false,
+        createDemandDialogOpen: false,
         results: []
     };
 
@@ -120,7 +120,7 @@ class OfferFlowScreen extends Component<Props, State> {
                     pages={[
                         {
                             flowPageName: "Kategorie",
-                            title: "Über welches Material verfügen Sie?",
+                            title: "Welches Material suchen Sie?",
                             contentClass: clsx(classes.elementContainer, classes.categoryContainer),
                             content: this.props.artikelKategorien?.map(kategorie => (
                                 <div
@@ -138,7 +138,7 @@ class OfferFlowScreen extends Component<Props, State> {
                         },
                         {
                             flowPageName: "Artikel",
-                            title: "Um was handelt es sich genau?",
+                            title: "Was genau benötigen Sie?",
                             icon: this.getIcon(this.state.selectedCategory?.name || ""),
                             iconAlt: "Kategorie " + this.state.selectedCategory?.name,
                             contentClass: clsx(classes.elementContainer, classes.articleContainer),
@@ -153,7 +153,7 @@ class OfferFlowScreen extends Component<Props, State> {
                         {
                             flowPageName: this.state.variantSkipped ? "Größe (übersprungen)" : "Größe",
                             disabled: this.state.variantSkipped,
-                            title: "Um welche Größe handelt es sich?",
+                            title: "Welche Größe benötigen Sie?",
                             icon: this.getIcon(this.state.selectedCategory?.name || ""),
                             iconAlt: "Kategorie " + this.state.selectedCategory?.name,
                             contentClass: clsx(classes.elementContainer, classes.articleContainer),
@@ -167,8 +167,8 @@ class OfferFlowScreen extends Component<Props, State> {
                         }
                     ]}
                     finishedPage={{
-                        title: "Wir haben 4 passende Bedarfe gefunden.",
-                        subtitle: "Sie können die gewünschten Empfänger kontaktieren, um Ihre Artikel anzubieten, oder Sie können ein Inserat erstellen, damit sich Empfänger bei Ihnen melden können.",
+                        title: "Wir haben 4 passende Angebote gefunden.",
+                        subtitle: "Sie können die gewünschten Spender kontaktieren, um sie auf Ihren Bedarf aufmerksam zu machen, oder Sie können ein Inserat erstellen, damit sich Spender bei Ihnen melden können.",
                         action: "Inserat erstellen",
                         onActionClicked: this.onCreateOfferClicked,
                         icon: this.getIcon(this.state.selectedCategory?.name || ""),
@@ -180,12 +180,12 @@ class OfferFlowScreen extends Component<Props, State> {
                                     hideType
                                     artikel={this.props.artikel || []}
                                     artikelKategorien={this.props.artikelKategorien || []}
-                                    angebote={[]}
-                                    bedarfe={this.state.results}/>
+                                    angebote={this.state.results}
+                                    bedarfe={[]}/>
 
                                 <CreateOfferDialog
                                     variantId={this.state.selectedVariant?.id}
-                                    open={this.state.createOfferDialogOpen}
+                                    open={this.state.createDemandDialogOpen}
                                     onCancelled={this.onCancelCreateOfferClicked}
                                     onCreated={this.onCancelCreateOfferClicked}/>
                             </>
@@ -237,18 +237,18 @@ class OfferFlowScreen extends Component<Props, State> {
 
     private onCreateOfferClicked = () => {
         this.setState({
-            createOfferDialogOpen: true
+            createDemandDialogOpen: true
         });
     };
 
     private onCancelCreateOfferClicked = () => {
         this.setState({
-            createOfferDialogOpen: false
+            createDemandDialogOpen: false
         });
     };
 
     private queryResults = async () => {
-        const result = await apiGet<Bedarf[]>("/remedy/bedarf/suche");
+        const result = await apiGet<Angebot[]>("/remedy/angebot/suche");
         this.setState({
             results: result.result || []
         });
@@ -326,4 +326,4 @@ const mapDispatchToProps = (dispatch: RootDispatch) => ({
 const connector = connect(mapStateToProps, mapDispatchToProps);
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
-export default connector(withStyles(styles)(OfferFlowScreen));
+export default connector(withStyles(styles)(DemandFlowScreen));

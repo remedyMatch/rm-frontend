@@ -18,7 +18,10 @@ const useStyles = makeStyles((theme: Theme) => ({
         display: "flex",
         "&>div": {
             "&>input": {
-                textAlign: "center"
+                fontWeight: 600,
+                fontFamily: "Montserrat, sans-serif",
+                textAlign: "center",
+                fontSize: "16px"
             },
             "&>fieldset": {
                 transition: theme.transitions.create("border"),
@@ -38,7 +41,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     focussed: {
         "&>div": {
             "&>fieldset": {
-                border: "2px solid #53284f"
+                border: "2px solid #53284f !important"
             },
             "&>button": {
                 color: "#53284f"
@@ -54,7 +57,7 @@ const useStyles = makeStyles((theme: Theme) => ({
         fontWeight: 600,
         color: "#333",
         lineHeight: 1.5,
-        marginBottom: "8px",
+        marginBottom: "16px",
         display: "flex"
     }
 }));

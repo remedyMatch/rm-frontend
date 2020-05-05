@@ -122,6 +122,7 @@ class DashboardScreen extends Component<Props, State> {
                         </FormButton>
 
                         <FormButton
+                            onClick={this.onCreateDemandClicked}
                             className={clsx(classes.button, classes.buttonDemand)}
                             variant="contained">
                             Material suchen
@@ -207,6 +208,10 @@ class DashboardScreen extends Component<Props, State> {
 
     private onCreateOfferClicked = () => {
         this.props.history.push("/angebot");
+    };
+
+    private onCreateDemandClicked = () => {
+        this.props.history.push("/bedarf");
     };
 }
 

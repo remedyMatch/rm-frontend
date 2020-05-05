@@ -6,7 +6,7 @@ import CheckboxGroup from "../../components/Form/CheckboxGroup";
 import DateInput from "../../components/Form/DateInput";
 import NumberInput from "../../components/Form/NumberInput";
 import TextArea from "../../components/Form/TextArea";
-import {apiPost} from "../../util/ApiUtils";
+import {apiPost, logApiError} from "../../util/ApiUtils";
 import {defined, numberSize, stringLength, validate} from "../../util/ValidationUtils";
 
 interface Props {
@@ -27,14 +27,14 @@ const useStyles = makeStyles((theme: Theme) => ({
     row: {
         display: "flex",
         flexDirection: "row",
-        margin: "1em -1.5em"
+        margin: "1.5em -1em"
     },
     rowEntry: {
         width: "calc((100% - 4.5em) / 2)",
         margin: "0px auto"
     },
     formRow: {
-        margin: "1em 0em 2em 0em"
+        margin: "1.5em 0em"
     }
 }));
 
@@ -58,9 +58,9 @@ const CreateOfferDialog: React.FC<Props> = props => {
 
     const onCreate = useCallback(async () => {
         const error = validate(
-            defined(variantId, "Es muss eine Variante gewählt werden!"),
-            numberSize(amount, "Die Anzahl", 1),
-            stringLength(comment, "Der Kommentar", 1, 1024)
+            defined(variantId, "Es wurde keine Variante ausgewählt!"),
+            numberSize(amount, "Ihre Anzahl", 1),
+            stringLength(comment, "Ihre Nachricht", 1, 1024)
         );
 
         if (error) {
@@ -72,7 +72,7 @@ const CreateOfferDialog: React.FC<Props> = props => {
         setDisabled(true);
 
         const result = await apiPost("/remedy/angebot", {
-            artikelVarianteId: props.variantId,
+            artikelVarianteId: variantId,
             anzahl: amount,
             kommentar: comment,
             haltbarkeit: useBefore,
@@ -84,7 +84,8 @@ const CreateOfferDialog: React.FC<Props> = props => {
 
         setDisabled(false);
         if (result.error) {
-            setError(result.error);
+            logApiError(result, "Beim Anlegen des Angebots ist ein Fehler aufgetreten");
+            setError("Es ist ein technischer Fehler aufgetreten. Bitte versuchen Sie es erneut.");
         } else {
             setAmount(0);
             setUseBefore(undefined);
@@ -95,7 +96,7 @@ const CreateOfferDialog: React.FC<Props> = props => {
             setComment("");
             onCreated();
         }
-    }, [onCreated, variantId, amount, comment, useBefore, sterile, medical, sealed]);
+    }, [onCreated, variantId, amount, comment, useBefore, sterile, medical, sealed, publicOffer]);
 
     const onCancel = useCallback(() => {
         setError(undefined);
@@ -131,8 +132,8 @@ const CreateOfferDialog: React.FC<Props> = props => {
                             disabled={disabled}
                             value={useBefore}
                             disablePast
-                            label="Wie ist das Haltbarkeitsdatum?"
-                            placeholder="Bitte auswählen"
+                            label="Gibt es ein Ablaufdatum?"
+                            placeholder="Optional"
                             onChange={setUseBefore}/>
 
                     </div>
