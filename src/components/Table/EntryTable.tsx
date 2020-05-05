@@ -19,10 +19,11 @@ import {Delete, Info} from "@material-ui/icons";
 import {Pagination} from "@material-ui/lab";
 import React from 'react';
 import {usePagination, useSortBy, useTable} from "react-table";
-import {Angebot} from "../../Domain/Angebot";
-import {Artikel} from "../../Domain/Artikel";
-import {ArtikelKategorie} from "../../Domain/ArtikelKategorie";
-import {Bedarf} from "../../Domain/Bedarf";
+import {Angebot} from "../../domain/angebot/Angebot";
+import {Artikel} from "../../domain/artikel/Artikel";
+import {ArtikelKategorie} from "../../domain/artikel/ArtikelKategorie";
+import {Bedarf} from "../../domain/bedarf/Bedarf";
+import clsx from "clsx";
 
 declare type DataRow = {
     type: "offer" | "demand", data: {
@@ -31,7 +32,7 @@ declare type DataRow = {
         article: string;
         location: string;
         distance: string;
-        amount: string;
+        amount: number;
     }
 };
 
@@ -128,6 +129,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 interface Props {
+    className?: string;
     artikel: Artikel[];
     artikelKategorien: ArtikelKategorie[];
     angebote: Angebot[];
@@ -135,8 +137,6 @@ interface Props {
     hideType?: boolean;
     hideDistance?: boolean;
     useSimplePagination?: boolean;
-    useAdvancedLocation?: boolean;
-    showDetailedAmount?: boolean;
     delete?: {
         eigeneInstitutionId: string;
         onDelete: (id: string) => void;
@@ -188,8 +188,8 @@ const EntryTable: React.FC<Props> = props => {
                         id: angebot.id,
                         category: kategorie?.name || "",
                         article: artikel?.name || "",
-                        amount: angebot.anzahl.toString(),
-                        location: (props.useAdvancedLocation ? angebot.standort.name + ", " : "") + angebot.standort.ort,
+                        amount: angebot.verfuegbareAnzahl,
+                        location: angebot.ort,
                         distance: angebot.entfernung.toFixed(1) + " km"
                     }
                 };
@@ -203,13 +203,13 @@ const EntryTable: React.FC<Props> = props => {
                         id: bedarf.id,
                         category: kategorie?.name || "",
                         article: artikel?.name || "",
-                        amount: bedarf.rest + (props.showDetailedAmount ? "/" + bedarf.anzahl : ""),
-                        location: (props.useAdvancedLocation ? bedarf.standort.name + ", " : "") + bedarf.standort.ort,
+                        amount: bedarf.verfuegbareAnzahl,
+                        location: bedarf.ort,
                         distance: bedarf.entfernung.toFixed(1) + " km"
                     }
                 };
             })),
-        [props.angebote, props.bedarfe, props.showDetailedAmount, props.useAdvancedLocation, props.artikel, props.artikelKategorien]
+        [props.angebote, props.bedarfe, props.artikel, props.artikelKategorien]
     );
 
     const hiddenColumns: string[] = [];
@@ -283,7 +283,7 @@ const EntryTable: React.FC<Props> = props => {
         });
 
     return (
-        <TableContainer className={classes.tableContainer}>
+        <TableContainer className={clsx(classes.tableContainer, props.className)}>
             <MUITable {...getTableProps()} stickyHeader className={classes.table}>
                 <TableHead>
                     {headerGroups.map(headerGroup => (
