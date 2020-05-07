@@ -79,7 +79,7 @@ const FlowPage: React.FC<Props> = props => {
 
     return (
         <>
-            <Fade in={props.active} timeout={1000}>
+            <Fade in={props.active} timeout={750}>
                 <div className={props.className}>
 
                     <div className={classes.titleContainer}>

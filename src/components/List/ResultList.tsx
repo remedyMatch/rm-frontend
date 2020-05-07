@@ -118,7 +118,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 interface Props {
     className?: string;
     results: DataRow[];
-    type: "demands" | "offers";
+    resultsType: "demands" | "offers";
 }
 
 const PAGE_SIZE = 10;
@@ -133,7 +133,7 @@ const ResultList: React.FC<Props> = props => {
     }
 
     const items = props.results.slice(pageIndex * PAGE_SIZE, pageIndex * PAGE_SIZE + PAGE_SIZE);
-    const contact = props.type === "demands" ? "Empfänger kontaktieren" : "Spender kontaktieren";
+    const contact = props.resultsType === "demands" ? "Empfänger kontaktieren" : "Spender kontaktieren";
 
     return (
         <div className={props.className}>

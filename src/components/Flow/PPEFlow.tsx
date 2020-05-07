@@ -27,7 +27,7 @@ interface CountEntry {
 }
 
 interface Props extends WithStyles<typeof styles>, PropsFromRedux {
-    type: "demands" | "offers";
+    flowType: "offer" | "demand";
 
     articleCategoryPageTitle: string;
     articlePageTitle: string;
@@ -277,7 +277,7 @@ class PPEFlow extends Component<Props, State> {
             content: (
                 <ResultList
                     results={this.mapResults()}
-                    type={this.props.type}/>
+                    resultsType={this.props.flowType === "offer" ? "demands" : "offers"}/>
             )
         };
     };

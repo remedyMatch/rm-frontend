@@ -42,7 +42,7 @@ const DemandFlowScreen: React.FC = () => {
     return (
         <>
             <PPEFlow
-                type="offers"
+                flowType="demand"
                 articleCategoryPageTitle="Welches Material suchen Sie?"
                 articlePageTitle="Was genau benötigen Sie?"
                 articleVariantPageTitle="Welche Größe benötigen Sie?"

@@ -32,7 +32,7 @@ const useStyles = makeStyles((theme: Theme) => ({
         marginTop: "6em",
         marginBottom: "6em",
         transition: theme.transitions.create("margin", {
-            duration: 1000
+            duration: 750
         })
     },
     stepperFinished: {
