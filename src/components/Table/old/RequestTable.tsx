@@ -7,8 +7,8 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import {CallMade, CallReceived} from "@material-ui/icons";
 import React from 'react';
-import {AngebotAnfrage} from "../../domain/angebot/AngebotAnfrage";
-import {Artikel} from "../../domain/artikel/Artikel";
+import {AngebotAnfrage} from "../../../domain/angebot/AngebotAnfrage";
+import {Artikel} from "../../../domain/artikel/Artikel";
 
 const useStyles = makeStyles({
     table: {

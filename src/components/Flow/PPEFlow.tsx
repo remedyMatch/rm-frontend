@@ -5,21 +5,21 @@ import React, {Component} from "react";
 import {connect, ConnectedProps} from "react-redux";
 import Flow from "../../components/Flow/Flow";
 import CountBadge from "../../components/Layout/CountBadge";
-import EntryTable from "../../components/Table/EntryTable";
 import {Angebot} from "../../domain/angebot/Angebot";
 import {Artikel} from "../../domain/artikel/Artikel";
 import {ArtikelKategorie} from "../../domain/artikel/ArtikelKategorie";
 import {ArtikelVariante} from "../../domain/artikel/ArtikelVariante";
 import {Bedarf} from "../../domain/bedarf/Bedarf";
-import {loadArtikelKategorien} from "../../state/artikel/ArtikelKategorienState";
-import {loadArtikel} from "../../state/artikel/ArtikelState";
-import {RootDispatch, RootState} from "../../state/Store";
-import {apiGet, logApiError} from "../../util/ApiUtils";
 import kategorie_behelfsmaske from "../../resources/kategorie_behelfsmaske.svg";
 import kategorie_desinfektion from "../../resources/kategorie_desinfektion.svg";
 import kategorie_schutzkleidung from "../../resources/kategorie_schutzkleidung.svg";
 import kategorie_schutzmaske from "../../resources/kategorie_schutzmaske.svg";
 import kategorie_sonstiges from "../../resources/kategorie_sonstiges.svg";
+import {loadArtikelKategorien} from "../../state/artikel/ArtikelKategorienState";
+import {loadArtikel} from "../../state/artikel/ArtikelState";
+import {RootDispatch, RootState} from "../../state/Store";
+import {apiGet, logApiError} from "../../util/ApiUtils";
+import ResultList from "../List/ResultList";
 
 interface CountEntry {
     id: string;
@@ -27,6 +27,8 @@ interface CountEntry {
 }
 
 interface Props extends WithStyles<typeof styles>, PropsFromRedux {
+    type: "demands" | "offers";
+
     articleCategoryPageTitle: string;
     articlePageTitle: string;
     articleVariantPageTitle: string;
@@ -273,18 +275,23 @@ class PPEFlow extends Component<Props, State> {
             icon: icon,
             iconAlt: iconAlt,
             content: (
-                <>
-                    <EntryTable
-                        className={this.props.classes.results}
-                        hideType
-                        artikel={this.props.artikel || []}
-                        artikelKategorien={this.props.artikelKategorien || []}
-                        //@ts-ignore // TODO
-                        angebote={this.state.results}
-                        bedarfe={[]}/>
-                </>
+                <ResultList
+                    results={this.mapResults()}
+                    type={this.props.type}/>
             )
         };
+    };
+
+    private mapResults = () => {
+        return this.state.results.map(result => ({
+            id: result.id,
+            icon: this.getIcon(this.state.selectedCategory?.name || ""),
+            articleName: result.artikel.name,
+            variantName: this.state.variantSkipped ? undefined : this.state.selectedVariant?.variante,
+            location: result.ort,
+            distance: result.entfernung,
+            amount: result.verfuegbareAnzahl
+        }));
     };
 
     private loadCategoryCounts = async () => {

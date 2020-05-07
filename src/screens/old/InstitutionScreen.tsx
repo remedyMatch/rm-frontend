@@ -2,7 +2,7 @@ import {Typography, WithStyles} from "@material-ui/core";
 import {createStyles, Theme, withStyles} from "@material-ui/core/styles";
 import React, {Component} from "react";
 import {connect, ConnectedProps} from "react-redux";
-import InstitutionTable from "../../components/Table/InstitutionTable";
+import InstitutionTable from "../../components/Table/old/InstitutionTable";
 import {Person2Institution} from "../../domain/person/Person2Institution";
 import {loadPerson} from "../../state/person/PersonState";
 import {RootDispatch, RootState} from "../../state/Store";
