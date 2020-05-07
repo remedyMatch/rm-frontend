@@ -38,7 +38,9 @@ const styles = (theme: Theme) =>
         },
         logo: {
             cursor: "pointer",
-            marginLeft: "-14px"
+            marginLeft: "-14px",
+            width: "300px",
+            height: "59px"
         },
         institution: {
             minWidth: "250px",

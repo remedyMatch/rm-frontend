@@ -4,7 +4,7 @@ import clsx from "clsx";
 import React, {Component} from "react";
 import {connect, ConnectedProps} from "react-redux";
 import Flow from "../../components/Flow/Flow";
-import CountBadge from "../../components/Layout/CountBadge";
+import CountBadge from "../Content/CountBadge";
 import {Angebot} from "../../domain/angebot/Angebot";
 import {Artikel} from "../../domain/artikel/Artikel";
 import {ArtikelKategorie} from "../../domain/artikel/ArtikelKategorie";
