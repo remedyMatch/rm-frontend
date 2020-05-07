@@ -119,9 +119,10 @@ interface Props {
     className?: string;
     results: DataRow[];
     resultsType: "demands" | "offers";
+    onContactClicked: (id: string) => void;
 }
 
-const PAGE_SIZE = 10;
+const PAGE_SIZE = 5;
 
 const ResultList: React.FC<Props> = props => {
     const classes = useStyles();
@@ -161,6 +162,7 @@ const ResultList: React.FC<Props> = props => {
                     </div>
                     <div className={classes.contactContainer}>
                         <Button
+                            onClick={() => props.onContactClicked(item.id)}
                             disableElevation
                             className={classes.button}
                             variant="contained">

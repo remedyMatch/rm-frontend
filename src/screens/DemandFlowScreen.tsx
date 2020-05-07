@@ -1,22 +1,9 @@
-import React, {useCallback, useState} from "react";
-import PPEFlow from "../components/Flow/PPEFlow";
+import React, {useCallback} from "react";
+import PPEFlow from "./PPEFlow/PPEFlow";
 import {Artikel} from "../domain/artikel/Artikel";
 import {ArtikelVariante} from "../domain/artikel/ArtikelVariante";
-import CreateDemandDialog from "./DemandFlowScreen/CreateDemandDialog";
 
 const DemandFlowScreen: React.FC = () => {
-    const [dialogVariantId, setDialogVariantId] = useState("");
-    const [createDemandDialogOpen, setCreateDemandDialogOpen] = useState(false);
-
-    const openDialog = useCallback((variantId: string) => {
-        setDialogVariantId(variantId);
-        setCreateDemandDialogOpen(true);
-    }, []);
-    const closeDialog = useCallback(() => {
-        setDialogVariantId("");
-        setCreateDemandDialogOpen(false);
-    }, []);
-
     const getArticleName = useCallback((article?: Artikel, variant?: ArtikelVariante) => {
         const name = article?.name || "";
         return variant ? `${name} in Größe ${variant.variante}` : name;
@@ -40,27 +27,18 @@ const DemandFlowScreen: React.FC = () => {
     }, []);
 
     return (
-        <>
-            <PPEFlow
-                flowType="demand"
-                articleCategoryPageTitle="Welches Material suchen Sie?"
-                articlePageTitle="Was genau benötigen Sie?"
-                articleVariantPageTitle="Welche Größe benötigen Sie?"
-                getLoadArticleCountsUrl={categoryId => "/remedy/angebot/suche/filter/artikel?artikelKategorieId=" + categoryId}
-                getLoadCategoryCountsUrl={() => "/remedy/angebot/suche/filter/artikelkategorie"}
-                getLoadingPageTitle={getLoadingPageTitle}
-                getLoadResultsUrl={variantId => "/remedy/angebot/suche?artikelVarianteId=" + variantId}
-                getLoadVariantCountsUrl={articleId => "/remedy/angebot/suche/filter/artikelvariante?artikelId=" + articleId}
-                getResultsPageSubtitle={getResultsSubtitle}
-                getResultsPageTitle={getResultsTitle}
-                onCreateAdActionClicked={openDialog}/>
-
-            <CreateDemandDialog
-                variantId={dialogVariantId}
-                open={createDemandDialogOpen}
-                onCancelled={closeDialog}
-                onCreated={closeDialog}/>
-        </>
+        <PPEFlow
+            flowType="demand"
+            articleCategoryPageTitle="Welches Material suchen Sie?"
+            articlePageTitle="Was genau benötigen Sie?"
+            articleVariantPageTitle="Welche Größe benötigen Sie?"
+            getLoadArticleCountsUrl={categoryId => "/remedy/angebot/suche/filter/artikel?artikelKategorieId=" + categoryId}
+            getLoadCategoryCountsUrl={() => "/remedy/angebot/suche/filter/artikelkategorie"}
+            getLoadingPageTitle={getLoadingPageTitle}
+            getLoadResultsUrl={variantId => "/remedy/angebot/suche?artikelVarianteId=" + variantId}
+            getLoadVariantCountsUrl={articleId => "/remedy/angebot/suche/filter/artikelvariante?artikelId=" + articleId}
+            getResultsPageSubtitle={getResultsSubtitle}
+            getResultsPageTitle={getResultsTitle}/>
     );
 };
 

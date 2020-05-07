@@ -3,19 +3,18 @@ import React, {useCallback, useState} from "react";
 import PopupDialog from "../../components/Dialog/PopupDialog";
 import Checkbox from "../../components/Form/Checkbox";
 import CheckboxGroup from "../../components/Form/CheckboxGroup";
+import DateInput from "../../components/Form/DateInput";
 import NumberInput from "../../components/Form/NumberInput";
 import TextArea from "../../components/Form/TextArea";
+import {Angebot} from "../../domain/angebot/Angebot";
 import {apiPost, logApiError} from "../../util/ApiUtils";
 import {defined, numberSize, stringLength, validate} from "../../util/ValidationUtils";
 
 interface Props {
     open: boolean;
-    onCreated: () => void;
+    onCreated: (offerId: string) => void;
     onCancelled: () => void;
     variantId?: string;
-}
-
-interface State {
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -37,14 +36,16 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
 }));
 
-const CreateDemandDialog: React.FC<Props> = props => {
+const CreateOfferDialog: React.FC<Props> = props => {
     const classes = useStyles();
 
     const {onCancelled, onCreated, variantId} = props;
 
     const [amount, setAmount] = useState<number>(0);
-    const [publicDemand, setPublicDemand] = useState<boolean>(true);
+    const [useBefore, setUseBefore] = useState<Date | undefined>(undefined);
+    const [publicOffer, setPublicOffer] = useState<boolean>(true);
     const [sterile, setSterile] = useState<boolean>(false);
+    const [sealed, setSealed] = useState<boolean>(false);
     const [medical, setMedical] = useState<boolean>(false);
     const [comment, setComment] = useState<string>("");
 
@@ -56,7 +57,7 @@ const CreateDemandDialog: React.FC<Props> = props => {
     const onCreate = useCallback(async () => {
         const error = validate(
             defined(variantId, "Es wurde keine Variante ausgewählt!"),
-            numberSize(amount, "Die benötigte Anzahl", 1),
+            numberSize(amount, "Die angebotene Anzahl", 1),
             stringLength(comment, "Ihre Nachricht", 1, 1024)
         );
 
@@ -68,13 +69,15 @@ const CreateDemandDialog: React.FC<Props> = props => {
         setError(undefined);
         setDisabled(true);
 
-        const result = await apiPost("/remedy/bedarf", {
+        const result = await apiPost<Angebot>("/remedy/angebot", {
             artikelVarianteId: variantId,
             anzahl: amount,
             kommentar: comment,
+            haltbarkeit: useBefore,
             steril: sterile,
             medizinisch: medical,
-            oeffentlich: publicDemand
+            originalverpackt: sealed,
+            oeffentlich: publicOffer
         });
 
         setDisabled(false);
@@ -83,13 +86,15 @@ const CreateDemandDialog: React.FC<Props> = props => {
             setError("Es ist ein technischer Fehler aufgetreten. Bitte versuchen Sie es erneut.");
         } else {
             setAmount(0);
-            setPublicDemand(true);
+            setUseBefore(undefined);
+            setPublicOffer(true);
             setSterile(false);
+            setSealed(false);
             setMedical(false);
             setComment("");
-            onCreated();
+            onCreated(result.result!.id);
         }
-    }, [onCreated, variantId, amount, comment, sterile, medical, publicDemand]);
+    }, [onCreated, variantId, amount, comment, useBefore, sterile, medical, sealed, publicOffer]);
 
     const onCancel = useCallback(() => {
         setError(undefined);
@@ -114,15 +119,28 @@ const CreateDemandDialog: React.FC<Props> = props => {
                     <div className={classes.row}>
 
                         <NumberInput
-                            label="Wie viele benötigen Sie?"
+                            label="Wie viele besitzen Sie?"
                             disabled={disabled}
                             onChange={setAmount}
                             className={classes.rowEntry}
                             value={amount}/>
 
+                        <DateInput
+                            className={classes.rowEntry}
+                            disabled={disabled}
+                            value={useBefore}
+                            disablePast
+                            label="Gibt es ein Ablaufdatum?"
+                            placeholder="Optional"
+                            onChange={setUseBefore}/>
+
+                    </div>
+
+                    <div className={classes.row}>
+
                         <CheckboxGroup
                             className={classes.rowEntry}
-                            label="Wie soll der Zustand sein?">
+                            label="Wie ist der Zustand?">
 
                             <Checkbox
                                 disabled={disabled}
@@ -132,33 +150,39 @@ const CreateDemandDialog: React.FC<Props> = props => {
 
                             <Checkbox
                                 disabled={disabled}
+                                checked={sealed}
+                                onChange={setSealed}
+                                label="Originalverpackt"/>
+
+                            <Checkbox
+                                disabled={disabled}
                                 checked={medical}
                                 onChange={setMedical}
                                 label="Medizinisch"/>
 
                         </CheckboxGroup>
 
-                    </div>
+                        <TextArea
+                            label="Ihre Nachricht"
+                            onChange={setComment}
+                            className={classes.rowEntry}
+                            disabled={disabled}
+                            minLines={4}
+                            maxLines={4}
+                            placeholder="Bitte eintippen..."
+                            value={comment}/>
 
-                    <TextArea
-                        label="Ihre Nachricht"
-                        onChange={setComment}
-                        className={classes.formRow}
-                        disabled={disabled}
-                        minLines={4}
-                        maxLines={4}
-                        placeholder="Bitte eintippen..."
-                        value={comment}/>
+                    </div>
 
                     <CheckboxGroup
                         className={classes.formRow}
-                        label="Möchten Sie Anfragen zu diesem Bedarf erhalten?">
+                        label="Möchten Sie Anfragen zu diesem Angebot erhalten?">
 
                         <Checkbox
                             disabled={disabled}
-                            checked={publicDemand}
-                            onChange={setPublicDemand}
-                            label="Bedarf ist öffentlich"/>
+                            checked={publicOffer}
+                            onChange={setPublicOffer}
+                            label="Angebot ist öffentlich"/>
 
                     </CheckboxGroup>
 
@@ -169,4 +193,4 @@ const CreateDemandDialog: React.FC<Props> = props => {
     )
 };
 
-export default CreateDemandDialog;
+export default CreateOfferDialog;

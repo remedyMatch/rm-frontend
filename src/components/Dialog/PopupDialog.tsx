@@ -15,6 +15,8 @@ interface Props {
     disabled?: boolean;
     className?: string;
     fullWidth?: boolean; // TODO Remove
+    firstDisabled?: boolean;
+    secondDisabled?: boolean;
     onFirst?: () => void;
     onSecond?: () => void;
     firstTitle?: string;
@@ -126,7 +128,7 @@ const PopupDialog: React.FC<Props> = props => {
                         className={clsx(classes.button, classes.buttonSecondary)}
                         onClick={props.onFirst}
                         variant="outlined"
-                        disabled={props.disabled}>
+                        disabled={props.disabled || props.firstDisabled}>
                         {props.firstTitle || "Abbrechen"}
                     </Button>
                 )}
@@ -136,7 +138,7 @@ const PopupDialog: React.FC<Props> = props => {
                         className={clsx(classes.button, classes.buttonPrimary)}
                         onClick={props.onSecond}
                         variant="contained"
-                        disabled={props.disabled}>
+                        disabled={props.disabled || props.secondDisabled}>
                         {props.secondTitle || "Fertig"}
                     </Button>
                 )}

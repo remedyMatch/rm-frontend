@@ -3,8 +3,9 @@ import {createStyles, Theme, withStyles} from "@material-ui/core/styles";
 import clsx from "clsx";
 import React, {Component} from "react";
 import {connect, ConnectedProps} from "react-redux";
+import CountBadge from "../../components/Content/CountBadge";
 import Flow from "../../components/Flow/Flow";
-import CountBadge from "../Content/CountBadge";
+import ResultList from "../../components/List/ResultList";
 import {Angebot} from "../../domain/angebot/Angebot";
 import {Artikel} from "../../domain/artikel/Artikel";
 import {ArtikelKategorie} from "../../domain/artikel/ArtikelKategorie";
@@ -15,11 +16,16 @@ import kategorie_desinfektion from "../../resources/kategorie_desinfektion.svg";
 import kategorie_schutzkleidung from "../../resources/kategorie_schutzkleidung.svg";
 import kategorie_schutzmaske from "../../resources/kategorie_schutzmaske.svg";
 import kategorie_sonstiges from "../../resources/kategorie_sonstiges.svg";
+import {loadInstitutionAngebote} from "../../state/angebot/InstitutionAngeboteState";
 import {loadArtikelKategorien} from "../../state/artikel/ArtikelKategorienState";
 import {loadArtikel} from "../../state/artikel/ArtikelState";
+import {loadInstitutionBedarfe} from "../../state/bedarf/InstitutionBedarfeState";
 import {RootDispatch, RootState} from "../../state/Store";
 import {apiGet, logApiError} from "../../util/ApiUtils";
-import ResultList from "../List/ResultList";
+import DemandDetailsDialog from "../old/Dialogs/Demand/DemandDetailsDialog";
+import ChooseAdDialog from "./ChooseAdDialog";
+import CreateDemandDialog from "./CreateDemandDialog";
+import CreateOfferDialog from "./CreateOfferDialog";
 
 interface CountEntry {
     id: string;
@@ -37,8 +43,6 @@ interface Props extends WithStyles<typeof styles>, PropsFromRedux {
     getResultsPageSubtitle: (resultCount: number) => string;
     getResultsPageTitle: (resultCount: number, selectedArticle?: Artikel, selectedVariant?: ArtikelVariante) => string;
 
-    onCreateAdActionClicked: (variantId: string) => void;
-
     getLoadCategoryCountsUrl: () => string;
     getLoadArticleCountsUrl: (categoryId: string) => string;
     getLoadVariantCountsUrl: (articleId: string) => string;
@@ -47,6 +51,13 @@ interface Props extends WithStyles<typeof styles>, PropsFromRedux {
 
 interface State {
     currentPage: number;
+
+    selectedAd?: string;
+    selectedEntryId?: string;
+
+    createAdDialogOpen: boolean;
+    chooseAdDialogOpen: boolean;
+    contactEntryDialogOpen: boolean;
 
     selectedCategory?: ArtikelKategorie;
     selectedArticle?: Artikel;
@@ -141,6 +152,10 @@ class PPEFlow extends Component<Props, State> {
     state: State = {
         currentPage: 0,
 
+        chooseAdDialogOpen: false,
+        createAdDialogOpen: false,
+        contactEntryDialogOpen: false,
+
         results: [],
         resultsLoading: false,
 
@@ -151,15 +166,52 @@ class PPEFlow extends Component<Props, State> {
 
     render() {
         return (
-            <Flow
-                currentPage={this.state.currentPage}
-                onPreviousStepClicked={this.onPreviousStepClicked}
-                pages={[
-                    this.getArticleCategoryPage(),
-                    this.getArticlePage(),
-                    this.getArticleVariantPage()
-                ]}
-                finishedPage={this.getFinishedPage()}/>
+            <>
+                <Flow
+                    currentPage={this.state.currentPage}
+                    onPreviousStepClicked={this.onPreviousStepClicked}
+                    pages={[
+                        this.getArticleCategoryPage(),
+                        this.getArticlePage(),
+                        this.getArticleVariantPage()
+                    ]}
+                    finishedPage={this.getFinishedPage()}/>
+
+                {this.props.flowType === "offer" && (
+                    <>
+                        <CreateOfferDialog
+                            variantId={this.state.selectedVariant?.id}
+                            open={this.state.createAdDialogOpen}
+                            onCancelled={this.onCreateAdDialogCancelled}
+                            onCreated={this.onCreateAdDialogCreated}/>
+                        <DemandDetailsDialog
+                            open={this.state.contactEntryDialogOpen}
+                            onDone={this.onContactDone}
+                            artikel={this.props.artikel || []}
+                            artikelKategorien={this.props.artikelKategorien || []}
+                            onContact={console.log}
+                            bedarf={this.state.results.find(r => r.id === this.state.selectedEntryId) as Bedarf}/>
+                    </>
+                )}
+
+                {this.props.flowType === "demand" && (
+                    <CreateDemandDialog
+                        variantId={this.state.selectedVariant?.id}
+                        open={this.state.createAdDialogOpen}
+                        onCancelled={this.onCreateAdDialogCancelled}
+                        onCreated={this.onCreateAdDialogCreated}/>
+                )}
+
+                <ChooseAdDialog
+                    categoryIcon={this.getIcon(this.state.selectedCategory?.name || "")}
+                    open={this.state.chooseAdDialogOpen}
+                    onChosen={this.onChooseAdDialogChosen}
+                    onCreateClicked={this.onChooseAdDialogCreateClicked}
+                    onCancelled={this.onChooseAdDialogCancelled}
+                    institutionEntries={(this.props.flowType === "offer" ? this.props.institutionAngebote : this.props.institutionBedarfe) || []}
+                    flowType={this.props.flowType}
+                    variantId={this.state.selectedVariant?.id}/>
+            </>
         );
     }
 
@@ -167,6 +219,12 @@ class PPEFlow extends Component<Props, State> {
         this.props.loadArtikel();
         this.props.loadArtikelKategorien();
         this.loadCategoryCounts();
+
+        if (this.props.flowType === "offer") {
+            this.props.loadInstitutionAngebote();
+        } else {
+            this.props.loadInstitutionBedarfe();
+        }
     };
 
     private getArticleCategoryPage = () => {
@@ -271,15 +329,77 @@ class PPEFlow extends Component<Props, State> {
             title: this.props.getResultsPageTitle(this.state.results.length, this.state.selectedArticle, this.state.variantSkipped ? undefined : this.state.selectedVariant),
             subtitle: this.props.getResultsPageSubtitle(this.state.results.length),
             action: "Inserat erstellen",
-            onActionClicked: () => this.props.onCreateAdActionClicked(this.state.selectedVariant?.id || ""),
+            onActionClicked: this.onCreateAdDialogClicked,
             icon: icon,
             iconAlt: iconAlt,
             content: (
                 <ResultList
+                    onContactClicked={this.onContactClicked}
                     results={this.mapResults()}
                     resultsType={this.props.flowType === "offer" ? "demands" : "offers"}/>
             )
         };
+    };
+
+    private onContactClicked = (id: string) => {
+        if (!this.state.selectedAd) {
+            this.setState({
+                selectedEntryId: id,
+                chooseAdDialogOpen: true
+            });
+        } else {
+            this.setState({
+                selectedEntryId: id,
+                contactEntryDialogOpen: true
+            });
+        }
+    };
+
+    private onContactDone = () => {
+        this.setState({
+            selectedEntryId: undefined,
+            contactEntryDialogOpen: false
+        });
+    };
+
+    private onChooseAdDialogChosen = (id: string) => {
+        this.setState({
+            chooseAdDialogOpen: false,
+            selectedAd: id,
+            contactEntryDialogOpen: true
+        });
+    };
+
+    private onChooseAdDialogCreateClicked = () => {
+        this.setState({
+            chooseAdDialogOpen: false,
+            createAdDialogOpen: true
+        });
+    };
+
+    private onChooseAdDialogCancelled = () => {
+        this.setState({
+            chooseAdDialogOpen: false
+        });
+    };
+
+    private onCreateAdDialogClicked = () => {
+        this.setState({
+            createAdDialogOpen: true
+        });
+    };
+
+    private onCreateAdDialogCancelled = () => {
+        this.setState({
+            createAdDialogOpen: false
+        });
+    };
+
+    private onCreateAdDialogCreated = (id: string) => {
+        this.setState({
+            selectedAd: id,
+            createAdDialogOpen: false
+        });
     };
 
     private mapResults = () => {
@@ -451,12 +571,16 @@ class PPEFlow extends Component<Props, State> {
 
 const mapStateToProps = (state: RootState) => ({
     artikel: state.artikel.value,
-    artikelKategorien: state.artikelKategorien.value
+    artikelKategorien: state.artikelKategorien.value,
+    institutionAngebote: state.institutionAngebote.value,
+    institutionBedarfe: state.institutionBedarfe.value
 });
 
 const mapDispatchToProps = (dispatch: RootDispatch) => ({
     loadArtikel: () => dispatch(loadArtikel()),
-    loadArtikelKategorien: () => dispatch(loadArtikelKategorien())
+    loadArtikelKategorien: () => dispatch(loadArtikelKategorien()),
+    loadInstitutionAngebote: () => dispatch(loadInstitutionAngebote()),
+    loadInstitutionBedarfe: () => dispatch(loadInstitutionBedarfe())
 });
 
 const connector = connect(mapStateToProps, mapDispatchToProps);
