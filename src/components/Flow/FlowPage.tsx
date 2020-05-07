@@ -23,10 +23,10 @@ const useStyles = makeStyles((theme: Theme) => ({
         color: "#333"
     },
     subtitle: {
-        marginTop: "12px",
         fontFamily: "Montserrat, sans-serif",
         fontSize: "16px",
-        color: "rgba(0, 0, 0, 0.54)"
+        color: "rgba(0, 0, 0, 0.54)",
+        flexGrow: 1
     },
     titleContainer: {
         display: "flex",
@@ -45,16 +45,17 @@ const useStyles = makeStyles((theme: Theme) => ({
         flexDirection: "column",
         flexGrow: 1
     },
-    titleButtonContainer: {
-        marginLeft: "2em",
-        placeSelf: "flex-end",
-        paddingBottom: "8px"
+    subtitleActionContainer: {
+        paddingTop: "12px",
+        display: "flex",
+        flexDirection: "row"
     },
     titleImage: {
         height: "5em",
         color: "#333"
     },
     titleButton: {
+        margin: "auto 0px 8px 32px",
         fontFamily: "Montserrat, sans-serif",
         fontWeight: 600,
         fontSize: "16px",
@@ -65,7 +66,8 @@ const useStyles = makeStyles((theme: Theme) => ({
         borderRadius: "8px",
         whiteSpace: "nowrap",
         padding: "8px 24px",
-        marginTop: "auto"
+        placeSelf: "flex-end",
+        flexShrink: 0
     },
     content: {
         margin: "2em 0em"
@@ -91,20 +93,18 @@ const FlowPage: React.FC<Props> = props => {
                         )}
                         <div className={classes.titleTextContainer}>
                             <Typography className={classes.title}>{props.title}</Typography>
-                            {props.subtitle && (
+                            <div className={classes.subtitleActionContainer}>
                                 <Typography className={classes.subtitle}>{props.subtitle}</Typography>
-                            )}
-                        </div>
-                        {props.action && (
-                            <div className={classes.titleButtonContainer}>
-                                <Button
-                                    onClick={props.onActionClicked}
-                                    variant="text"
-                                    className={classes.titleButton}>
-                                    {props.action}
-                                </Button>
+                                {props.action && (
+                                    <Button
+                                        onClick={props.onActionClicked}
+                                        variant="text"
+                                        className={classes.titleButton}>
+                                        {props.action}
+                                    </Button>
+                                )}
                             </div>
-                        )}
+                        </div>
                     </div>
 
                     <div className={classes.content}>

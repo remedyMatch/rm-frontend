@@ -2,7 +2,7 @@ import {WithStyles} from "@material-ui/core";
 import {createStyles, Theme, withStyles} from "@material-ui/core/styles";
 import {Component, default as React} from "react";
 import {Redirect, Route, Switch} from "react-router-dom";
-import Footer from "../../components/Layout/Footer";
+import Footer from "./Footer";
 import DashboardScreen from "../../screens/DashboardScreen";
 import DemandFlowScreen from "../../screens/DemandFlowScreen";
 import OfferFlowScreen from "../../screens/OfferFlowScreen";

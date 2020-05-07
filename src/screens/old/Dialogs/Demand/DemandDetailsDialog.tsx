@@ -53,8 +53,8 @@ const useStyles = makeStyles((theme: Theme) => ({
 const DemandDetailsDialog: React.FC<Props> = props => {
     const classes = useStyles();
 
-    const category = props.artikelKategorien.find(kategorie => kategorie.id === props.bedarf?.artikelKategorieId);
-    const article = props.artikel.find(artikel => artikel.id === props.bedarf?.artikelId);
+    const category = props.artikelKategorien.find(kategorie => kategorie.id === props.bedarf?.artikel.artikelKategorieId);
+    const article = props.artikel.find(artikel => artikel.id === props.bedarf?.artikel.id);
     const variant = article?.varianten?.find(variant => variant.id === props.bedarf?.artikelVarianteId);
 
     return (

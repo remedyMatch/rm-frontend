@@ -144,8 +144,9 @@ const styles = (theme: Theme) =>
             }
         },
         notificationText: {
+            fontFamily: "Montserrat, sans-serif",
+            letterSpacing: "-0.02em",
             fontWeight: 600,
-            fontFamily: "Arial, sans-serif",
             fontSize: "16px"
         },
         notificationTextRead: {
@@ -212,7 +213,7 @@ class Menu extends Component<Props, State> {
                                     vertical: "bottom"
                                 }}
                                 overlap="circle"
-                                badgeContent={this.props.benachrichtigungen?.length || 0}
+                                badgeContent={this.props.benachrichtigungen?.filter(b => !b.gelesen).length || 0}
                                 color="error">
                                 <Notifications
                                     fontSize="large"
