@@ -2,6 +2,8 @@ import {Button} from "@material-ui/core";
 import {makeStyles, Theme} from '@material-ui/core/styles';
 import {Pagination} from "@material-ui/lab";
 import React, {useState} from 'react';
+import {Angebot} from "../../domain/angebot/Angebot";
+import {Bedarf} from "../../domain/bedarf/Bedarf";
 import distance from "../../resources/distance.svg";
 
 declare type DataRow = {
@@ -17,6 +19,7 @@ declare type DataRow = {
     sterile: boolean;
     sealed?: boolean;
     useBefore?: Date;
+    original: Angebot | Bedarf;
 };
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -160,7 +163,7 @@ interface Props {
     className?: string;
     results: DataRow[];
     resultsType: "demands" | "offers";
-    onContactClicked: (id: string) => void;
+    onContactClicked: (entry: Angebot | Bedarf) => void;
 }
 
 const PAGE_SIZE = 5;
@@ -222,7 +225,7 @@ const ResultList: React.FC<Props> = props => {
                     </div>
                     <div className={classes.contactContainer}>
                         <Button
-                            onClick={() => props.onContactClicked(item.id)}
+                            onClick={() => props.onContactClicked(item.original)}
                             disableElevation
                             className={classes.button}
                             variant="contained">

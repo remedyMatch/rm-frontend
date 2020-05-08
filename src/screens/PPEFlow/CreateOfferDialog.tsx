@@ -7,12 +7,13 @@ import DateInput from "../../components/Form/DateInput";
 import NumberInput from "../../components/Form/NumberInput";
 import TextArea from "../../components/Form/TextArea";
 import {Angebot} from "../../domain/angebot/Angebot";
+import {InstitutionAngebot} from "../../domain/angebot/InstitutionAngebot";
 import {apiPost, logApiError} from "../../util/ApiUtils";
 import {defined, numberSize, stringLength, validate} from "../../util/ValidationUtils";
 
 interface Props {
     open: boolean;
-    onCreated: (offerId: string) => void;
+    onCreated: (created: InstitutionAngebot) => void;
     onCancelled: () => void;
     variantId?: string;
 }
@@ -41,7 +42,7 @@ const CreateOfferDialog: React.FC<Props> = props => {
 
     const {onCancelled, onCreated, variantId} = props;
 
-    const [amount, setAmount] = useState<number>(0);
+    const [amount, setAmount] = useState<number | undefined>(0);
     const [useBefore, setUseBefore] = useState<Date | undefined>(undefined);
     const [publicOffer, setPublicOffer] = useState<boolean>(true);
     const [sterile, setSterile] = useState<boolean>(false);
@@ -57,7 +58,8 @@ const CreateOfferDialog: React.FC<Props> = props => {
     const onCreate = useCallback(async () => {
         const error = validate(
             defined(variantId, "Es wurde keine Variante ausgewählt!"),
-            numberSize(amount, "Die angebotene Anzahl", 1),
+            defined(amount, "Es wurde keine Anzahl ausgewählt!"),
+            numberSize(amount!, "Die angebotene Anzahl", 1),
             stringLength(comment, "Ihre Nachricht", 1, 1024)
         );
 
@@ -92,7 +94,7 @@ const CreateOfferDialog: React.FC<Props> = props => {
             setSealed(false);
             setMedical(false);
             setComment("");
-            onCreated(result.result!.id);
+            onCreated({anfragen: [], ...result.result!});
         }
     }, [onCreated, variantId, amount, comment, useBefore, sterile, medical, sealed, publicOffer]);
 

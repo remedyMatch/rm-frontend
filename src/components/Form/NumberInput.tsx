@@ -9,7 +9,7 @@ interface Props {
     label: string;
     value?: number;
     className?: string;
-    onChange: (newValue: number) => void;
+    onChange: (newValue?: number) => void;
     disabled?: boolean;
 }
 
@@ -74,12 +74,14 @@ const NumberInput: React.FC<Props> = props => {
     const onBlur = useCallback(() => setFocussed(false), []);
     const setValueSafe = useCallback((e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const amount = parseFloat(e.target.value);
-        if (!isNaN(amount) || e.target.value.length === 0) {
+        if (!isNaN(amount)) {
             onChange(amount);
+        } else if(e.target.value.length === 0) {
+            onChange(undefined);
         }
     }, [onChange]);
 
-    const displayValue = useMemo(() => focussed ? value === undefined ? "" : value : numberFormat.format(value || 0), [focussed, value]);
+    const displayValue = useMemo(() => value === undefined ? value : focussed ? value : numberFormat.format(value), [focussed, value]);
 
     return (
         <div className={props.className}>

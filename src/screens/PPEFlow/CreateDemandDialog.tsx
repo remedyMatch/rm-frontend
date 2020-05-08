@@ -6,12 +6,13 @@ import CheckboxGroup from "../../components/Form/CheckboxGroup";
 import NumberInput from "../../components/Form/NumberInput";
 import TextArea from "../../components/Form/TextArea";
 import {Bedarf} from "../../domain/bedarf/Bedarf";
+import {InstitutionBedarf} from "../../domain/bedarf/InstitutionBedarf";
 import {apiPost, logApiError} from "../../util/ApiUtils";
 import {defined, numberSize, stringLength, validate} from "../../util/ValidationUtils";
 
 interface Props {
     open: boolean;
-    onCreated: (demandId: string) => void;
+    onCreated: (created: InstitutionBedarf) => void;
     onCancelled: () => void;
     variantId?: string;
 }
@@ -40,7 +41,7 @@ const CreateDemandDialog: React.FC<Props> = props => {
 
     const {onCancelled, onCreated, variantId} = props;
 
-    const [amount, setAmount] = useState<number>(0);
+    const [amount, setAmount] = useState<number | undefined>(0);
     const [publicDemand, setPublicDemand] = useState<boolean>(true);
     const [sterile, setSterile] = useState<boolean>(false);
     const [medical, setMedical] = useState<boolean>(false);
@@ -54,7 +55,8 @@ const CreateDemandDialog: React.FC<Props> = props => {
     const onCreate = useCallback(async () => {
         const error = validate(
             defined(variantId, "Es wurde keine Variante ausgewählt!"),
-            numberSize(amount, "Die benötigte Anzahl", 1),
+            defined(amount, "Es wurde keine Anzahl ausgewählt!"),
+            numberSize(amount!, "Die benötigte Anzahl", 1),
             stringLength(comment, "Ihre Nachricht", 1, 1024)
         );
 
@@ -85,7 +87,7 @@ const CreateDemandDialog: React.FC<Props> = props => {
             setSterile(false);
             setMedical(false);
             setComment("");
-            onCreated(result.result!.id);
+            onCreated({anfragen: [], ...result.result!});
         }
     }, [onCreated, variantId, amount, comment, sterile, medical, publicDemand]);
 

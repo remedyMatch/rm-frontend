@@ -191,7 +191,7 @@ class Menu extends Component<Props, State> {
 
     render() {
         const classes = this.props.classes;
-        const curInst = this.props.person?.aktuelleInstitution;
+        const curInst = this.props.person?.aktuellerStandort;
 
         return (
             <>

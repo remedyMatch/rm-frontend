@@ -7,10 +7,12 @@ import CountBadge from "../../components/Content/CountBadge";
 import Flow from "../../components/Flow/Flow";
 import ResultList from "../../components/List/ResultList";
 import {Angebot} from "../../domain/angebot/Angebot";
+import {InstitutionAngebot} from "../../domain/angebot/InstitutionAngebot";
 import {Artikel} from "../../domain/artikel/Artikel";
 import {ArtikelKategorie} from "../../domain/artikel/ArtikelKategorie";
 import {ArtikelVariante} from "../../domain/artikel/ArtikelVariante";
 import {Bedarf} from "../../domain/bedarf/Bedarf";
+import {InstitutionBedarf} from "../../domain/bedarf/InstitutionBedarf";
 import kategorie_behelfsmaske from "../../resources/kategorie_behelfsmaske.svg";
 import kategorie_desinfektion from "../../resources/kategorie_desinfektion.svg";
 import kategorie_probenentnahme from "../../resources/kategorie_probenentnahme.svg";
@@ -23,9 +25,8 @@ import {loadArtikel} from "../../state/artikel/ArtikelState";
 import {loadInstitutionBedarfe} from "../../state/bedarf/InstitutionBedarfeState";
 import {RootDispatch, RootState} from "../../state/Store";
 import {apiGet, logApiError} from "../../util/ApiUtils";
-import DemandDetailsDialog from "../old/Dialogs/Demand/DemandDetailsDialog";
-import OfferDetailsDialog from "../old/Dialogs/Offer/OfferDetailsDialog";
 import ChooseAdDialog from "./ChooseAdDialog";
+import ContactEntryDialog from "./ContactEntryDialog";
 import CreateDemandDialog from "./CreateDemandDialog";
 import CreateOfferDialog from "./CreateOfferDialog";
 
@@ -54,8 +55,8 @@ interface Props extends WithStyles<typeof styles>, PropsFromRedux {
 interface State {
     currentPage: number;
 
-    selectedAd?: string;
-    selectedEntryId?: string;
+    selectedAd?: InstitutionAngebot | InstitutionBedarf;
+    selectedEntry?: Angebot | Bedarf;
 
     createAdDialogOpen: boolean;
     chooseAdDialogOpen: boolean;
@@ -181,38 +182,28 @@ class PPEFlow extends Component<Props, State> {
                     finishedPage={this.getFinishedPage()}/>
 
                 {this.props.flowType === "offer" && (
-                    <>
-                        <CreateOfferDialog
-                            variantId={this.state.selectedVariant?.id}
-                            open={this.state.createAdDialogOpen}
-                            onCancelled={this.onCreateAdDialogCancelled}
-                            onCreated={this.onCreateAdDialogCreated}/>
-                        <DemandDetailsDialog
-                            open={this.state.contactEntryDialogOpen}
-                            onDone={this.onContactDone}
-                            artikel={this.props.artikel || []}
-                            artikelKategorien={this.props.artikelKategorien || []}
-                            onContact={console.log}
-                            bedarf={this.state.results.find(r => r.id === this.state.selectedEntryId) as Bedarf}/>
-                    </>
+                    <CreateOfferDialog
+                        variantId={this.state.selectedVariant?.id}
+                        open={this.state.createAdDialogOpen}
+                        onCancelled={this.onCreateAdDialogCancelled}
+                        onCreated={this.onCreateAdDialogCreated}/>
                 )}
 
                 {this.props.flowType === "demand" && (
-                    <>
-                        <CreateDemandDialog
-                            variantId={this.state.selectedVariant?.id}
-                            open={this.state.createAdDialogOpen}
-                            onCancelled={this.onCreateAdDialogCancelled}
-                            onCreated={this.onCreateAdDialogCreated}/>
-                        <OfferDetailsDialog
-                            open={this.state.contactEntryDialogOpen}
-                            onDone={this.onContactDone}
-                            artikel={this.props.artikel || []}
-                            artikelKategorien={this.props.artikelKategorien || []}
-                            onContact={console.log}
-                            angebot={this.state.results.find(r => r.id === this.state.selectedEntryId) as Angebot}/>
-                    </>
+                    <CreateDemandDialog
+                        variantId={this.state.selectedVariant?.id}
+                        open={this.state.createAdDialogOpen}
+                        onCancelled={this.onCreateAdDialogCancelled}
+                        onCreated={this.onCreateAdDialogCreated}/>
                 )}
+
+                <ContactEntryDialog
+                    open={this.state.contactEntryDialogOpen}
+                    onContacted={this.onContactDialogContacted}
+                    onCancelled={this.onContactDialogCancelled}
+                    selectedAd={this.state.selectedAd}
+                    selectedEntry={this.state.selectedEntry}
+                    type={this.props.flowType}/>
 
                 <ChooseAdDialog
                     categoryIcon={this.getIcon(this.state.selectedCategory?.name || "")}
@@ -353,31 +344,38 @@ class PPEFlow extends Component<Props, State> {
         };
     };
 
-    private onContactClicked = (id: string) => {
+    private onContactClicked = (entry: Angebot | Bedarf) => {
         if (!this.state.selectedAd) {
             this.setState({
-                selectedEntryId: id,
+                selectedEntry: entry,
                 chooseAdDialogOpen: true
             });
         } else {
             this.setState({
-                selectedEntryId: id,
+                selectedEntry: entry,
                 contactEntryDialogOpen: true
             });
         }
     };
 
-    private onContactDone = () => {
+    private onContactDialogContacted = () => {
         this.setState({
-            selectedEntryId: undefined,
+            selectedEntry: undefined,
             contactEntryDialogOpen: false
         });
-    };
+    }
 
-    private onChooseAdDialogChosen = (id: string) => {
+    private onContactDialogCancelled = () => {
+        this.setState({
+            selectedEntry: undefined,
+            contactEntryDialogOpen: false
+        });
+    }
+
+    private onChooseAdDialogChosen = (ad: InstitutionAngebot | InstitutionBedarf) => {
         this.setState({
             chooseAdDialogOpen: false,
-            selectedAd: id,
+            selectedAd: ad,
             contactEntryDialogOpen: true
         });
     };
@@ -407,9 +405,9 @@ class PPEFlow extends Component<Props, State> {
         });
     };
 
-    private onCreateAdDialogCreated = (id: string) => {
+    private onCreateAdDialogCreated = (ad: InstitutionAngebot | InstitutionBedarf) => {
         this.setState({
-            selectedAd: id,
+            selectedAd: ad,
             createAdDialogOpen: false
         });
     };
@@ -427,7 +425,8 @@ class PPEFlow extends Component<Props, State> {
             sealed: ("originalverpackt" in result && result.originalverpackt) || undefined,
             sterile: result.steril,
             medical: result.medizinisch,
-            useBefore: ("haltbarkeit" in result && new Date(result.haltbarkeit)) || undefined
+            useBefore: ("haltbarkeit" in result && new Date(result.haltbarkeit)) || undefined,
+            original: result
         }));
     };
 

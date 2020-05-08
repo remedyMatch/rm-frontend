@@ -72,7 +72,7 @@ class DemandScreen extends Component<Props, State> {
                     artikelKategorien={this.props.artikelKategorien || []}
                     bedarfe={this.filter()}
                     angebote={[]}
-                    details={{onClick: this.onDetailsClicked, eigeneInstitutionId: this.props.person?.aktuelleInstitution.institution.id || ""}}/>
+                    details={{onClick: this.onDetailsClicked, eigeneInstitutionId: this.props.person?.aktuellerStandort.institution.id || ""}}/>
 
                 <AddDemandDialog
                     open={this.state.addDialogOpen}

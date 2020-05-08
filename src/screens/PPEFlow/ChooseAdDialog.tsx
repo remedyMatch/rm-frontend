@@ -10,7 +10,7 @@ import distance from "../../resources/distance.svg";
 interface Props {
     categoryIcon: string;
     open: boolean;
-    onChosen: (adId: string) => void;
+    onChosen: (adId: InstitutionAngebot | InstitutionBedarf) => void;
     onCreateClicked: () => void;
     onCancelled: () => void;
     variantId?: string;
@@ -114,7 +114,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 const ChooseAdDialog: React.FC<Props> = props => {
     const classes = useStyles();
 
-    const [selectedEntry, setSelectedEntry] = useState<string | undefined>(undefined);
+    const [selectedEntry, setSelectedEntry] = useState<InstitutionAngebot | InstitutionBedarf | undefined>(undefined);
 
     const matchingEntries = props.institutionEntries.filter(entry => entry.artikelVarianteId === props.variantId);
     if (matchingEntries.length === 0) {
@@ -151,14 +151,14 @@ const ChooseAdDialog: React.FC<Props> = props => {
                 <Typography className={classes.subtitle}>
                     {props.flowType === "offer"
                         ? "Um einen Empfänger zu kontaktieren, müssen Sie zuerst ein passendes Angebot auswählen. Wählen Sie das korrekte Angebot und klicken Sie auf 'Angebot auswählen'."
-                        : "Um einen Spender zu kontaktieren, müssen Sie zuerst einen passenden Bedarf auswählen. Wählen Sie den korrekten Bedarf und klicken Sie auf 'Angebot auswählen'."}
+                        : "Um einen Spender zu kontaktieren, müssen Sie zuerst einen passenden Bedarf auswählen. Wählen Sie den korrekten Bedarf und klicken Sie auf 'Bedarf auswählen'."}
                 </Typography>
 
                 <div className={classes.entries}>
                     {matchingEntries.map(entry => (
                         <div
-                            onClick={() => setSelectedEntry(entry.id)}
-                            className={clsx(classes.entry, entry.id === selectedEntry && classes.entrySelected)}>
+                            onClick={() => setSelectedEntry(entry)}
+                            className={clsx(classes.entry, entry === selectedEntry && classes.entrySelected)}>
                             <img src={props.categoryIcon} alt="Kategorie" className={classes.categoryIcon}/>
                             <span className={classes.amountCount}>{entry.verfuegbareAnzahl}x</span>
                             <span className={classes.articleName}>
