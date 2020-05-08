@@ -30,17 +30,16 @@ interface Props {
 const useStyles = makeStyles((theme: Theme) => ({
     stepper: {
         marginTop: "6em",
-        marginBottom: "6em",
         transition: theme.transitions.create("margin", {
             duration: 750
         })
     },
     stepperFinished: {
         marginTop: "1em",
-        marginBottom: "4em"
     },
     stepContentContainer: {
-        display: "grid"
+        display: "grid",
+        paddingTop: "4em"
     },
     stepContent: {
         gridRow: 1,

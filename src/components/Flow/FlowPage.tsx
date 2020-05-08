@@ -31,8 +31,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     titleContainer: {
         display: "flex",
         flexDirection: "row",
-        alignItems: "center",
-        marginTop: "-2.5em"
+        alignItems: "center"
     },
     titleImageContainer: {
         backgroundColor: "rgba(0, 0, 0, 0.04)",

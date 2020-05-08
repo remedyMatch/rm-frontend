@@ -8,7 +8,8 @@ const useStyles = makeStyles((theme: Theme) => ({
     root: {
         minHeight: "100vh",
         display: "flex",
-        flexDirection: "column"
+        flexDirection: "column",
+        overflowX: "hidden"
     }
 }));
 

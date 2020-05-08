@@ -13,6 +13,7 @@ import {ArtikelVariante} from "../../domain/artikel/ArtikelVariante";
 import {Bedarf} from "../../domain/bedarf/Bedarf";
 import kategorie_behelfsmaske from "../../resources/kategorie_behelfsmaske.svg";
 import kategorie_desinfektion from "../../resources/kategorie_desinfektion.svg";
+import kategorie_probenentnahme from "../../resources/kategorie_probenentnahme.svg";
 import kategorie_schutzkleidung from "../../resources/kategorie_schutzkleidung.svg";
 import kategorie_schutzmaske from "../../resources/kategorie_schutzmaske.svg";
 import kategorie_sonstiges from "../../resources/kategorie_sonstiges.svg";
@@ -23,6 +24,7 @@ import {loadInstitutionBedarfe} from "../../state/bedarf/InstitutionBedarfeState
 import {RootDispatch, RootState} from "../../state/Store";
 import {apiGet, logApiError} from "../../util/ApiUtils";
 import DemandDetailsDialog from "../old/Dialogs/Demand/DemandDetailsDialog";
+import OfferDetailsDialog from "../old/Dialogs/Offer/OfferDetailsDialog";
 import ChooseAdDialog from "./ChooseAdDialog";
 import CreateDemandDialog from "./CreateDemandDialog";
 import CreateOfferDialog from "./CreateOfferDialog";
@@ -102,6 +104,7 @@ const styles = (theme: Theme) =>
             }
         },
         categoryIcon: {
+            height: "8em",
             color: "#333"
         },
         categoryLabel: {
@@ -195,11 +198,20 @@ class PPEFlow extends Component<Props, State> {
                 )}
 
                 {this.props.flowType === "demand" && (
-                    <CreateDemandDialog
-                        variantId={this.state.selectedVariant?.id}
-                        open={this.state.createAdDialogOpen}
-                        onCancelled={this.onCreateAdDialogCancelled}
-                        onCreated={this.onCreateAdDialogCreated}/>
+                    <>
+                        <CreateDemandDialog
+                            variantId={this.state.selectedVariant?.id}
+                            open={this.state.createAdDialogOpen}
+                            onCancelled={this.onCreateAdDialogCancelled}
+                            onCreated={this.onCreateAdDialogCreated}/>
+                        <OfferDetailsDialog
+                            open={this.state.contactEntryDialogOpen}
+                            onDone={this.onContactDone}
+                            artikel={this.props.artikel || []}
+                            artikelKategorien={this.props.artikelKategorien || []}
+                            onContact={console.log}
+                            angebot={this.state.results.find(r => r.id === this.state.selectedEntryId) as Angebot}/>
+                    </>
                 )}
 
                 <ChooseAdDialog
@@ -410,7 +422,12 @@ class PPEFlow extends Component<Props, State> {
             variantName: this.state.variantSkipped ? undefined : this.state.selectedVariant?.variante,
             location: result.ort,
             distance: result.entfernung,
-            amount: result.verfuegbareAnzahl
+            amount: result.verfuegbareAnzahl,
+            comment: result.kommentar,
+            sealed: ("originalverpackt" in result && result.originalverpackt) || undefined,
+            sterile: result.steril,
+            medical: result.medizinisch,
+            useBefore: ("haltbarkeit" in result && new Date(result.haltbarkeit)) || undefined
         }));
     };
 
@@ -522,7 +539,7 @@ class PPEFlow extends Component<Props, State> {
                 return kategorie_schutzkleidung;
             }
             case "probenentnahme": {
-                return kategorie_sonstiges;
+                return kategorie_probenentnahme;
             }
             case "behelfs-maske": {
                 return kategorie_behelfsmaske;

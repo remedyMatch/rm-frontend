@@ -12,6 +12,11 @@ declare type DataRow = {
     location: string;
     distance: number;
     amount: number;
+    comment: string;
+    medical: boolean;
+    sterile: boolean;
+    sealed?: boolean;
+    useBefore?: Date;
 };
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -34,6 +39,7 @@ const useStyles = makeStyles((theme: Theme) => ({
         minWidth: "144px",
         backgroundColor: "#007C92",
         color: "white",
+        whiteSpace: "nowrap",
         "&:hover": {
             backgroundColor: "#006374"
         }
@@ -53,33 +59,36 @@ const useStyles = makeStyles((theme: Theme) => ({
         fontFamily: "Montserrat, sans-serif",
         fontSize: "16px",
         fontWeight: 600,
-        color: "#666"
+        color: "#666",
+        whiteSpace: "nowrap"
     },
     variantName: {
         textAlign: "center",
         fontFamily: "Montserrat, sans-serif",
         fontSize: "16px",
         fontWeight: 600,
-        color: "#666"
+        color: "#666",
+        whiteSpace: "nowrap"
     },
     details: {
         display: "flex",
         flexDirection: "column",
         justifyContent: "center",
-        margin: "0px 4em",
-        flexGrow: 1
+        margin: "0px 4em"
     },
     location: {
         fontFamily: "Montserrat, sans-serif",
         fontSize: "18px",
-        fontWeight: 600
+        fontWeight: 600,
+        whiteSpace: "nowrap"
     },
     distance: {
         display: "flex",
         marginTop: "8px",
         fontFamily: "Montserrat, sans-serif",
         fontSize: "12px",
-        color: "#333"
+        color: "#333",
+        whiteSpace: "nowrap"
     },
     distanceIcon: {
         height: "15px",
@@ -91,7 +100,8 @@ const useStyles = makeStyles((theme: Theme) => ({
         marginTop: "4px",
         fontFamily: "Montserrat, sans-serif",
         fontSize: "12px",
-        color: "#007c92"
+        color: "#007c92",
+        whiteSpace: "nowrap"
     },
     amountCount: {
         fontFamily: "Montserrat, sans-serif",
@@ -103,6 +113,20 @@ const useStyles = makeStyles((theme: Theme) => ({
         color: "white",
         marginRight: "8px"
     },
+    commentContainer: {
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        marginRight: "4em",
+        flexGrow: 1
+    },
+    comment: {
+        padding: "1em 0em",
+        fontFamily: "Montserrat, sans-serif",
+        fontSize: "16px",
+        fontStyle: "italic",
+        whiteSpace: "pre-line"
+    },
     contactContainer: {
         display: "flex",
         flexDirection: "column",
@@ -112,6 +136,23 @@ const useStyles = makeStyles((theme: Theme) => ({
         justifyContent: "center",
         display: "flex",
         margin: "2em"
+    },
+    attributes: {
+        display: "flex",
+        flexDirection: "row",
+        flexWrap: "wrap"
+    },
+    attribute: {
+        color: "white",
+        backgroundColor: "#007C92",
+        borderRadius: "4px",
+        padding: "2px 4px",
+        fontFamily: "Montserrat, sans-serif",
+        fontSize: "12px",
+        fontWeight: 600,
+        marginRight: "0.5em",
+        marginBottom: "0.5em",
+        whiteSpace: "nowrap"
     }
 }));
 
@@ -158,6 +199,25 @@ const ResultList: React.FC<Props> = props => {
                         <span className={classes.amount}>
                             <span className={classes.amountCount}>{item.amount}</span>
                             verfügbar
+                        </span>
+                    </div>
+                    <div className={classes.commentContainer}>
+                        <span className={classes.comment}>
+                            "{item.comment}"
+                        </span>
+                        <span className={classes.attributes}>
+                            {[
+                                item.medical && "Medizinisch",
+                                item.sterile && "Steril",
+                                item.sealed && "Originalverpackt",
+                                item.useBefore && "MHD " + item.useBefore.toLocaleDateString('de-DE', {
+                                    day: '2-digit',
+                                    month: '2-digit',
+                                    year: '2-digit'
+                                })
+                            ].filter(e => !!e).map(entry => (
+                                <span className={classes.attribute}>{entry}</span>
+                            ))}
                         </span>
                     </div>
                     <div className={classes.contactContainer}>
