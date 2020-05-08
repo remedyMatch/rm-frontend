@@ -5,8 +5,10 @@ import React, {Component} from "react";
 import {connect, ConnectedProps} from "react-redux";
 import {RouteComponentProps, withRouter} from "react-router-dom";
 import {FormButton} from "../components/Form/old/FormButton";
-import ContentCard from "../components/Layout/ContentCard";
-import LinkCard from "../components/Layout/LinkCard";
+import ContentCard from "../components/Content/ContentCard";
+import LinkCard from "../components/Content/LinkCard";
+import {InstitutionAngebot} from "../domain/angebot/InstitutionAngebot";
+import {InstitutionBedarf} from "../domain/bedarf/InstitutionBedarf";
 import home from "../resources/home.svg";
 import {loadGestellteAngebotAnfragen} from "../state/angebot/GestellteAngebotAnfragenState";
 import {loadInstitutionAngebote} from "../state/angebot/InstitutionAngeboteState";
@@ -86,6 +88,25 @@ const styles = (theme: Theme) =>
             marginTop: "1.5em",
             display: "flex",
             flexWrap: "wrap"
+        },
+        adEntry: {
+            padding: "4px 24px",
+            cursor: "pointer",
+            "&:hover": {
+                backgroundColor: "rgba(0,0,0,0.04)"
+            }
+        },
+        adEntryTitle: {
+            fontFamily: "Montserrat, sans-serif",
+            fontSize: "16px",
+            letterSpacing: "-0.02em"
+        },
+        adEntryRequests: {
+            backgroundColor: "#53284f",
+            borderRadius: "8px",
+            fontFamily: "Montserrat, sans-serif",
+            fontWeight: 600,
+            fontSize: "12px"
         }
     });
 
@@ -122,6 +143,7 @@ class DashboardScreen extends Component<Props, State> {
                         </FormButton>
 
                         <FormButton
+                            onClick={this.onCreateDemandClicked}
                             className={clsx(classes.button, classes.buttonDemand)}
                             variant="contained">
                             Material suchen
@@ -159,8 +181,13 @@ class DashboardScreen extends Component<Props, State> {
                             </>
                         )}>
                         {
-                            this.props.institutionAngebote?.map(angebot => (
-                                <span>{angebot.verfuegbareAnzahl} {angebot.artikel.name}</span>
+                            this.mapAds().slice(0, 5).map(entry => (
+                                <div className={classes.adEntry}>
+                                    <span className={classes.adEntryTitle}>{entry.message}</span>
+                                    {entry.requests > 0 && (
+                                        <span className={classes.adEntryRequests}>{entry.requests} Anfragen</span>
+                                    )}
+                                </div>
                             ))
                         }
                     </ContentCard>
@@ -208,6 +235,32 @@ class DashboardScreen extends Component<Props, State> {
     private onCreateOfferClicked = () => {
         this.props.history.push("/angebot");
     };
+
+    private onCreateDemandClicked = () => {
+        this.props.history.push("/bedarf");
+    };
+
+    private mapAds = () => {
+        const bedarfe = this.props.institutionBedarfe || [];
+        const angebote = this.props.institutionAngebote || [];
+        return bedarfe.map(bedarf => this.mapToAd(bedarf, true))
+            .concat(angebote.map(angebot => this.mapToAd(angebot, false)));
+    };
+
+    private mapToAd = (entry: InstitutionBedarf | InstitutionAngebot, bedarf: boolean) => {
+        const count = entry.verfuegbareAnzahl;
+        const name = entry.artikel.name;
+
+        const variante = entry.artikel.varianten.length > 1
+            ? entry.artikel.varianten.find(variante => variante.id === entry.artikelVarianteId)?.variante
+            : undefined;
+
+        return {
+            id: entry.id,
+            message: `${bedarf ? "Bedarf: " : "Angebot: "} ${count}x ${name}` + (variante ? ` (${variante})` : ""),
+            requests: entry.anfragen.length
+        };
+    }
 }
 
 const mapStateToProps = (state: RootState) => ({

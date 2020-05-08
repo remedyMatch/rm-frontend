@@ -7,6 +7,6 @@ export interface Person {
     nachname: string;
     email: string;
     telefon: string;
-    aktuelleInstitution: Person2Institution;
-    institutionen: Person2Institution[];
+    standorte: Person2Institution[];
+    aktuellerStandort: Person2Institution;
 }

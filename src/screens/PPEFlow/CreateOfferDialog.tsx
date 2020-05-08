@@ -6,17 +6,16 @@ import CheckboxGroup from "../../components/Form/CheckboxGroup";
 import DateInput from "../../components/Form/DateInput";
 import NumberInput from "../../components/Form/NumberInput";
 import TextArea from "../../components/Form/TextArea";
-import {apiPost} from "../../util/ApiUtils";
+import {Angebot} from "../../domain/angebot/Angebot";
+import {InstitutionAngebot} from "../../domain/angebot/InstitutionAngebot";
+import {apiPost, logApiError} from "../../util/ApiUtils";
 import {defined, numberSize, stringLength, validate} from "../../util/ValidationUtils";
 
 interface Props {
     open: boolean;
-    onCreated: () => void;
+    onCreated: (created: InstitutionAngebot) => void;
     onCancelled: () => void;
     variantId?: string;
-}
-
-interface State {
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -27,14 +26,14 @@ const useStyles = makeStyles((theme: Theme) => ({
     row: {
         display: "flex",
         flexDirection: "row",
-        margin: "1em -1.5em"
+        margin: "1.5em -1em"
     },
     rowEntry: {
         width: "calc((100% - 4.5em) / 2)",
         margin: "0px auto"
     },
     formRow: {
-        margin: "1em 0em 2em 0em"
+        margin: "1.5em 0em"
     }
 }));
 
@@ -43,7 +42,7 @@ const CreateOfferDialog: React.FC<Props> = props => {
 
     const {onCancelled, onCreated, variantId} = props;
 
-    const [amount, setAmount] = useState<number>(0);
+    const [amount, setAmount] = useState<number | undefined>(0);
     const [useBefore, setUseBefore] = useState<Date | undefined>(undefined);
     const [publicOffer, setPublicOffer] = useState<boolean>(true);
     const [sterile, setSterile] = useState<boolean>(false);
@@ -58,9 +57,10 @@ const CreateOfferDialog: React.FC<Props> = props => {
 
     const onCreate = useCallback(async () => {
         const error = validate(
-            defined(variantId, "Es muss eine Variante gewählt werden!"),
-            numberSize(amount, "Die Anzahl", 1),
-            stringLength(comment, "Der Kommentar", 1, 1024)
+            defined(variantId, "Es wurde keine Variante ausgewählt!"),
+            defined(amount, "Es wurde keine Anzahl ausgewählt!"),
+            numberSize(amount!, "Die angebotene Anzahl", 1),
+            stringLength(comment, "Ihre Nachricht", 1, 1024)
         );
 
         if (error) {
@@ -71,8 +71,8 @@ const CreateOfferDialog: React.FC<Props> = props => {
         setError(undefined);
         setDisabled(true);
 
-        const result = await apiPost("/remedy/angebot", {
-            artikelVarianteId: props.variantId,
+        const result = await apiPost<Angebot>("/remedy/angebot", {
+            artikelVarianteId: variantId,
             anzahl: amount,
             kommentar: comment,
             haltbarkeit: useBefore,
@@ -84,7 +84,8 @@ const CreateOfferDialog: React.FC<Props> = props => {
 
         setDisabled(false);
         if (result.error) {
-            setError(result.error);
+            logApiError(result, "Beim Anlegen des Angebots ist ein Fehler aufgetreten");
+            setError("Es ist ein technischer Fehler aufgetreten. Bitte versuchen Sie es erneut.");
         } else {
             setAmount(0);
             setUseBefore(undefined);
@@ -93,9 +94,9 @@ const CreateOfferDialog: React.FC<Props> = props => {
             setSealed(false);
             setMedical(false);
             setComment("");
-            onCreated();
+            onCreated({anfragen: [], ...result.result!});
         }
-    }, [onCreated, variantId, amount, comment, useBefore, sterile, medical, sealed]);
+    }, [onCreated, variantId, amount, comment, useBefore, sterile, medical, sealed, publicOffer]);
 
     const onCancel = useCallback(() => {
         setError(undefined);
@@ -131,8 +132,8 @@ const CreateOfferDialog: React.FC<Props> = props => {
                             disabled={disabled}
                             value={useBefore}
                             disablePast
-                            label="Wie ist das Haltbarkeitsdatum?"
-                            placeholder="Bitte auswählen"
+                            label="Gibt es ein Ablaufdatum?"
+                            placeholder="Optional"
                             onChange={setUseBefore}/>
 
                     </div>

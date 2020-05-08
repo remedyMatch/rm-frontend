@@ -16,12 +16,13 @@ interface Props {
 
 const useStyles = makeStyles((theme: Theme) => ({
     root: {
-        height: "calc(100% - 32px) !important",
+        height: "calc(100% - 40px) !important",
         fontFamily: "Montserrat, sans-serif",
+        fontSize: "16px",
+        fontWeight: 600,
         lineHeight: 1.5,
         color: "#333",
         resize: "none",
-        fontSize: "16px",
         padding: "16px",
         width: "100%",
         transition: theme.transitions.create("border"),
@@ -51,7 +52,7 @@ const useStyles = makeStyles((theme: Theme) => ({
         fontWeight: 600,
         color: "#333",
         lineHeight: 1.5,
-        marginBottom: "8px",
+        marginBottom: "16px",
         display: "flex"
     }
 }));

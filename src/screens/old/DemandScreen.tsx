@@ -4,7 +4,7 @@ import React, {Component} from "react";
 import {connect, ConnectedProps} from "react-redux";
 import {FormButton} from "../../components/Form/old/FormButton";
 import {FormTextInput} from "../../components/Form/old/FormTextInput";
-import EntryTable from "../../components/Table/EntryTable";
+import EntryTable from "../../components/Table/old/EntryTable";
 import {loadArtikelKategorien} from "../../state/artikel/ArtikelKategorienState";
 import {loadArtikel} from "../../state/artikel/ArtikelState";
 import {loadBedarfe} from "../../state/bedarf/BedarfeState";
@@ -72,7 +72,7 @@ class DemandScreen extends Component<Props, State> {
                     artikelKategorien={this.props.artikelKategorien || []}
                     bedarfe={this.filter()}
                     angebote={[]}
-                    details={{onClick: this.onDetailsClicked, eigeneInstitutionId: this.props.person?.aktuelleInstitution.institution.id || ""}}/>
+                    details={{onClick: this.onDetailsClicked, eigeneInstitutionId: this.props.person?.aktuellerStandort.institution.id || ""}}/>
 
                 <AddDemandDialog
                     open={this.state.addDialogOpen}

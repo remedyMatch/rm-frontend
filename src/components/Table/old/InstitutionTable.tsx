@@ -8,7 +8,7 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import {Edit} from "@material-ui/icons";
 import React from 'react';
-import {Person2Institution} from "../../domain/person/Person2Institution";
+import {Person2Institution} from "../../../domain/person/Person2Institution";
 
 const useStyles = makeStyles({
     table: {

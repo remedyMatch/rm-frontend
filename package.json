@@ -6,7 +6,7 @@
   "homepage": "app",
   "private": true,
   "scripts": {
-    "start": "BROWSER=none react-scripts start",
+    "start": "WDS_SOCKET_PATH=/app/sockjs-node BROWSER=none react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"

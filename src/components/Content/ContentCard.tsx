@@ -29,7 +29,7 @@ const useStyles = makeStyles((theme: Theme) => ({
         padding: "24px 24px 0px 24px"
     },
     cardContent: {
-        padding: "12px 24px",
+        padding: "12px 0px",
         flexGrow: 1
     },
     cardPlaceholder: {
@@ -37,6 +37,7 @@ const useStyles = makeStyles((theme: Theme) => ({
         display: "block",
         textAlign: "center",
         padding: "36px",
+        flexGrow: 1,
         fontFamily: "Montserrat, sans-serif",
         color: "rgba(0,0,0,0.54)"
     },

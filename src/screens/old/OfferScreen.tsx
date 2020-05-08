@@ -4,7 +4,7 @@ import React, {Component} from "react";
 import {connect, ConnectedProps} from "react-redux";
 import {FormButton} from "../../components/Form/old/FormButton";
 import {FormTextInput} from "../../components/Form/old/FormTextInput";
-import EntryTable from "../../components/Table/EntryTable";
+import EntryTable from "../../components/Table/old/EntryTable";
 import {loadAngebote} from "../../state/angebot/AngeboteState";
 import {loadArtikelKategorien} from "../../state/artikel/ArtikelKategorienState";
 import {loadArtikel} from "../../state/artikel/ArtikelState";

@@ -15,10 +15,12 @@ interface Props {
 
 const useStyles = makeStyles((theme: Theme) => ({
     root: {
-        transition: theme.transitions.create(["color", "background-color"]),
+        transition: theme.transitions.create("background-color"),
         height: "48px",
         margin: "0px",
+        paddingRight: "42px",
         "&>span:last-child": {
+            transition: theme.transitions.create("color"),
             fontFamily: "Montserrat, sans-serif",
             fontSize: "16px",
             fontWeight: 600,

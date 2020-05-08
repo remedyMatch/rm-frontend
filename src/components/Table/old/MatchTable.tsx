@@ -7,8 +7,8 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import {CallMade, CallReceived} from "@material-ui/icons";
 import React from 'react';
-import {Artikel} from "../../domain/artikel/Artikel";
-import {Match} from "../../domain/match/Match";
+import {Artikel} from "../../../domain/artikel/Artikel";
+import {Match} from "../../../domain/match/Match";
 
 const useStyles = makeStyles({
     table: {

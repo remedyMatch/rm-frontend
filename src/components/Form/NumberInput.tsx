@@ -9,7 +9,7 @@ interface Props {
     label: string;
     value?: number;
     className?: string;
-    onChange: (newValue: number) => void;
+    onChange: (newValue?: number) => void;
     disabled?: boolean;
 }
 
@@ -18,7 +18,10 @@ const useStyles = makeStyles((theme: Theme) => ({
         display: "flex",
         "&>div": {
             "&>input": {
-                textAlign: "center"
+                fontWeight: 600,
+                fontFamily: "Montserrat, sans-serif",
+                textAlign: "center",
+                fontSize: "16px"
             },
             "&>fieldset": {
                 transition: theme.transitions.create("border"),
@@ -38,7 +41,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     focussed: {
         "&>div": {
             "&>fieldset": {
-                border: "2px solid #53284f"
+                border: "2px solid #53284f !important"
             },
             "&>button": {
                 color: "#53284f"
@@ -54,7 +57,7 @@ const useStyles = makeStyles((theme: Theme) => ({
         fontWeight: 600,
         color: "#333",
         lineHeight: 1.5,
-        marginBottom: "8px",
+        marginBottom: "16px",
         display: "flex"
     }
 }));
@@ -71,12 +74,14 @@ const NumberInput: React.FC<Props> = props => {
     const onBlur = useCallback(() => setFocussed(false), []);
     const setValueSafe = useCallback((e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const amount = parseFloat(e.target.value);
-        if (!isNaN(amount) || e.target.value.length === 0) {
+        if (!isNaN(amount)) {
             onChange(amount);
+        } else if(e.target.value.length === 0) {
+            onChange(undefined);
         }
     }, [onChange]);
 
-    const displayValue = useMemo(() => focussed ? value === undefined ? "" : value : numberFormat.format(value || 0), [focussed, value]);
+    const displayValue = useMemo(() => value === undefined ? value : focussed ? value : numberFormat.format(value), [focussed, value]);
 
     return (
         <div className={props.className}>

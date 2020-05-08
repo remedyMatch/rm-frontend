@@ -38,7 +38,9 @@ const styles = (theme: Theme) =>
         },
         logo: {
             cursor: "pointer",
-            marginLeft: "-14px"
+            marginLeft: "-14px",
+            width: "300px",
+            height: "59px"
         },
         institution: {
             minWidth: "250px",
@@ -144,8 +146,9 @@ const styles = (theme: Theme) =>
             }
         },
         notificationText: {
+            fontFamily: "Montserrat, sans-serif",
+            letterSpacing: "-0.02em",
             fontWeight: 600,
-            fontFamily: "Arial, sans-serif",
             fontSize: "16px"
         },
         notificationTextRead: {
@@ -188,7 +191,7 @@ class Menu extends Component<Props, State> {
 
     render() {
         const classes = this.props.classes;
-        const curInst = this.props.person?.aktuelleInstitution;
+        const curInst = this.props.person?.aktuellerStandort;
 
         return (
             <>
@@ -212,7 +215,7 @@ class Menu extends Component<Props, State> {
                                     vertical: "bottom"
                                 }}
                                 overlap="circle"
-                                badgeContent={this.props.benachrichtigungen?.length || 0}
+                                badgeContent={this.props.benachrichtigungen?.filter(b => !b.gelesen).length || 0}
                                 color="error">
                                 <Notifications
                                     fontSize="large"
