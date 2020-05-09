@@ -4,8 +4,10 @@ import {ArrowDropDown, DirectionsWalk, LocationCity, Person, PersonPinCircle} fr
 import clsx from "clsx";
 import React, {useCallback, useEffect, useRef, useState} from "react";
 import {useDispatch, useSelector} from "react-redux";
+import {useHistory} from "react-router-dom";
 import {loadPerson} from "../../state/person/PersonState";
 import {RootDispatch, RootState} from "../../state/Store";
+import LoginService from "../../util/LoginService";
 
 const useStyles = makeStyles((theme: Theme) => ({
     backdrop: {
@@ -109,11 +111,25 @@ const AccountMenu: React.FC = () => {
 
     const [open, setOpen] = useState(false);
 
+    const history = useHistory();
+
     const person = useSelector((state: RootState) => state.person.value);
     const dispatch: RootDispatch = useDispatch();
 
     const openMenu = useCallback(() => setOpen(true), []);
     const closeMenu = useCallback(() => setOpen(false), []);
+
+    const onChooseButtonClicked = useCallback(() => {
+        setOpen(false);
+    }, []);
+    const onAccountButtonClicked = useCallback(() => {
+        history.push("/konto");
+        setOpen(false);
+    }, [history]);
+    const onLogoutButtonClicked = useCallback(() => {
+        LoginService.doLogout();
+        setOpen(false);
+    }, []);
 
     useEffect(() => {
         dispatch(loadPerson());
@@ -167,6 +183,7 @@ const AccountMenu: React.FC = () => {
                                 <div className={classes.accountMenuContainer}>
 
                                     <Button
+                                        onClick={onChooseButtonClicked}
                                         startIcon={<PersonPinCircle className={classes.accountMenuActionIcon}/>}
                                         variant="text"
                                         className={classes.accountMenuAction}>
@@ -174,6 +191,7 @@ const AccountMenu: React.FC = () => {
                                     </Button>
 
                                     <Button
+                                        onClick={onAccountButtonClicked}
                                         startIcon={<Person className={classes.accountMenuActionIcon}/>}
                                         variant="text"
                                         className={classes.accountMenuAction}>
@@ -181,6 +199,7 @@ const AccountMenu: React.FC = () => {
                                     </Button>
 
                                     <Button
+                                        onClick={onLogoutButtonClicked}
                                         startIcon={<DirectionsWalk className={classes.accountMenuActionIcon}/>}
                                         variant="text"
                                         className={classes.accountMenuAction}>
