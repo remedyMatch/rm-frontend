@@ -18,6 +18,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     accountMenu: {
         backgroundColor: "white",
         minWidth: "320px",
+        minHeight: "51px",
         cursor: "pointer",
         border: "2px solid #CCC",
         borderRadius: "8px",
@@ -133,7 +134,7 @@ const AccountMenu: React.FC = () => {
 
     useEffect(() => {
         dispatch(loadPerson());
-    });
+    }, [dispatch]);
 
     const curInst = person?.aktuellerStandort;
 

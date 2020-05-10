@@ -179,12 +179,12 @@ const NotificationMenu: React.FC = () => {
 
     useEffect(() => {
         dispatch(loadBenachrichtigungen());
-    });
+    }, [dispatch]);
 
     useEffect(() => {
         const interval = setInterval(() => dispatch(loadBenachrichtigungen()), 30 * 1000);
         return () => clearInterval(interval);
-    });
+    }, [dispatch]);
 
     return (
         <>
