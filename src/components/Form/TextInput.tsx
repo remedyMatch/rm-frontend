@@ -7,10 +7,11 @@ import React, {ChangeEvent, useCallback, useMemo, useState} from "react";
 
 interface Props {
     label: string;
-    value?: number;
+    value?: string;
     className?: string;
-    onChange: (newValue?: number) => void;
+    onChange: (newValue: string) => void;
     disabled?: boolean;
+    dense?: boolean;
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -20,7 +21,6 @@ const useStyles = makeStyles((theme: Theme) => ({
             "&>input": {
                 fontWeight: 600,
                 fontFamily: "Montserrat, sans-serif",
-                textAlign: "center",
                 fontSize: "16px"
             },
             "&>fieldset": {
@@ -29,12 +29,6 @@ const useStyles = makeStyles((theme: Theme) => ({
                 "&:hover": {
                     border: "2px solid #53284f"
                 }
-            },
-            "&>button": {
-                color: "#666"
-            },
-            "&:hover>button": {
-                color: "#53284f"
             }
         }
     },
@@ -42,14 +36,8 @@ const useStyles = makeStyles((theme: Theme) => ({
         "&>div": {
             "&>fieldset": {
                 border: "2px solid #53284f !important"
-            },
-            "&>button": {
-                color: "#53284f"
             }
         }
-    },
-    disabledButton: {
-        color: "#CCC !important"
     },
     label: {
         fontFamily: "Montserrat, sans-serif",
@@ -59,12 +47,13 @@ const useStyles = makeStyles((theme: Theme) => ({
         lineHeight: 1.5,
         marginBottom: "16px",
         display: "flex"
+    },
+    denseLabel: {
+        marginBottom: "8px"
     }
 }));
 
-const numberFormat = new Intl.NumberFormat('de-DE');
-
-const NumberInput: React.FC<Props> = props => {
+const TextInput: React.FC<Props> = props => {
     const classes = useStyles();
     const {onChange, value, disabled} = props;
 
@@ -72,51 +61,26 @@ const NumberInput: React.FC<Props> = props => {
 
     const onFocus = useCallback(() => setFocussed(true), []);
     const onBlur = useCallback(() => setFocussed(false), []);
-    const setValueSafe = useCallback((e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        const amount = parseFloat(e.target.value);
-        if (!isNaN(amount)) {
-            onChange(amount);
-        } else if(e.target.value.length === 0) {
-            onChange(undefined);
-        }
+    const setValue = useCallback((e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        onChange(e.target.value);
     }, [onChange]);
-
-    const displayValue = useMemo(() => value === undefined ? value : focussed ? value : numberFormat.format(value), [focussed, value]);
 
     return (
         <div className={props.className}>
-            <Typography className={classes.label}>{props.label}</Typography>
+            <Typography className={clsx(classes.label, props.dense && classes.denseLabel)}>{props.label}</Typography>
             <TextField
                 size="small"
                 variant="outlined"
                 onFocus={onFocus}
                 onBlur={onBlur}
-                value={displayValue}
+                placeholder={props.label}
+                value={value}
                 className={clsx(classes.root, focussed && classes.focussed)}
-                onChange={setValueSafe}
+                onChange={setValue}
                 disabled={disabled}
-                InputProps={{
-                    startAdornment: (
-                        <IconButton
-                            size="small"
-                            className={clsx((disabled || (value || 0) === 0) && classes.disabledButton)}
-                            onClick={() => onChange((props.value || 0) - 1)}
-                            disabled={disabled || (value || 0) === 0}>
-                            <Remove/>
-                        </IconButton>
-                    ),
-                    endAdornment: (
-                        <IconButton
-                            size="small"
-                            onClick={() => onChange((value || 0) + 1)}
-                            disabled={disabled}>
-                            <Add/>
-                        </IconButton>
-                    )
-                }}
             />
         </div>
     );
 };
 
-export default NumberInput;
+export default TextInput;

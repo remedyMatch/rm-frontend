@@ -1,0 +1,12 @@
+1. Download https://unicode.org/Public/cldr/37/cldr-common-37.0.zip
+2. Go to common/main/XX.xml
+3. Extract entries in ldml/localDisplayNames/territories
+4. Remove territories with numbers as types
+5. Remove any indents
+6. Use the following regular expression substitution:
+    Search: <territory type="([A-Z]{2})"[^>]*>([^<]*)</territory>
+    Replace: "$1": "$2",
+7. Remove double values by only keeping the most common version
+8. Remove the values for "EU", "EZ", "UN", "ZZ"
+8. Surround the result with { and } and place it in the countries.json-File as value for the language key
+9. Check if it's displayed correctly in the application

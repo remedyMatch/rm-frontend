@@ -81,6 +81,9 @@ const styles = (theme: Theme) =>
             flexWrap: "wrap",
             justifyContent: "space-between"
         },
+        contentCard: {
+            width: "calc((100% - 1em) / 2)"
+        },
         cardPlaceholderAction: {
             fontWeight: 600
         },
@@ -88,6 +91,9 @@ const styles = (theme: Theme) =>
             marginTop: "1.5em",
             display: "flex",
             flexWrap: "wrap"
+        },
+        linkCard: {
+            width: "calc((100% - 3em) / 4)"
         },
         adEntry: {
             padding: "4px 24px",
@@ -165,6 +171,7 @@ class DashboardScreen extends Component<Props, State> {
                 <div className={classes.cards}>
 
                     <ContentCard
+                        className={classes.contentCard}
                         title="Meine Inserate"
                         showPlaceholder={ownCount === 0}
                         actionDisabled={ownCount === 0}
@@ -193,6 +200,7 @@ class DashboardScreen extends Component<Props, State> {
                     </ContentCard>
 
                     <ContentCard
+                        className={classes.contentCard}
                         title="Meine offenen Anfragen"
                         showPlaceholder={requestCount === 0}
                         actionDisabled={requestCount === 0}
@@ -218,8 +226,14 @@ class DashboardScreen extends Component<Props, State> {
                 </div>
 
                 <div className={classes.linkCards}>
-                    <LinkCard title="Meine Matches anzeigen" onClick={() => console.log("Matches anzeigen")}/>
-                    <LinkCard title="Mein Konto anzeigen" onClick={this.onMyAccountClicked}/>
+                    <LinkCard
+                        title="Meine Matches anzeigen"
+                        onClick={() => console.log("Matches anzeigen")}
+                        className={classes.linkCard}/>
+                    <LinkCard
+                        title="Mein Konto anzeigen"
+                        onClick={this.onMyAccountClicked}
+                        className={classes.linkCard}/>
                 </div>
             </>
         )

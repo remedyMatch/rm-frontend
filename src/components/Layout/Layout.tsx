@@ -2,11 +2,11 @@ import {WithStyles} from "@material-ui/core";
 import {createStyles, Theme, withStyles} from "@material-ui/core/styles";
 import {Component, default as React} from "react";
 import {Redirect, Route, Switch} from "react-router-dom";
-import Footer from "./Footer";
+import AccountScreen from "../../screens/AccountScreen";
 import DashboardScreen from "../../screens/DashboardScreen";
 import DemandFlowScreen from "../../screens/DemandFlowScreen";
 import OfferFlowScreen from "../../screens/OfferFlowScreen";
-import InstitutionScreen from "../../screens/old/InstitutionScreen";
+import Footer from "./Footer";
 import Menu from "./Menu";
 
 interface Props extends WithStyles<typeof styles> {
@@ -56,7 +56,7 @@ class Layout extends Component<Props, State> {
                 <div className={classes.content}>
                     <Menu/>
                     <Switch>
-                        <Route path="/konto" component={InstitutionScreen}/>
+                        <Route path="/konto" component={AccountScreen}/>
                         <Route path="/angebot" component={OfferFlowScreen}/>
                         <Route path="/bedarf" component={DemandFlowScreen}/>
                         <Route path="/" exact component={DashboardScreen}/>

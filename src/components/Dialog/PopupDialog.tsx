@@ -22,13 +22,27 @@ interface Props {
     firstTitle?: string;
     secondTitle?: string;
     onCloseError?: () => void;
-    paperClassName?: string;
+    errorClassName?: string;
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
     children: {
         display: "flex",
         flexDirection: "column"
+    },
+    childrenWrapper: {
+        margin: "0.5em",
+        padding: "0px 24px",
+        "&::-webkit-scrollbar": {
+            width: "12px"
+        },
+        "&::-webkit-scrollbar-track": {
+            backgroundColor: "rgba(0,0,0,0.1)"
+        },
+        "&::-webkit-scrollbar-thumb": {
+            backgroundColor: "darkgrey",
+            borderRadius: "6px"
+        }
     },
     backdrop: {
         backgroundColor: "rgba(0,0,0,0.25)",
@@ -87,6 +101,9 @@ const useStyles = makeStyles((theme: Theme) => ({
         "&:hover": {
             backgroundColor: "#006374"
         }
+    },
+    titleWrapper: {
+        padding: "16px 24px 0px 24px"
     }
 }));
 
@@ -100,21 +117,21 @@ const PopupDialog: React.FC<Props> = props => {
                 className: classes.backdrop
             }}
             PaperProps={{
-                className: clsx(classes.paper, props.paperClassName),
+                className: classes.paper,
                 elevation: undefined
             }}
             open={props.open}
             disableBackdropClick>
 
-            <DialogTitle disableTypography>
+            <DialogTitle disableTypography className={classes.titleWrapper}>
                 <Typography className={classes.title}>{props.title}</Typography>
                 {props.subtitle && (
                     <Typography className={classes.subtitle}>{props.subtitle}</Typography>
                 )}
             </DialogTitle>
 
-            <DialogContent>
-                <ErrorToast error={props.error} onClose={props.onCloseError}/>
+            <DialogContent className={classes.childrenWrapper}>
+                <ErrorToast error={props.error} onClose={props.onCloseError} className={props.errorClassName}/>
                 <div className={classes.children}>
                     {props.children}
                 </div>

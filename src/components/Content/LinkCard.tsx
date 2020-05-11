@@ -7,6 +7,7 @@ import React from "react";
 interface Props {
     title: string;
     onClick: () => void;
+    className?: string;
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -25,7 +26,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
     linkCard: {
         backgroundColor: "#53284f",
-        width: "calc((100% - 3em) / 4)",
         borderRadius: "8px",
         height: "48px",
         marginRight: "1em",
@@ -43,7 +43,7 @@ const LinkCard: React.FC<Props> = props => {
     const classes = useStyles();
 
     return (
-        <div className={classes.linkCard}>
+        <div className={clsx(classes.linkCard, props.className)}>
             <Button
                 onClick={props.onClick}
                 startIcon={<ArrowForward/>}
