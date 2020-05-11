@@ -48,7 +48,8 @@ const styles = (theme: Theme) =>
             fontFamily: "Montserrat, sans-serif",
             fontSize: "60px",
             fontWeight: 600,
-            color: "#007c92"
+            color: "#007c92",
+            lineHeight: 1.1
         },
         welcomeSubtitle: {
             fontFamily: "Montserrat, sans-serif",

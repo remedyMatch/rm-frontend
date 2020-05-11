@@ -1,9 +1,8 @@
-import {IconButton, Typography} from "@material-ui/core";
+import {Typography} from "@material-ui/core";
 import {makeStyles, Theme} from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
-import {Add, Remove} from "@material-ui/icons";
 import clsx from "clsx";
-import React, {ChangeEvent, useCallback, useMemo, useState} from "react";
+import React, {ChangeEvent, useCallback, useState} from "react";
 
 interface Props {
     label: string;

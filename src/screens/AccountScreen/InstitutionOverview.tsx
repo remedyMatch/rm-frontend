@@ -1,7 +1,7 @@
 import {Button, capitalize} from "@material-ui/core";
 import {makeStyles, Theme} from "@material-ui/core/styles";
 import {ArrowForward} from "@material-ui/icons";
-import React, {useCallback, useEffect, useMemo, useState} from "react";
+import React, {useCallback, useEffect, useState} from "react";
 import {useDispatch, useSelector} from "react-redux";
 import {useHistory} from "react-router-dom";
 import ContentCard from "../../components/Content/ContentCard";
@@ -11,25 +11,29 @@ import {RootState} from "../../state/Store";
 import RequestInstitutionDialog from "./RequestInstitutionDialog";
 
 const useStyles = makeStyles((theme: Theme) => ({
-    contentCards: {
+    cardColumnContainer: {
         display: "flex",
         justifyContent: "space-between"
+    },
+    cardColumn: {
+        display: "flex",
+        flexDirection: "column",
+        width: "calc((100% - 1em) / 2)",
     },
     contentCard: {
-        width: "calc((100% - 1em) / 2)"
-    },
-    linkCards: {
-        marginTop: "1em",
-        display: "flex",
-        flexWrap: "wrap",
-        justifyContent: "space-between"
+        width: "100%"
     },
     linkCard: {
-        width: "calc((100% - 1em) / 2)"
+        marginTop: "1em",
+        width: "100%",
+        marginRight: "0px"
     },
     contentCardContent: {
         display: "flex",
         flexDirection: "column"
+    },
+    locationContainer: {
+        margin: "12px 0px -12px 0px"
     },
     contentCardListButton: {
         fontFamily: "Montserrat, sans-serif",
@@ -42,8 +46,33 @@ const useStyles = makeStyles((theme: Theme) => ({
         justifyContent: "left",
         display: "flex"
     },
-    requestName: {
-        flexGrow: 1
+    entry: {
+        padding: "24px",
+        display: "flex",
+        flexDirection: "row",
+        borderTop: "1px solid #CCC",
+        transition: theme.transitions.create(["border", "background-color"])
+    },
+    entryTextBlock: {
+        display: "flex",
+        flexDirection: "column"
+    },
+    heading: {
+        fontFamily: "Montserrat, sans-serif",
+        fontWeight: 600,
+        color: "rgba(0, 0, 0, 0.87)",
+        fontSize: "16px"
+    },
+    locationDetails: {
+        fontFamily: "Montserrat, sans-serif",
+        color: "rgba(0, 0, 0, 0.87)",
+        fontSize: "14px"
+    },
+    status: {
+        fontFamily: "Montserrat, sans-serif",
+        color: "rgba(0, 0, 0, 0.87)",
+        fontSize: "16px",
+        marginLeft: "auto"
     }
 }));
 
@@ -70,16 +99,9 @@ const InstitutionOverview: React.FC = () => {
         dispatch(loadInstitutionAntraege());
     }, [dispatch]);
 
-    // Filter institutions
-    const institutions = useMemo(
-        () => person?.standorte
-            .map(s => s.institution)
-            .filter((s, i, a) => a.find(x => x.id === s.id) === s),
-        [person]);
-
     return (
-        <>
-            <div className={classes.contentCards}>
+        <div className={classes.cardColumnContainer}>
+            <div className={classes.cardColumn}>
 
                 <ContentCard
                     className={classes.contentCard}
@@ -91,17 +113,21 @@ const InstitutionOverview: React.FC = () => {
                         </span>
                     )}>
                     <div className={classes.contentCardContent}>
-                        {institutions?.map(institution => (
+                        {person?.institutionen.map(institution => (
                             <Button
                                 variant="text"
-                                onClick={() => history.push("/konto/institutionen/" + institution.id)}
+                                onClick={() => history.push("/konto/institutionen/" + institution.institution.id)}
                                 className={classes.contentCardListButton}
                                 startIcon={<ArrowForward/>}>
-                                {institution.name}
+                                {institution.institution.name}
                             </Button>
                         ))}
                     </div>
                 </ContentCard>
+
+            </div>
+
+            <div className={classes.cardColumn}>
 
                 <ContentCard
                     className={classes.contentCard}
@@ -112,23 +138,23 @@ const InstitutionOverview: React.FC = () => {
                             {requests === undefined ? "Ihre Daten werden geladen..." : "Sie haben noch keine Institutionen beantragt."}
                         </span>
                     )}>
-                    <div className={classes.contentCardContent}>
-                        {requests?.map(request => (
-                            <Button
-                                variant="text"
-                                onClick={() => history.push("/konto/institutionen/" + request.id) /* TODO */}
-                                className={classes.contentCardListButton}
-                                startIcon={<ArrowForward/>}>
-                                <span className={classes.requestName}>{request.name}</span>
-                                {capitalize(request.status)}
-                            </Button>
+                    <div className={classes.locationContainer}>
+                        {requests?.map(entry => (
+                            <div className={classes.entry}>
+                                <div className={classes.entryTextBlock}>
+                                    <span className={classes.heading}>{entry.name}</span>
+                                    <span className={classes.locationDetails}>{entry.strasse} {entry.hausnummer}</span>
+                                    <span className={classes.locationDetails}>{entry.plz} {entry.ort}</span>
+                                    <span className={classes.locationDetails}>{entry.land}</span>
+                                </div>
+                                <span className={classes.status}>
+                                    {capitalize(entry.status.toLowerCase())}
+                                </span>
+                            </div>
                         ))}
                     </div>
                 </ContentCard>
 
-            </div>
-
-            <div className={classes.linkCards}>
                 <LinkCard
                     className={classes.linkCard}
                     title="Institution beantragen"
@@ -139,9 +165,9 @@ const InstitutionOverview: React.FC = () => {
             <RequestInstitutionDialog
                 open={requestInstitutionDialogOpen}
                 onCancelled={onRequestInstitutionDialogCancelled}
-                onSaved={onRequestInstitutionDialogSaved} />
+                onSaved={onRequestInstitutionDialogSaved}/>
 
-        </>
+        </div>
     )
 };
 

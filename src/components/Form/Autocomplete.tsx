@@ -34,11 +34,13 @@ const useStyles = makeStyles((theme: Theme) => ({
         }
     },
     focussed: {
-        "&>div>div": {
-            "&>fieldset": {
-                border: "2px solid #53284f !important",
-                borderRadius: "4px 4px 0px 0px"
-            }
+        "&>div>div>fieldset": {
+            border: "2px solid #53284f !important"
+        }
+    },
+    open: {
+        "&>div>div>fieldset": {
+            borderRadius: "4px 4px 0px 0px"
         }
     },
     label: {
@@ -92,25 +94,33 @@ const Autocomplete: FC<Props<any>> = <T extends unknown>(props: Props<T>) => {
     }, [onChange]);
 
     const [focussed, setFocussed] = useState<boolean>(false);
+    const [open, setOpen] = useState<boolean>(false);
 
     const onFocus = useCallback(() => setFocussed(true), []);
     const onBlur = useCallback(() => setFocussed(false), []);
+    const onOpen = useCallback(() => setOpen(true), []);
+    const onClose = useCallback(() => setOpen(false), []);
 
     return (
         <div className={props.className}>
             <Typography className={clsx(classes.label, props.dense && classes.denseLabel)}>{props.label}</Typography>
             <MUIAutocomplete
-                debug
-                blurOnSelect
+                onOpen={onOpen}
+                onClose={onClose}
                 onFocus={onFocus}
                 onBlur={onBlur}
-                className={clsx(classes.root, focussed && classes.focussed)}
+                className={clsx(classes.root, focussed && classes.focussed, open && classes.open)}
                 size="small"
                 disabled={props.disabled}
                 getOptionLabel={props.getOptionLabel}
                 onChange={onChangeCallback}
                 options={props.options}
-                classes={{popper: classes.popper, option: classes.option, paper: classes.paper, listbox: classes.listbox}}
+                classes={{
+                    popper: classes.popper,
+                    option: classes.option,
+                    paper: classes.paper,
+                    listbox: classes.listbox
+                }}
                 value={props.value || null}
                 renderInput={params => (
                     <TextField {...params}

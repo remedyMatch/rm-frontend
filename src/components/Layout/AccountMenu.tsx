@@ -157,7 +157,11 @@ const AccountMenu: React.FC = () => {
 
                 <div className={classes.accountMenuButton}>
 
-                    <LocationCity className={classes.accountMenuIcon}/>
+                    {
+                        curInst?.institution.typ === "PRIVAT"
+                            ? <Person className={classes.accountMenuIcon}/>
+                            : <LocationCity className={classes.accountMenuIcon}/>
+                    }
 
                     <div className={classes.accountMenuText}>
                         <Typography className={classes.accountMenuInstitution}>

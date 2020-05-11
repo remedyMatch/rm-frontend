@@ -2,8 +2,6 @@ import {Typography, WithStyles} from "@material-ui/core";
 import {createStyles, Theme, withStyles} from "@material-ui/core/styles";
 import React, {Component} from "react";
 import {connect, ConnectedProps} from "react-redux";
-import InstitutionTable from "../../components/Table/old/InstitutionTable";
-import {Person2Institution} from "../../domain/person/Person2Institution";
 import {loadPerson} from "../../state/person/PersonState";
 import {RootDispatch, RootState} from "../../state/Store";
 
@@ -128,10 +126,6 @@ class InstitutionScreen extends Component<Props, State> {
                         className={classes.subtitle}>
                         Institutionen
                     </Typography>
-
-                    <InstitutionTable
-                        rows={this.props.person?.standorte || []}
-                        onEditClicked={(inst: Person2Institution) => console.log(inst)}/>
 
                 </div>
 

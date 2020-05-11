@@ -1,8 +1,8 @@
 import {Theme} from "@material-ui/core";
 import {makeStyles} from "@material-ui/core/styles";
-import {LocationCity, LocationOn} from "@material-ui/icons";
+import {LocationCity, LocationOn, Person as PersonIcon} from "@material-ui/icons";
 import clsx from "clsx";
-import React, {useCallback, useEffect, useMemo, useState} from "react";
+import React, {useCallback, useEffect, useState} from "react";
 import {Institution} from "../../domain/institution/Institution";
 import {InstitutionStandort} from "../../domain/institution/InstitutionStandort";
 import {Person} from "../../domain/person/Person";
@@ -147,19 +147,6 @@ const InstitutionLocationDialog: React.FC<Props> = props => {
         onCancelled();
     }, [onCancelled]);
 
-    // Filter institutions
-    const institutions = useMemo(
-        () => person?.standorte
-            .map(s => s.institution)
-            .filter((s, i, a) => a.find(x => x.id === s.id) === s)
-            .map(institution => ({
-                institution: institution,
-                locations: person?.standorte
-                    .filter(s => s.institution === institution)
-                    .map(s => s.standort)
-            })),
-        [person]);
-
     return (
         <PopupDialog
             open={props.open}
@@ -176,11 +163,13 @@ const InstitutionLocationDialog: React.FC<Props> = props => {
             <div className={classes.root}>
 
                 <div className={classes.entries}>
-                    {institutions?.map(entry => (
+                    {person?.institutionen.map(entry => (
                         <div
                             onClick={disabled ? undefined : () => setSelectedInstitution(entry.institution)}
                             className={clsx(classes.entry, entry.institution.id === selectedInstitution?.id && classes.entrySelected)}>
-                            <LocationCity fontSize="large"/>
+                            {entry.institution.typ === "PRIVAT"
+                                ? <PersonIcon fontSize="large"/>
+                                : <LocationCity fontSize="large"/>}
                             <div className={classes.entryTextBlock}>
                                 <span className={classes.institutionName}>{entry.institution.name}</span>
                             </div>

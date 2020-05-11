@@ -1,13 +1,12 @@
 import {makeStyles, Theme} from "@material-ui/core/styles";
-import clsx from "clsx";
-import React, {useMemo} from "react";
+import {LocationCity, Person} from "@material-ui/icons";
+import React from "react";
 import {useSelector} from "react-redux";
 import {NavLink, Redirect, Route, Switch, useLocation} from "react-router-dom";
 import {RootState} from "../state/Store";
 import AccountDetails from "./AccountScreen/AccountDetails";
 import InstitutionDetails from "./AccountScreen/InstitutionDetails";
 import InstitutionOverview from "./AccountScreen/InstitutionOverview";
-import DemandFlowScreen from "./DemandFlowScreen";
 
 const useStyles = makeStyles((theme: Theme) => ({
     root: {
@@ -35,6 +34,7 @@ const useStyles = makeStyles((theme: Theme) => ({
         }
     },
     navigationButton: {
+        display: "flex",
         borderRadius: "0px",
         fontSize: "16px",
         borderTop: "1px solid #CCC",
@@ -52,11 +52,14 @@ const useStyles = makeStyles((theme: Theme) => ({
         fontWeight: 600,
         backgroundColor: "#42203f"
     },
-    navigationButtonNested: {
-        paddingLeft: "48px"
-    },
     content: {
         flexGrow: 1
+    },
+    institutionIcon: {
+        height: "0.8em",
+        width: "0.8em",
+        marginLeft: "16px",
+        marginRight: "8px"
     }
 }));
 
@@ -66,13 +69,6 @@ const AccountScreen: React.FC = props => {
     // Loaded in Menu component
     const person = useSelector((state: RootState) => state.person.value);
     const location = useLocation();
-
-    // Filter institutions
-    const institutions = useMemo(
-        () => person?.standorte
-            .map(s => s.institution)
-            .filter((s, i, a) => a.find(x => x.id === s.id) === s),
-        [person]);
 
     return (
         <>
@@ -93,20 +89,19 @@ const AccountScreen: React.FC = props => {
                         className={classes.navigationButton}>
                         Meine Institutionen
                     </NavLink>
-                    {location.pathname.startsWith("/konto/institutionen") && institutions?.map(institution => (
+                    {location.pathname.startsWith("/konto/institutionen") && person?.institutionen.map(institution => (
                         <NavLink
-                            to={"/konto/institutionen/" + institution.id}
+                            to={"/konto/institutionen/" + institution.institution.id}
                             activeClassName={classes.navigationButtonActive}
-                            className={clsx(classes.navigationButton, classes.navigationButtonNested)}>
-                            {institution.name}
+                            className={classes.navigationButton}>
+                            {
+                                institution.institution.typ === "PRIVAT"
+                                    ? <Person className={classes.institutionIcon}/>
+                                    : <LocationCity className={classes.institutionIcon}/>
+                            }
+                            {institution.institution.name}
                         </NavLink>
                     ))}
-                    <NavLink
-                        to="/konto/benachrichtigungen"
-                        activeClassName={classes.navigationButtonActive}
-                        className={classes.navigationButton}>
-                        Benachrichtigungen
-                    </NavLink>
                 </div>
 
                 <div className={classes.content}>
@@ -114,7 +109,6 @@ const AccountScreen: React.FC = props => {
                         <Route path="/konto" exact component={AccountDetails}/>
                         <Route path="/konto/institutionen" exact component={InstitutionOverview}/>
                         <Route path="/konto/institutionen/:id" component={InstitutionDetails}/>
-                        <Route path="/konto/benachrichtigungen" component={DemandFlowScreen}/>
                         <Redirect to="/konto"/>
                     </Switch>
                 </div>
