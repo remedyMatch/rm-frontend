@@ -425,7 +425,7 @@ class PPEFlow extends Component<Props, State> {
             sealed: ("originalverpackt" in result && result.originalverpackt) || undefined,
             sterile: result.steril,
             medical: result.medizinisch,
-            useBefore: ("haltbarkeit" in result && new Date(result.haltbarkeit)) || undefined,
+            useBefore: ("haltbarkeit" in result && !!result.haltbarkeit && new Date(result.haltbarkeit)) || undefined,
             original: result
         }));
     };

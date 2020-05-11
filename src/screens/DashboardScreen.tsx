@@ -4,9 +4,9 @@ import clsx from "clsx";
 import React, {Component} from "react";
 import {connect, ConnectedProps} from "react-redux";
 import {RouteComponentProps, withRouter} from "react-router-dom";
-import {FormButton} from "../components/Form/old/FormButton";
 import ContentCard from "../components/Content/ContentCard";
 import LinkCard from "../components/Content/LinkCard";
+import {FormButton} from "../components/Form/old/FormButton";
 import {InstitutionAngebot} from "../domain/angebot/InstitutionAngebot";
 import {InstitutionBedarf} from "../domain/bedarf/InstitutionBedarf";
 import home from "../resources/home.svg";
@@ -219,7 +219,7 @@ class DashboardScreen extends Component<Props, State> {
 
                 <div className={classes.linkCards}>
                     <LinkCard title="Meine Matches anzeigen" onClick={() => console.log("Matches anzeigen")}/>
-                    <LinkCard title="Mein Konto anzeigen" onClick={() => console.log("Konto anzeigen")}/>
+                    <LinkCard title="Mein Konto anzeigen" onClick={this.onMyAccountClicked}/>
                 </div>
             </>
         )
@@ -239,6 +239,10 @@ class DashboardScreen extends Component<Props, State> {
     private onCreateDemandClicked = () => {
         this.props.history.push("/bedarf");
     };
+
+    private onMyAccountClicked = () => {
+        this.props.history.push("/konto");
+    }
 
     private mapAds = () => {
         const bedarfe = this.props.institutionBedarfe || [];

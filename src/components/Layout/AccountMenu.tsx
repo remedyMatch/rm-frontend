@@ -8,6 +8,7 @@ import {useHistory} from "react-router-dom";
 import {loadPerson} from "../../state/person/PersonState";
 import {RootDispatch, RootState} from "../../state/Store";
 import LoginService from "../../util/LoginService";
+import InstitutionLocationDialog from "./InstitutionLocationDialog";
 
 const useStyles = makeStyles((theme: Theme) => ({
     backdrop: {
@@ -111,6 +112,7 @@ const AccountMenu: React.FC = () => {
     const menuRef = useRef<HTMLDivElement>(null);
 
     const [open, setOpen] = useState(false);
+    const [locationMenuOpen, setLocationMenuOpen] = useState(false);
 
     const history = useHistory();
 
@@ -122,6 +124,7 @@ const AccountMenu: React.FC = () => {
 
     const onChooseButtonClicked = useCallback(() => {
         setOpen(false);
+        setLocationMenuOpen(true);
     }, []);
     const onAccountButtonClicked = useCallback(() => {
         history.push("/konto");
@@ -131,6 +134,12 @@ const AccountMenu: React.FC = () => {
         LoginService.doLogout();
         setOpen(false);
     }, []);
+    const onLocationMenuCancelled = useCallback(() => {
+        setLocationMenuOpen(false);
+    }, []);
+    const onLocationMenuSaved = useCallback(() => {
+        dispatch(loadPerson());
+    }, [dispatch]);
 
     useEffect(() => {
         dispatch(loadPerson());
@@ -166,8 +175,14 @@ const AccountMenu: React.FC = () => {
             </div>
 
             <Backdrop
-                open={open}
+                open={open || locationMenuOpen}
                 className={classes.backdrop}/>
+
+            <InstitutionLocationDialog
+                open={locationMenuOpen}
+                onCancelled={onLocationMenuCancelled}
+                onSaved={onLocationMenuSaved}
+                person={person}/>
 
             <Popper
                 style={{width: menuRef.current?.offsetWidth}}
