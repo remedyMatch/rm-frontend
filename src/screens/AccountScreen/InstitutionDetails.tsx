@@ -1,13 +1,15 @@
 import {capitalize} from "@material-ui/core";
 import {makeStyles, Theme} from "@material-ui/core/styles";
 import {LocationCity, LocationOn, Person} from "@material-ui/icons";
-import React, {useEffect} from "react";
+import React, {useCallback, useEffect, useState} from "react";
 import {useDispatch, useSelector} from "react-redux";
 import {useRouteMatch} from "react-router-dom";
 import ContentCard from "../../components/Content/ContentCard";
 import LinkCard from "../../components/Content/LinkCard";
 import {loadInstitutionAntraege} from "../../state/institution/InstitutionAntraegeState";
 import {RootState} from "../../state/Store";
+import RequestInstitutionDialog from "./RequestInstitutionDialog";
+import RequestLocationDialog from "./RequestLocationDialog";
 
 const useStyles = makeStyles((theme: Theme) => ({
     cardColumnContainer: {
@@ -89,6 +91,12 @@ const InstitutionDetails: React.FC = () => {
     const dispatch = useDispatch();
     const match = useRouteMatch<{ id: string }>();
 
+    const [requestLocationDialogOpen, setRequestLocationDialogOpen] = useState(false);
+
+    const onRequestLocationClicked = useCallback(() => setRequestLocationDialogOpen(true), []);
+    const onRequestLocationDialogCancelled = useCallback(() => setRequestLocationDialogOpen(false), []);
+    const onRequestLocationDialogSaved = useCallback(() => setRequestLocationDialogOpen(false), [dispatch]);
+
     useEffect(() => {
         dispatch(loadInstitutionAntraege());
     }, [dispatch]);
@@ -152,10 +160,15 @@ const InstitutionDetails: React.FC = () => {
                     <LinkCard
                         className={classes.linkCard}
                         title="Standort beantragen"
-                        onClick={() => console.log("Institution beantragen")}/>
+                        onClick={onRequestLocationClicked}/>
 
                 </div>
             </div>
+
+            <RequestLocationDialog
+                open={requestLocationDialogOpen}
+                onCancelled={onRequestLocationDialogCancelled}
+                onSaved={onRequestLocationDialogSaved}/>
 
         </>
     )
