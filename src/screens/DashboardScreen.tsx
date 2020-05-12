@@ -101,7 +101,6 @@ const styles = (theme: Theme) =>
         },
         adEntry: {
             padding: "4px 24px",
-            cursor: "pointer",
             "&:hover": {
                 backgroundColor: "rgba(0,0,0,0.04)"
             }

@@ -20,6 +20,7 @@ import {loadInstitutionBedarfe} from "../state/bedarf/InstitutionBedarfeState";
 import {RootState} from "../state/Store";
 import CancelAdDialog from "./AccountScreen/CancelAdDialog";
 import EditAdDialog from "./AccountScreen/EditAdDialog";
+import EditCountDialog from "./AccountScreen/EditCountDialog";
 
 const useStyles = makeStyles(() => ({
     container: {
@@ -100,6 +101,7 @@ const AdScreen: React.FC = () => {
     }, [dispatch]);
 
     const [cancelAdDialogOpen, setCancelAdDialogOpen] = useState(false);
+    const [editCountDialogOpen, setEditCountDialogOpen] = useState(false);
     const [editAdDialogOpen, setEditAdDialogOpen] = useState(false);
     const [selectedAdType, setSelectedAdType] = useState<"offer" | "demand" | undefined>(undefined);
     const [selectedAd, setSelectedAd] = useState<Angebot | Bedarf | undefined>(undefined);
@@ -108,6 +110,19 @@ const AdScreen: React.FC = () => {
         setSelectedAd(item.original);
         setSelectedAdType(item.type);
         setEditAdDialogOpen(true);
+    }, []);
+
+    const onEditCountDialogSaved = useCallback(() => {
+        dispatch(selectedAdType === "offer" ? loadInstitutionAngebote() : loadInstitutionBedarfe());
+        setEditCountDialogOpen(false);
+        setSelectedAd(undefined);
+        setSelectedAdType(undefined);
+    }, [dispatch, selectedAdType]);
+
+    const onEditCountDialogCancelled = useCallback(() => {
+        setEditCountDialogOpen(false);
+        setSelectedAd(undefined);
+        setSelectedAdType(undefined);
     }, []);
 
     const onCancelAdDialogCancelled = useCallback(() => {
@@ -125,6 +140,7 @@ const AdScreen: React.FC = () => {
 
     const onEditAdDialogEditCountClicked = useCallback(() => {
         setEditAdDialogOpen(false);
+        setEditCountDialogOpen(true);
     }, []);
 
     const onEditAdDialogCancelAdClicked = useCallback(() => {
@@ -174,6 +190,14 @@ const AdScreen: React.FC = () => {
                 adId={selectedAd?.id}
                 onCancelled={onCancelAdDialogCancelled}
                 onAccepted={onCancelAdDialogAccepted}/>
+
+            <EditCountDialog
+                open={editCountDialogOpen}
+                onSaved={onEditCountDialogSaved}
+                onCancelled={onEditCountDialogCancelled}
+                adId={selectedAd?.id}
+                type={selectedAdType}
+                currentCount={selectedAd?.verfuegbareAnzahl}/>
         </>
     );
 };

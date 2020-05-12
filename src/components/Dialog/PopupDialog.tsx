@@ -103,6 +103,9 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
     titleWrapper: {
         padding: "16px 24px 0px 24px"
+    },
+    error: {
+        marginBottom: "16px"
     }
 }));
 
@@ -130,7 +133,7 @@ const PopupDialog: React.FC<Props> = props => {
             </DialogTitle>
 
             <DialogContent className={classes.childrenWrapper}>
-                <ErrorToast error={props.error} onClose={props.onCloseError} className={props.errorClassName}/>
+                <ErrorToast error={props.error} onClose={props.onCloseError} className={clsx(classes.error, props.errorClassName)}/>
                 <div className={classes.children}>
                     {props.children}
                 </div>
