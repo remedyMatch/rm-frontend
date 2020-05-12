@@ -21,10 +21,8 @@ const useStyles = makeStyles((theme: Theme) => ({
         display: "flex",
         flexDirection: "column",
         margin: "0em 4em auto 0em",
-        border: "2px solid #CCC",
         flexShrink: 0,
         "&>a:first-child": {
-            borderTop: "none",
             borderTopLeftRadius: "8px",
             borderTopRightRadius: "8px"
         },
@@ -36,9 +34,9 @@ const useStyles = makeStyles((theme: Theme) => ({
     navigationButton: {
         display: "flex",
         borderRadius: "0px",
-        fontSize: "16px",
-        borderTop: "1px solid #CCC",
+        fontSize: "14px",
         color: "white",
+        fontWeight: 600,
         fontFamily: "Montserrat, sans-serif",
         textTransform: "none",
         textDecoration: "none",
@@ -49,7 +47,6 @@ const useStyles = makeStyles((theme: Theme) => ({
         }
     },
     navigationButtonActive: {
-        fontWeight: 600,
         backgroundColor: "#42203f"
     },
     content: {

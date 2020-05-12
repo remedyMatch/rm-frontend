@@ -68,7 +68,6 @@ const useStyles = makeStyles((theme: Theme) => ({
         color: "#333",
         textAlign: "center",
         lineHeight: 1.2,
-        marginTop: "-12px",
         padding: "0px 24px 24px 24px"
     },
     buttons: {
@@ -137,29 +136,31 @@ const PopupDialog: React.FC<Props> = props => {
                 </div>
             </DialogContent>
 
-            <DialogActions
-                className={classes.buttons}>
-                {props.onFirst && (
-                    <Button
-                        disableElevation
-                        className={clsx(classes.button, classes.buttonSecondary)}
-                        onClick={props.onFirst}
-                        variant="outlined"
-                        disabled={props.disabled || props.firstDisabled}>
-                        {props.firstTitle || "Abbrechen"}
-                    </Button>
-                )}
-                {props.onSecond && (
-                    <Button
-                        disableElevation
-                        className={clsx(classes.button, classes.buttonPrimary)}
-                        onClick={props.onSecond}
-                        variant="contained"
-                        disabled={props.disabled || props.secondDisabled}>
-                        {props.secondTitle || "Fertig"}
-                    </Button>
-                )}
-            </DialogActions>
+            {(props.onFirst || props.onSecond) && (
+                <DialogActions
+                    className={classes.buttons}>
+                    {props.onFirst && (
+                        <Button
+                            disableElevation
+                            className={clsx(classes.button, classes.buttonSecondary)}
+                            onClick={props.onFirst}
+                            variant="outlined"
+                            disabled={props.disabled || props.firstDisabled}>
+                            {props.firstTitle || "Abbrechen"}
+                        </Button>
+                    )}
+                    {props.onSecond && (
+                        <Button
+                            disableElevation
+                            className={clsx(classes.button, classes.buttonPrimary)}
+                            onClick={props.onSecond}
+                            variant="contained"
+                            disabled={props.disabled || props.secondDisabled}>
+                            {props.secondTitle || "Fertig"}
+                        </Button>
+                    )}
+                </DialogActions>
+            )}
 
         </Dialog>
     );

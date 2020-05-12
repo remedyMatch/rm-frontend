@@ -3,6 +3,7 @@ import {createStyles, Theme, withStyles} from "@material-ui/core/styles";
 import {Component, default as React} from "react";
 import {Redirect, Route, Switch} from "react-router-dom";
 import AccountScreen from "../../screens/AccountScreen";
+import AdScreen from "../../screens/AdScreen";
 import DashboardScreen from "../../screens/DashboardScreen";
 import DemandFlowScreen from "../../screens/DemandFlowScreen";
 import OfferFlowScreen from "../../screens/OfferFlowScreen";
@@ -59,6 +60,7 @@ class Layout extends Component<Props, State> {
                         <Route path="/konto" component={AccountScreen}/>
                         <Route path="/angebot" component={OfferFlowScreen}/>
                         <Route path="/bedarf" component={DemandFlowScreen}/>
+                        <Route path="/inserate" component={AdScreen}/>
                         <Route path="/" exact component={DashboardScreen}/>
                         <Redirect to="/"/>
                     </Switch>

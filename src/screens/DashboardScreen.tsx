@@ -7,7 +7,9 @@ import {RouteComponentProps, withRouter} from "react-router-dom";
 import ContentCard from "../components/Content/ContentCard";
 import LinkCard from "../components/Content/LinkCard";
 import {FormButton} from "../components/Form/old/FormButton";
+import {GestellteAngebotAnfrage} from "../domain/angebot/GestellteAngebotAnfrage";
 import {InstitutionAngebot} from "../domain/angebot/InstitutionAngebot";
+import {GestellteBedarfAnfrage} from "../domain/bedarf/GestellteBedarfAnfrage";
 import {InstitutionBedarf} from "../domain/bedarf/InstitutionBedarf";
 import home from "../resources/home.svg";
 import {loadGestellteAngebotAnfragen} from "../state/angebot/GestellteAngebotAnfragenState";
@@ -55,7 +57,8 @@ const styles = (theme: Theme) =>
             fontFamily: "Montserrat, sans-serif",
             fontSize: "16px",
             lineHeight: "24px",
-            marginBottom: "4em"
+            marginBottom: "4em",
+            marginTop: "1em"
         },
         mainImage: {
             height: "auto",
@@ -113,7 +116,10 @@ const styles = (theme: Theme) =>
             borderRadius: "8px",
             fontFamily: "Montserrat, sans-serif",
             fontWeight: 600,
-            fontSize: "12px"
+            fontSize: "12px",
+            marginRight: "8px",
+            color: "white",
+            padding: "2px 4px"
         }
     });
 
@@ -176,7 +182,7 @@ class DashboardScreen extends Component<Props, State> {
                         title="Meine Inserate"
                         showPlaceholder={ownCount === 0}
                         actionDisabled={ownCount === 0}
-                        onActionClicked={() => console.log("Inserate anzeigen")}
+                        onActionClicked={this.onShowAdsClicked}
                         action={ownCount ? `Alle ${ownCount} Inserate anzeigen` : "Keine Inserate gefunden"}
                         placeholder={(
                             <>
@@ -191,10 +197,12 @@ class DashboardScreen extends Component<Props, State> {
                         {
                             this.mapAds().slice(0, 5).map(entry => (
                                 <div className={classes.adEntry}>
-                                    <span className={classes.adEntryTitle}>{entry.message}</span>
                                     {entry.requests > 0 && (
-                                        <span className={classes.adEntryRequests}>{entry.requests} Anfragen</span>
+                                        <span className={classes.adEntryRequests}>
+                                            {entry.requests} Anfrage{entry.requests > 1 ? "n" : ""}
+                                        </span>
                                     )}
+                                    <span className={classes.adEntryTitle}>{entry.message}</span>
                                 </div>
                             ))
                         }
@@ -202,15 +210,15 @@ class DashboardScreen extends Component<Props, State> {
 
                     <ContentCard
                         className={classes.contentCard}
-                        title="Meine offenen Anfragen"
+                        title="Mein Postfach"
                         showPlaceholder={requestCount === 0}
                         actionDisabled={requestCount === 0}
-                        onActionClicked={() => console.log("Offene Anfragen anzeigen")}
-                        action={ownCount ? `Alle ${requestCount} Anfragen anzeigen` : "Keine Anfragen gefunden"}
+                        onActionClicked={() => console.log("Konversationen anzeigen")}
+                        action={ownCount ? `Alle ${requestCount} Konversationen anzeigen` : "Keine Konversationen gefunden"}
                         placeholder={(
                             <>
                                 <span>
-                                    Ihre Institution hat noch keine Anfragen gestellt.<br/>
+                                    Ihre Institution hat noch keine Konversationen gestartet.<br/>
                                 </span>
                                 <span className={classes.cardPlaceholderAction}>
                                     Klicken Sie oben, um ein Inserat anzufragen!
@@ -218,8 +226,14 @@ class DashboardScreen extends Component<Props, State> {
                             </>
                         )}>
                         {
-                            this.props.gestellteAngebotAnfragen?.map(anfrage => (
-                                <span>{anfrage.anzahl} {anfrage.angebot?.artikel.name}</span>
+                            ((this.props.gestellteAngebotAnfragen || []) as (GestellteAngebotAnfrage | GestellteBedarfAnfrage)[])
+                                .concat(this.props.gestellteBedarfAnfragen || [])
+                                .map(entry => (
+                                <div className={classes.adEntry}>
+                                    <span className={classes.adEntryTitle}>
+                                        {entry.anzahl} {"angebot" in entry ? entry.angebot?.artikel.name : entry.bedarf?.artikel.name}
+                                    </span>
+                                </div>
                             ))
                         }
                     </ContentCard>
@@ -257,7 +271,11 @@ class DashboardScreen extends Component<Props, State> {
 
     private onMyAccountClicked = () => {
         this.props.history.push("/konto");
-    }
+    };
+
+    private onShowAdsClicked = () => {
+        this.props.history.push("/inserate");
+    };
 
     private mapAds = () => {
         const bedarfe = this.props.institutionBedarfe || [];

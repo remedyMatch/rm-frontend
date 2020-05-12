@@ -34,8 +34,10 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
     cardPlaceholder: {
         width: "100%",
-        display: "block",
+        display: "flex",
         textAlign: "center",
+        flexDirection: "column",
+        justifyContent: "center",
         padding: "36px",
         flexGrow: 1,
         fontFamily: "Montserrat, sans-serif",

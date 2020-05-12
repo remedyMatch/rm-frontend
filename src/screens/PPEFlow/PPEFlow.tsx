@@ -5,7 +5,7 @@ import React, {Component} from "react";
 import {connect, ConnectedProps} from "react-redux";
 import CountBadge from "../../components/Content/CountBadge";
 import Flow from "../../components/Flow/Flow";
-import ResultList from "../../components/List/ResultList";
+import ResultList, {ResultListDataRow} from "../../components/List/ResultList";
 import {Angebot} from "../../domain/angebot/Angebot";
 import {InstitutionAngebot} from "../../domain/angebot/InstitutionAngebot";
 import {Artikel} from "../../domain/artikel/Artikel";
@@ -337,22 +337,21 @@ class PPEFlow extends Component<Props, State> {
             iconAlt: iconAlt,
             content: (
                 <ResultList
-                    onContactClicked={this.onContactClicked}
-                    results={this.mapResults()}
-                    resultsType={this.props.flowType === "offer" ? "demands" : "offers"}/>
+                    onButtonClicked={this.onContactClicked}
+                    results={this.mapResults()}/>
             )
         };
     };
 
-    private onContactClicked = (entry: Angebot | Bedarf) => {
+    private onContactClicked = (entry: ResultListDataRow) => {
         if (!this.state.selectedAd) {
             this.setState({
-                selectedEntry: entry,
+                selectedEntry: entry.original,
                 chooseAdDialogOpen: true
             });
         } else {
             this.setState({
-                selectedEntry: entry,
+                selectedEntry: entry.original,
                 contactEntryDialogOpen: true
             });
         }
@@ -408,7 +407,8 @@ class PPEFlow extends Component<Props, State> {
     private onCreateAdDialogCreated = (ad: InstitutionAngebot | InstitutionBedarf) => {
         this.setState({
             selectedAd: ad,
-            createAdDialogOpen: false
+            createAdDialogOpen: false,
+            contactEntryDialogOpen: !!this.state.selectedEntry
         });
     };
 
@@ -426,7 +426,9 @@ class PPEFlow extends Component<Props, State> {
             sterile: result.steril,
             medical: result.medizinisch,
             useBefore: ("haltbarkeit" in result && !!result.haltbarkeit && new Date(result.haltbarkeit)) || undefined,
-            original: result
+            original: result,
+            type: this.props.flowType === "offer" ? "demand" as const : "offer" as const,
+            buttonText: this.props.flowType === "offer" ? "Empfänger kontaktieren" : "Spender kontaktieren"
         }));
     };
 

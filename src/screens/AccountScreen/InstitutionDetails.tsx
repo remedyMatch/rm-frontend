@@ -8,7 +8,6 @@ import ContentCard from "../../components/Content/ContentCard";
 import LinkCard from "../../components/Content/LinkCard";
 import {loadInstitutionAntraege} from "../../state/institution/InstitutionAntraegeState";
 import {RootState} from "../../state/Store";
-import RequestInstitutionDialog from "./RequestInstitutionDialog";
 import RequestLocationDialog from "./RequestLocationDialog";
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -95,7 +94,7 @@ const InstitutionDetails: React.FC = () => {
 
     const onRequestLocationClicked = useCallback(() => setRequestLocationDialogOpen(true), []);
     const onRequestLocationDialogCancelled = useCallback(() => setRequestLocationDialogOpen(false), []);
-    const onRequestLocationDialogSaved = useCallback(() => setRequestLocationDialogOpen(false), [dispatch]);
+    const onRequestLocationDialogSaved = useCallback(() => setRequestLocationDialogOpen(false), []);
 
     useEffect(() => {
         dispatch(loadInstitutionAntraege());

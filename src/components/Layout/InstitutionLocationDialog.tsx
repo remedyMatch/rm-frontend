@@ -180,7 +180,7 @@ const InstitutionLocationDialog: React.FC<Props> = props => {
                 <hr className={classes.divider}/>
 
                 <div className={classes.entries}>
-                    {selectedInstitution?.standorte.map(entry => (
+                    {person?.institutionen.find(i => i.institution.id === selectedInstitution?.id)?.standorte.map(entry => (
                         <div
                             onClick={disabled ? undefined : () => setSelectedLocation(entry)}
                             className={clsx(classes.entry, entry.id === selectedLocation?.id && classes.entrySelected)}>
