@@ -32,11 +32,11 @@ const OfferFlowScreen: React.FC = () => {
             articleCategoryPageTitle="Über welches Material verfügen Sie?"
             articlePageTitle="Um was handelt es sich genau?"
             articleVariantPageTitle="Um welche Größe handelt es sich?"
-            getLoadArticleCountsUrl={categoryId => "/remedy/bedarf/suche/filter/artikel?artikelKategorieId=" + categoryId}
-            getLoadCategoryCountsUrl={() => "/remedy/bedarf/suche/filter/artikelkategorie"}
+            getLoadArticleCountsUrl={categoryId => "/remedy/bedarf/suche/filter/artikel?ohneEigene=true&artikelKategorieId=" + categoryId}
+            getLoadCategoryCountsUrl={() => "/remedy/bedarf/suche/filter/artikelkategorie?ohneEigene=true"}
             getLoadingPageTitle={getLoadingPageTitle}
-            getLoadResultsUrl={variantId => "/remedy/bedarf/suche?artikelVarianteId=" + variantId}
-            getLoadVariantCountsUrl={articleId => "/remedy/bedarf/suche/filter/artikelvariante?artikelId=" + articleId}
+            getLoadResultsUrl={variantId => "/remedy/bedarf/suche?ohneEigene=true&artikelVarianteId=" + variantId}
+            getLoadVariantCountsUrl={articleId => "/remedy/bedarf/suche/filter/artikelvariante?ohneEigene=true&artikelId=" + articleId}
             getResultsPageSubtitle={getResultsSubtitle}
             getResultsPageTitle={getResultsTitle}/>
     );

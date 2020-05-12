@@ -32,11 +32,11 @@ const DemandFlowScreen: React.FC = () => {
             articleCategoryPageTitle="Welches Material suchen Sie?"
             articlePageTitle="Was genau benötigen Sie?"
             articleVariantPageTitle="Welche Größe benötigen Sie?"
-            getLoadArticleCountsUrl={categoryId => "/remedy/angebot/suche/filter/artikel?artikelKategorieId=" + categoryId}
-            getLoadCategoryCountsUrl={() => "/remedy/angebot/suche/filter/artikelkategorie"}
+            getLoadArticleCountsUrl={categoryId => "/remedy/angebot/suche/filter/artikel?ohneEigene=true&artikelKategorieId=" + categoryId}
+            getLoadCategoryCountsUrl={() => "/remedy/angebot/suche/filter/artikelkategorie?ohneEigene=true"}
             getLoadingPageTitle={getLoadingPageTitle}
-            getLoadResultsUrl={variantId => "/remedy/angebot/suche?artikelVarianteId=" + variantId}
-            getLoadVariantCountsUrl={articleId => "/remedy/angebot/suche/filter/artikelvariante?artikelId=" + articleId}
+            getLoadResultsUrl={variantId => "/remedy/angebot/suche?ohneEigene=true&artikelVarianteId=" + variantId}
+            getLoadVariantCountsUrl={articleId => "/remedy/angebot/suche/filter/artikelvariante?ohneEigene=true&artikelId=" + articleId}
             getResultsPageSubtitle={getResultsSubtitle}
             getResultsPageTitle={getResultsTitle}/>
     );

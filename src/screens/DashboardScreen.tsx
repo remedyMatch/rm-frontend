@@ -7,9 +7,7 @@ import {RouteComponentProps, withRouter} from "react-router-dom";
 import ContentCard from "../components/Content/ContentCard";
 import LinkCard from "../components/Content/LinkCard";
 import {FormButton} from "../components/Form/old/FormButton";
-import {GestellteAngebotAnfrage} from "../domain/angebot/GestellteAngebotAnfrage";
 import {InstitutionAngebot} from "../domain/angebot/InstitutionAngebot";
-import {GestellteBedarfAnfrage} from "../domain/bedarf/GestellteBedarfAnfrage";
 import {InstitutionBedarf} from "../domain/bedarf/InstitutionBedarf";
 import home from "../resources/home.svg";
 import {loadGestellteAngebotAnfragen} from "../state/angebot/GestellteAngebotAnfragenState";
@@ -225,12 +223,10 @@ class DashboardScreen extends Component<Props, State> {
                             </>
                         )}>
                         {
-                            ((this.props.gestellteAngebotAnfragen || []) as (GestellteAngebotAnfrage | GestellteBedarfAnfrage)[])
-                                .concat(this.props.gestellteBedarfAnfragen || [])
-                                .map(entry => (
+                            this.mapConversations().map(entry => (
                                 <div className={classes.adEntry}>
                                     <span className={classes.adEntryTitle}>
-                                        {entry.anzahl} {"angebot" in entry ? entry.angebot?.artikel.name : entry.bedarf?.artikel.name}
+                                        {entry.message}
                                     </span>
                                 </div>
                             ))
@@ -296,7 +292,30 @@ class DashboardScreen extends Component<Props, State> {
             message: `${bedarf ? "Bedarf: " : "Angebot: "} ${count}x ${name}` + (variante ? ` (${variante})` : ""),
             requests: entry.anfragen.length
         };
-    }
+    };
+
+    private mapConversations = () => {
+        const bedarfe = this.props.institutionBedarfe || [];
+        const angebote = this.props.institutionAngebote || [];
+        return bedarfe.flatMap(bedarf => this.mapToConversations(bedarf, true))
+            .concat(angebote.flatMap(angebot => this.mapToConversations(angebot, false)));
+    };
+
+    private mapToConversations = (entry: InstitutionBedarf | InstitutionAngebot, bedarf: boolean) => {
+        const count = entry.verfuegbareAnzahl;
+        const name = entry.artikel.name;
+
+        const variante = entry.artikel.varianten.length > 1
+            ? entry.artikel.varianten.find(variante => variante.id === entry.artikelVarianteId)?.variante
+            : undefined;
+
+        return entry.anfragen.map(anfrage => ({
+            type: bedarf ? "demand" : "offer",
+            adId: entry.id,
+            requestId: anfrage.id,
+            message: `Anfrage von ${anfrage.institution.name} (${anfrage.standort.ort}) zu ${bedarf ? "Bedarf: " : "Angebot: "} ${count}x ${name}` + (variante ? ` (${variante})` : "")
+        }));
+    };
 }
 
 const mapStateToProps = (state: RootState) => ({
