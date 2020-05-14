@@ -4,8 +4,11 @@ import {Component, default as React} from "react";
 import {Redirect, Route, Switch} from "react-router-dom";
 import AccountScreen from "../../screens/AccountScreen";
 import AdScreen from "../../screens/AdScreen";
+import ConversationListScreen from "../../screens/ConversationListScreen";
+import ConversationScreen from "../../screens/ConversationScreen";
 import DashboardScreen from "../../screens/DashboardScreen";
 import DemandFlowScreen from "../../screens/DemandFlowScreen";
+import MatchScreen from "../../screens/MatchScreen";
 import OfferFlowScreen from "../../screens/OfferFlowScreen";
 import Footer from "./Footer";
 import Menu from "./Menu";
@@ -61,6 +64,9 @@ class Layout extends Component<Props, State> {
                         <Route path="/angebot/:categoryId?/:articleId?/:variantId?" component={OfferFlowScreen}/>
                         <Route path="/bedarf/:categoryId?/:articleId?/:variantId?" component={DemandFlowScreen}/>
                         <Route path="/inserate/:adId?" component={AdScreen}/>
+                        <Route path="/matches" component={MatchScreen}/>
+                        <Route path="/konversation" exact component={ConversationListScreen} />
+                        <Route path="/konversation/:conversationId" component={ConversationScreen} />
                         <Route path="/" exact component={DashboardScreen}/>
                         <Redirect to="/"/>
                     </Switch>

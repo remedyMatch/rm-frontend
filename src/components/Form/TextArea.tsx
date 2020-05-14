@@ -4,7 +4,7 @@ import clsx from "clsx";
 import React, {ChangeEvent, useCallback, useState} from "react";
 
 interface Props {
-    label: string;
+    label?: string;
     value?: string;
     className?: string;
     onChange: (newValue: string) => void;
@@ -69,7 +69,9 @@ const TextArea: React.FC<Props> = props => {
 
     return (
         <div className={props.className}>
-            <Typography className={classes.label}>{props.label}</Typography>
+            {props.label && (
+                <Typography className={classes.label}>{props.label}</Typography>
+            )}
             <TextareaAutosize
                 rowsMin={props.minLines}
                 rowsMax={props.maxLines}

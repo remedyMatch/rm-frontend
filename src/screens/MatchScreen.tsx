@@ -2,10 +2,7 @@ import {Typography} from "@material-ui/core";
 import {makeStyles} from "@material-ui/core/styles";
 import React, {useEffect} from "react";
 import {useDispatch, useSelector} from "react-redux";
-import ResultList from "../components/List/ResultList";
-import {InstitutionAngebot} from "../domain/angebot/InstitutionAngebot";
-import {ArtikelKategorie} from "../domain/artikel/ArtikelKategorie";
-import {InstitutionBedarf} from "../domain/bedarf/InstitutionBedarf";
+import MatchList from "../components/List/MatchList";
 import kategorie_behelfsmaske from "../resources/kategorie_behelfsmaske.svg";
 import kategorie_desinfektion from "../resources/kategorie_desinfektion.svg";
 import kategorie_probenentnahme from "../resources/kategorie_probenentnahme.svg";
@@ -15,9 +12,6 @@ import kategorie_sonstiges from "../resources/kategorie_sonstiges.svg";
 import {loadArtikelKategorien} from "../state/artikel/ArtikelKategorienState";
 import {loadMatches} from "../state/match/MatchesState";
 import {RootState} from "../state/Store";
-import CancelAdDialog from "./AccountScreen/CancelAdDialog";
-import EditAdDialog from "./AccountScreen/EditAdDialog";
-import EditCountDialog from "./AccountScreen/EditCountDialog";
 
 const useStyles = makeStyles(() => ({
     container: {
@@ -40,26 +34,6 @@ const useStyles = makeStyles(() => ({
         flexGrow: 1
     },
 }));
-
-const mapToAd = (entry: InstitutionBedarf | InstitutionAngebot, bedarf: boolean, kategorien?: ArtikelKategorie[]) => {
-    return {
-        id: entry.id,
-        icon: getIcon(kategorien?.find(ak => ak.id === entry.artikel.artikelKategorieId)?.name || ""),
-        articleName: entry.artikel.name,
-        variantName: entry.artikel.varianten.length > 1 ? entry.artikel.varianten.find(v => v.id === entry.artikelVarianteId)?.variante : undefined,
-        location: entry.ort,
-        distance: entry.entfernung,
-        amount: entry.verfuegbareAnzahl,
-        comment: entry.kommentar,
-        sealed: ("originalverpackt" in entry && entry.originalverpackt) || undefined,
-        sterile: entry.steril,
-        medical: entry.medizinisch,
-        useBefore: ("haltbarkeit" in entry && !!entry.haltbarkeit && new Date(entry.haltbarkeit)) || undefined,
-        original: entry,
-        buttonText: bedarf ? "Bedarf bearbeiten" : "Angebot bearbeiten",
-        type: bedarf ? "demand" as const : "offer" as const
-    };
-};
 
 const getIcon = (name: string) => {
     switch (name.toLowerCase()) {
@@ -99,6 +73,11 @@ const MatchScreen: React.FC = () => {
     const matches = useSelector((state: RootState) => state.matches.value);
     const kategorien = useSelector((state: RootState) => state.artikelKategorien.value);
 
+    const entries = matches?.map(match => ({
+        original: match,
+        icon: getIcon(kategorien?.find(k => k.id === match.artikel.artikelKategorieId)?.name || "")
+    })) || [];
+
     return (
         <>
             <div className={classes.container}>
@@ -106,10 +85,9 @@ const MatchScreen: React.FC = () => {
                 <Typography className={classes.subtitle}>Unten sehen Sie alle Matches, also alle Anfragen, die Sie
                     gestellt oder empfangen haben, die akzeptiert wurden.</Typography>
 
-                {matches?.map(match => (
-                    <span>{match}</span>
-                ))}
-
+                <MatchList
+                    results={entries}
+                    onOpenConversationClicked={console.log}/>
             </div>
         </>
     );
