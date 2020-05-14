@@ -10,7 +10,7 @@ import {useHistory, useRouteMatch} from "react-router-dom";
 import TextArea from "../components/Form/TextArea";
 import {Konversation} from "../domain/nachricht/Konversation";
 import {RootState} from "../state/Store";
-import {apiGet} from "../util/ApiUtils";
+import {apiGet, apiPost} from "../util/ApiUtils";
 
 const useStyles = makeStyles(() => ({
     container: {
@@ -63,7 +63,8 @@ const useStyles = makeStyles(() => ({
         padding: "8px 16px",
         borderRadius: "8px",
         display: "flex",
-        flexDirection: "column"
+        flexDirection: "column",
+        whiteSpace: "pre-line"
     },
     messageLeft: {
         marginRight: "35%",
@@ -113,7 +114,7 @@ const useStyles = makeStyles(() => ({
 }));
 
 const formatDate = (dateString?: string) => {
-    if(!dateString) {
+    if (!dateString) {
         return "";
     }
 
@@ -141,9 +142,11 @@ const ConversationScreen: React.FC = () => {
     const match = useRouteMatch<{ conversationId: string }>();
 
     const conversations = useSelector((state: RootState) => state.konversationen.value) || [];
+    const person = useSelector((state: RootState) => state.person.value);
 
     const [conversation, setConversation] = useState<Konversation | undefined>(conversations.find(k => k.id === match.params.conversationId));
     const [inputText, setInputText] = useState("");
+    const [inputDisabled, setInputDisabled] = useState(false);
 
     const loadConversation = useCallback(() => {
         const load = async (id: string) => {
@@ -155,6 +158,21 @@ const ConversationScreen: React.FC = () => {
         load(match.params.conversationId);
     }, [match]);
 
+    const onSendClicked = useCallback(() => {
+        const send = async () => {
+            setInputDisabled(true);
+            const result = await apiPost("/remedy/konversation/" + match.params.conversationId + "/nachricht", {
+                nachricht: inputText.trim()
+            });
+            if (!result.error) {
+                loadConversation();
+                setInputText("");
+                setInputDisabled(false);
+            }
+        };
+        send();
+    }, [match, inputText, loadConversation]);
+
     useEffect(() => {
         loadConversation();
         const interval = setInterval(loadConversation, 10 * 1000);
@@ -165,151 +183,42 @@ const ConversationScreen: React.FC = () => {
         <>
             <div className={classes.container}>
                 <div className={classes.header}>
-                    <span className={classes.title}>Konversation über Angebot über 200 Einweghandschuhe in Größe XXL</span>
+                    <span
+                        className={classes.title}>Konversation über Angebot über 200 Einweghandschuhe in Größe XXL</span>
                     <span className={classes.participants}>{conversation?.beteiligte.join(", ")}</span>
                 </div>
 
-                {conversation?.nachrichten.map(n => (<div className={classes.messageContainer}>
-                    <div className={clsx(classes.message, classes.messageLeft)}>
-                        <span className={classes.messageSender}>{n.erstellerName}</span>
-                        <span className={classes.messageText}>{n.nachricht}</span>
-                        <span className={classes.messageSent}>{formatDate(n.erstelltAm)}</span>
-                    </div>
-                    <div className={clsx(classes.message, classes.messageRight)}>
-                        <span className={classes.messageSender}>{n.erstellerName}</span>
-                        <span className={classes.messageText}>{n.nachricht}</span>
-                        <span className={classes.messageSent}>{formatDate(n.erstelltAm)}</span>
-                    </div>
-                    <div className={clsx(classes.message, classes.messageLeft)}>
-                        <span className={classes.messageSender}>{n.erstellerName}</span>
-                        <span className={classes.messageText}>{n.nachricht}</span>
-                        <span className={classes.messageSent}>{formatDate(n.erstelltAm)}</span>
-                    </div>
-                    <div className={clsx(classes.message, classes.messageRight)}>
-                        <span className={classes.messageSender}>{n.erstellerName}</span>
-                        <span className={classes.messageText}>{n.nachricht}</span>
-                        <span className={classes.messageSent}>{formatDate(n.erstelltAm)}</span>
-                    </div>
-                    <div className={clsx(classes.message, classes.messageLeft)}>
-                        <span className={classes.messageSender}>{n.erstellerName}</span>
-                        <span className={classes.messageText}>{n.nachricht + n.nachricht + n.nachricht + n.nachricht + n.nachricht + n.nachricht + n.nachricht + n.nachricht + n.nachricht + n.nachricht + n.nachricht + n.nachricht + n.nachricht}</span>
-                        <span className={classes.messageSent}>{formatDate(n.erstelltAm)}</span>
-                    </div>
-                    <div className={clsx(classes.message, classes.messageRight)}>
-                        <span className={classes.messageSender}>{n.erstellerName}</span>
-                        <span className={classes.messageText}>{n.nachricht + n.nachricht + n.nachricht + n.nachricht + n.nachricht + n.nachricht + n.nachricht + n.nachricht + n.nachricht + n.nachricht + n.nachricht + n.nachricht + n.nachricht + n.nachricht + n.nachricht + n.nachricht + n.nachricht}</span>
-                        <span className={classes.messageSent}>{formatDate(n.erstelltAm)}</span>
-                    </div>
-                    <div className={clsx(classes.message, classes.messageLeft)}>
-                        <span className={classes.messageSender}>{n.erstellerName}</span>
-                        <span className={classes.messageText}>{n.nachricht}</span>
-                        <span className={classes.messageSent}>{formatDate(n.erstelltAm)}</span>
-                    </div>
-                    <div className={clsx(classes.message, classes.messageRight)}>
-                        <span className={classes.messageSender}>{n.erstellerName}</span>
-                        <span className={classes.messageText}>{n.nachricht}</span>
-                        <span className={classes.messageSent}>{formatDate(n.erstelltAm)}</span>
-                    </div>
-                    <div className={clsx(classes.message, classes.messageLeft)}>
-                        <span className={classes.messageSender}>{n.erstellerName}</span>
-                        <span className={classes.messageText}>{n.nachricht}</span>
-                        <span className={classes.messageSent}>{formatDate(n.erstelltAm)}</span>
-                    </div>
-                    <div className={clsx(classes.message, classes.messageRight)}>
-                        <span className={classes.messageSender}>{n.erstellerName}</span>
-                        <span className={classes.messageText}>{n.nachricht}</span>
-                        <span className={classes.messageSent}>{formatDate(n.erstelltAm)}</span>
-                    </div>
-                    <div className={clsx(classes.message, classes.messageLeft)}>
-                        <span className={classes.messageSender}>{n.erstellerName}</span>
-                        <span className={classes.messageText}>{n.nachricht}</span>
-                        <span className={classes.messageSent}>{formatDate(n.erstelltAm)}</span>
-                    </div>
-                    <div className={clsx(classes.message, classes.messageRight)}>
-                        <span className={classes.messageSender}>{n.erstellerName}</span>
-                        <span className={classes.messageText}>{n.nachricht}</span>
-                        <span className={classes.messageSent}>{formatDate(n.erstelltAm)}</span>
-                    </div>
-                    <div className={clsx(classes.message, classes.messageLeft)}>
-                        <span className={classes.messageSender}>{n.erstellerName}</span>
-                        <span className={classes.messageText}>{n.nachricht}</span>
-                        <span className={classes.messageSent}>{formatDate(n.erstelltAm)}</span>
-                    </div>
-                    <div className={clsx(classes.message, classes.messageRight)}>
-                        <span className={classes.messageSender}>{n.erstellerName}</span>
-                        <span className={classes.messageText}>{n.nachricht}</span>
-                        <span className={classes.messageSent}>{formatDate(n.erstelltAm)}</span>
-                    </div>
-                    <div className={clsx(classes.message, classes.messageLeft)}>
-                        <span className={classes.messageSender}>{n.erstellerName}</span>
-                        <span className={classes.messageText}>{n.nachricht}</span>
-                        <span className={classes.messageSent}>{formatDate(n.erstelltAm)}</span>
-                    </div>
-                    <div className={clsx(classes.message, classes.messageRight)}>
-                        <span className={classes.messageSender}>{n.erstellerName}</span>
-                        <span className={classes.messageText}>{n.nachricht}</span>
-                        <span className={classes.messageSent}>{formatDate(n.erstelltAm)}</span>
-                    </div>
-                    <div className={clsx(classes.message, classes.messageLeft)}>
-                        <span className={classes.messageSender}>{n.erstellerName}</span>
-                        <span className={classes.messageText}>{n.nachricht}</span>
-                        <span className={classes.messageSent}>{formatDate(n.erstelltAm)}</span>
-                    </div>
-                    <div className={clsx(classes.message, classes.messageRight)}>
-                        <span className={classes.messageSender}>{n.erstellerName}</span>
-                        <span className={classes.messageText}>{n.nachricht}</span>
-                        <span className={classes.messageSent}>{formatDate(n.erstelltAm)}</span>
-                    </div>
-                    <div className={clsx(classes.message, classes.messageLeft)}>
-                        <span className={classes.messageSender}>{n.erstellerName}</span>
-                        <span className={classes.messageText}>{n.nachricht}</span>
-                        <span className={classes.messageSent}>{formatDate(n.erstelltAm)}</span>
-                    </div>
-                    <div className={clsx(classes.message, classes.messageRight)}>
-                        <span className={classes.messageSender}>{n.erstellerName}</span>
-                        <span className={classes.messageText}>{n.nachricht}</span>
-                        <span className={classes.messageSent}>{formatDate(n.erstelltAm)}</span>
-                    </div>
-                    <div className={clsx(classes.message, classes.messageLeft)}>
-                        <span className={classes.messageSender}>{n.erstellerName}</span>
-                        <span className={classes.messageText}>{n.nachricht}</span>
-                        <span className={classes.messageSent}>{formatDate(n.erstelltAm)}</span>
-                    </div>
-                    <div className={clsx(classes.message, classes.messageRight)}>
-                        <span className={classes.messageSender}>{n.erstellerName}</span>
-                        <span className={classes.messageText}>{n.nachricht}</span>
-                        <span className={classes.messageSent}>{formatDate(n.erstelltAm)}</span>
-                    </div>
-                    <div className={clsx(classes.message, classes.messageLeft)}>
-                        <span className={classes.messageSender}>{n.erstellerName}</span>
-                        <span className={classes.messageText}>{n.nachricht}</span>
-                        <span className={classes.messageSent}>{formatDate(n.erstelltAm)}</span>
-                    </div>
-                    <div className={clsx(classes.message, classes.messageRight)}>
-                        <span className={classes.messageSender}>{n.erstellerName}</span>
-                        <span className={classes.messageText}>{n.nachricht}</span>
-                        <span className={classes.messageSent}>{formatDate(n.erstelltAm)}</span>
-                    </div>
-                    <div className={clsx(classes.message, classes.messageLeft)}>
-                        <span className={classes.messageSender}>{n.erstellerName}</span>
-                        <span className={classes.messageText}>{n.nachricht}</span>
-                        <span className={classes.messageSent}>{formatDate(n.erstelltAm)}</span>
-                    </div>
-                    <div className={clsx(classes.message, classes.messageRight)}>
-                        <span className={classes.messageSender}>{n.erstellerName}</span>
-                        <span className={classes.messageText}>{n.nachricht}</span>
-                        <span className={classes.messageSent}>{formatDate(n.erstelltAm)}</span>
-                    </div>
-                </div>))}
+                <div className={classes.messageContainer}>
+                    {
+                        conversation?.nachrichten.slice().map(m => ({
+                            ...m,
+                            timestamp: new Date(m.erstelltAm).getTime()
+                        })).sort((a, b) => a.timestamp - b.timestamp).map(message => (
+                            <div
+                                className={clsx(classes.message, person?.aktuellerStandort.institution.id === message.erstellerInstitution ? classes.messageRight : classes.messageLeft)}>
+                                <span className={classes.messageSender}>{message.erstellerName}</span>
+                                <span className={classes.messageText}>{message.nachricht}</span>
+                                <span className={classes.messageSent}>{formatDate(message.erstelltAm)}</span>
+                            </div>
+                        ))
+                    }
+                </div>
+
                 <div className={classes.footer}>
                     <TextArea
+                        disabled={inputDisabled}
                         className={classes.footerInput}
                         placeholder="Ihre Nachricht..."
                         onChange={setInputText}
                         value={inputText}
                         minLines={1}
-                        maxLines={5} />
-                    <IconButton className={classes.footerSend}><Send /></IconButton>
+                        maxLines={5}/>
+                    <IconButton
+                        disabled={inputDisabled || inputText.trim().length === 0}
+                        className={classes.footerSend}
+                        onClick={onSendClicked}>
+                        <Send/>
+                    </IconButton>
                 </div>
             </div>
         </>
