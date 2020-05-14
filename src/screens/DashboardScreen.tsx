@@ -325,23 +325,25 @@ class DashboardScreen extends Component<Props, State> {
             .map(k => {
                 if (k.referenzTyp === "ANGEBOT_ANFRAGE") {
                     const details = this.props.konversationAngebotAnfragen[k.referenzId]?.value;
+                    const mine = details?.institution.id === this.props.person?.aktuellerStandort.institution.id;
                     const variantId = details?.angebot.artikelVarianteId;
                     const variants = details?.angebot.artikel.varianten;
                     const variant = variants?.find(v => v.id === variantId);
                     const articleName = details ? details.angebot.artikel.name + ((variants?.length || 0) > 1 ? " (" + variant?.variante + ")" : "") : "";
                     return {
-                        title: (details?.institution.name || "???") + " zu Angebot: " + (details?.angebot.verfuegbareAnzahl || "???") + " " + (articleName || ""),
+                        title: (mine ? "Ihre Anfrage" : (details?.institution.name || "???")) + " zu Angebot: " + (details?.angebot.verfuegbareAnzahl || "???") + " " + (articleName || ""),
                         id: k.referenzId,
                         type: "offer"
                     };
                 } else {
                     const details = this.props.konversationBedarfAnfragen[k.referenzId]?.value;
+                    const mine = details?.institution.id === this.props.person?.aktuellerStandort.institution.id;
                     const variantId = details?.bedarf.artikelVarianteId;
                     const variants = details?.bedarf.artikel.varianten;
                     const variant = variants?.find(v => v.id === variantId);
                     const articleName = details ? details.bedarf.artikel.name + ((variants?.length || 0) > 1 ? " (" + variant?.variante + ")" : "") : "";
                     return {
-                        title: (details?.institution.name || "???") + " zu Bedarf: " + (details?.bedarf.verfuegbareAnzahl || "???") + " " + (articleName || ""),
+                        title: (mine ? "Ihre Anfrage" : (details?.institution.name || "???")) + " zu Bedarf: " + (details?.bedarf.verfuegbareAnzahl || "???") + " " + (articleName || ""),
                         id: k.referenzId,
                         type: "demand"
                     };

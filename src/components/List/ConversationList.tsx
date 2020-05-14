@@ -30,14 +30,16 @@ const useStyles = makeStyles((theme: Theme) => ({
     left: {
         display: "flex",
         flexDirection: "column",
-        flexGrow: 1,
-        flexShrink: 1
+        flex: 1,
+        maxWidth: "80%",
+        overflow: "hidden"
     },
     right: {
         display: "flex",
         flexDirection: "row",
         flexShrink: 0,
         flexGrow: 0,
+        marginLeft: "auto",
         alignItems: "center"
     },
     title: {
@@ -57,6 +59,8 @@ const useStyles = makeStyles((theme: Theme) => ({
         fontSize: "14px",
         fontWeight: 600,
         whiteSpace: "nowrap",
+        flexGrow: 0,
+        flexShrink: 0,
         color: "rgba(0, 0, 0, 0.54)"
     },
     messageText: {
@@ -65,7 +69,10 @@ const useStyles = makeStyles((theme: Theme) => ({
         whiteSpace: "nowrap",
         textOverflow: "ellipsis",
         color: "rgba(0, 0, 0, 0.54)",
-        marginLeft: "4px"
+        marginLeft: "4px",
+        overflow: "hidden",
+        flexGrow: 1,
+        flexShrink: 1
     },
     time: {
         fontFamily: "Montserrat, sans-serif",
@@ -101,25 +108,28 @@ const mapConversations = (conversations: Konversation[], offerDetails: IdMap<Ges
         .map(k => {
             if (k.referenzTyp === "ANGEBOT_ANFRAGE") {
                 const details = offerDetails[k.referenzId]?.value;
-                const mine = details?.institution.id === person?.aktuellerStandort.institution.id; // TODO: Woher bekomme ich die andere Institution? Im Angebot/Bedarf steht keine!
+                const mine = details?.institution.id === person?.aktuellerStandort.institution.id;
                 const variantId = details?.angebot.artikelVarianteId;
                 const variants = details?.angebot.artikel.varianten;
                 const variant = variants?.find(v => v.id === variantId);
                 const articleName = details ? details.angebot.artikel.name + ((variants?.length || 0) > 1 ? " (" + variant?.variante + ")" : "") : "";
+                const message = k.nachrichten.map(m => ({ ...m, timestamp: new Date(m.erstelltAm).getTime() })).sort((a, b) => a.timestamp - b.timestamp).slice(-1)[0];
                 return {
-                    title: (details?.institution.name || "???") + " zu Angebot: " + (details?.angebot.verfuegbareAnzahl || "???") + " " + (articleName || ""),
-                    message: k.nachrichten.length > 0 ? k.nachrichten[k.nachrichten.length - 1] : undefined,
+                    title: (mine ? "Ihre Anfrage" : "Anfrage von " + (details?.institution.name || "???")) + " zu Angebot: " + (details?.angebot.verfuegbareAnzahl || "???") + " " + (articleName || ""),
+                    message: message,
                     id: k.id
                 };
             } else {
                 const details = demandDetails[k.referenzId]?.value;
+                const mine = details?.institution.id === person?.aktuellerStandort.institution.id;
                 const variantId = details?.bedarf.artikelVarianteId;
                 const variants = details?.bedarf.artikel.varianten;
                 const variant = variants?.find(v => v.id === variantId);
                 const articleName = details ? details.bedarf.artikel.name + ((variants?.length || 0) > 1 ? " (" + variant?.variante + ")" : "") : "";
+                const message = k.nachrichten.map(m => ({ ...m, timestamp: new Date(m.erstelltAm).getTime() })).sort((a, b) => a.timestamp - b.timestamp).slice(-1)[0];
                 return {
-                    title: (details?.institution.name || "???") + " zu Bedarf: " + (details?.bedarf.verfuegbareAnzahl || "???") + " " + (articleName || ""),
-                    message: k.nachrichten.length > 0 ? k.nachrichten[k.nachrichten.length - 1] : undefined,
+                    title: (mine ? "Ihre Anfrage" : "Anfrage von " + (details?.institution.name || "???")) + " zu Bedarf: " + (details?.bedarf.verfuegbareAnzahl || "???") + " " + (articleName || ""),
+                    message: message,
                     id: k.id
                 };
             }

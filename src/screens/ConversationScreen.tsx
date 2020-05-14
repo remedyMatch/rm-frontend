@@ -1,18 +1,20 @@
-import {IconButton} from "@material-ui/core";
+import {Button, IconButton, Theme} from "@material-ui/core";
 import {makeStyles} from "@material-ui/core/styles";
-import {Send} from "@material-ui/icons";
+import {Close, Send} from "@material-ui/icons";
 import clsx from "clsx";
 import {format, isThisYear, isToday, isYesterday} from "date-fns";
 import {de} from "date-fns/locale";
 import React, {useCallback, useEffect, useState} from "react";
 import {useDispatch, useSelector} from "react-redux";
-import {useHistory, useRouteMatch} from "react-router-dom";
+import {useRouteMatch} from "react-router-dom";
 import TextArea from "../components/Form/TextArea";
 import {Konversation} from "../domain/nachricht/Konversation";
+import {loadKonversationAngebotAnfragen} from "../state/nachricht/KonversationAngebotAnfragenState";
+import {loadKonversationBedarfAnfragen} from "../state/nachricht/KonversationBedarfAnfragenState";
 import {RootState} from "../state/Store";
 import {apiGet, apiPost} from "../util/ApiUtils";
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme: Theme) => ({
     container: {
         border: "2px solid #aabec6",
         borderRadius: "8px",
@@ -63,8 +65,7 @@ const useStyles = makeStyles(() => ({
         padding: "8px 16px",
         borderRadius: "8px",
         display: "flex",
-        flexDirection: "column",
-        whiteSpace: "pre-line"
+        flexDirection: "column"
     },
     messageLeft: {
         marginRight: "35%",
@@ -87,7 +88,9 @@ const useStyles = makeStyles(() => ({
         fontSize: "16px",
         color: "rgba(0, 0, 0, 0.87)",
         marginTop: "4px",
-        marginBottom: "4px"
+        marginBottom: "4px",
+        userSelect: "text",
+        whiteSpace: "pre-line"
     },
     messageSent: {
         fontFamily: "Montserrat, sans-serif",
@@ -110,6 +113,58 @@ const useStyles = makeStyles(() => ({
         width: "48px",
         height: "48px",
         margin: "auto 8px"
+    },
+    actionContainer: {
+        backgroundColor: "#aabec6",
+        paddingTop: "8px",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center"
+    },
+    actionHint: {
+        fontFamily: "Montserrat, sans-serif",
+        fontSize: "14px",
+        color: "rgba(0, 0, 0, 0.87)"
+    },
+    actionButtonContainer: {
+        display: "flex",
+        flexDirection: "row"
+    },
+    button: {
+        fontFamily: "Montserrat, sans-serif",
+        fontWeight: 600,
+        textTransform: "none",
+        padding: "8px 24px",
+        transition: theme.transitions.create(["border", "color", "background-color"]),
+        height: "48px",
+        minWidth: "144px",
+        backgroundColor: "white",
+        color: "rgba(0, 0, 0, 0.87)",
+        whiteSpace: "nowrap",
+        margin: "8px 8px 0px 8px",
+        border: "2px solid #666",
+        "&:hover": {
+            backgroundColor: "#CCC"
+        }
+    },
+    errorContainer: {
+        backgroundColor: "darkorange",
+        padding: "8px",
+        width: "100%",
+        display: "flex",
+        flexDirection: "row"
+    },
+    errorMessage: {
+        color: "white",
+        fontFamily: "Montserrat, sans-serif",
+        fontWeight: 600,
+        fontSize: "14px",
+        flexGrow: 1
+    },
+    dismissErrorButton: {
+        height: "36px",
+        width: "36px",
+        placeSelf: "center"
     }
 }));
 
@@ -138,15 +193,25 @@ const formatDate = (dateString?: string) => {
 const ConversationScreen: React.FC = () => {
     const classes = useStyles();
     const dispatch = useDispatch();
-    const history = useHistory();
     const match = useRouteMatch<{ conversationId: string }>();
 
     const conversations = useSelector((state: RootState) => state.konversationen.value) || [];
     const person = useSelector((state: RootState) => state.person.value);
+    const conversationDemandDetails = useSelector((state: RootState) => state.konversationBedarfAnfragen.value);
+    const conversationOfferDetails = useSelector((state: RootState) => state.konversationAngebotAnfragen.value);
 
     const [conversation, setConversation] = useState<Konversation | undefined>(conversations.find(k => k.id === match.params.conversationId));
     const [inputText, setInputText] = useState("");
     const [inputDisabled, setInputDisabled] = useState(false);
+    const [error, setError] = useState<string | undefined>(undefined);
+
+    useEffect(() => {
+        if (conversation?.referenzTyp === "ANGEBOT_ANFRAGE") {
+            dispatch(loadKonversationAngebotAnfragen(conversation.referenzId));
+        } else if (conversation?.referenzTyp === "BEDARF_ANFRAGE") {
+            dispatch(loadKonversationBedarfAnfragen(conversation.referenzId));
+        }
+    }, [dispatch, conversation]);
 
     const loadConversation = useCallback(() => {
         const load = async (id: string) => {
@@ -168,10 +233,15 @@ const ConversationScreen: React.FC = () => {
                 loadConversation();
                 setInputText("");
                 setInputDisabled(false);
+            } else {
+                setInputDisabled(false);
+                setError(result.error);
             }
         };
         send();
     }, [match, inputText, loadConversation]);
+
+    const onDismissErrorClicked = useCallback(() => setError(undefined), []);
 
     useEffect(() => {
         loadConversation();
@@ -179,18 +249,33 @@ const ConversationScreen: React.FC = () => {
         return () => clearInterval(interval);
     }, [dispatch, loadConversation]);
 
+    let ad, details;
+    if (conversation?.referenzTyp === "ANGEBOT_ANFRAGE") {
+        details = conversationOfferDetails[conversation?.referenzId || ""]?.value;
+        ad = details?.angebot;
+    } else if (conversation?.referenzTyp === "BEDARF_ANFRAGE") {
+        details = conversationDemandDetails[conversation?.referenzId || ""]?.value;
+        ad = details?.bedarf;
+    }
+    const variantId = ad?.artikelVarianteId;
+    const variants = ad?.artikel.varianten;
+    const variant = variants?.find(v => v.id === variantId);
+    const articleName = details ? ad?.artikel.name + ((variants?.length || 0) > 1 ? " (" + variant?.variante + ")" : "") : "";
+    const title = "Anfrage von " + (details?.institution.name || "???") + " zu " + (conversation?.referenzTyp === "ANGEBOT_ANFRAGE" ? "Angebot" : "Bedarf") + ": " + (ad?.verfuegbareAnzahl || "???") + " " + (articleName || "");
+    const mine = details?.institution.id === person?.aktuellerStandort.institution.id;
+
     return (
         <>
             <div className={classes.container}>
                 <div className={classes.header}>
                     <span
-                        className={classes.title}>Konversation über Angebot über 200 Einweghandschuhe in Größe XXL</span>
+                        className={classes.title}>{title}</span>
                     <span className={classes.participants}>{conversation?.beteiligte.join(", ")}</span>
                 </div>
 
                 <div className={classes.messageContainer}>
                     {
-                        conversation?.nachrichten.slice().map(m => ({
+                        conversation?.nachrichten.map(m => ({
                             ...m,
                             timestamp: new Date(m.erstelltAm).getTime()
                         })).sort((a, b) => a.timestamp - b.timestamp).map(message => (
@@ -203,6 +288,44 @@ const ConversationScreen: React.FC = () => {
                         ))
                     }
                 </div>
+
+                {error && (
+                    <div className={classes.errorContainer}>
+                        <span className={classes.errorMessage}>
+                            {error}
+                        </span>
+                        <IconButton
+                            className={classes.dismissErrorButton}
+                            size="small"
+                            onClick={onDismissErrorClicked}>
+                            <Close/>
+                        </IconButton>
+                    </div>
+                )}
+
+                {!mine && details?.status === "OFFEN" && (
+                    <div className={classes.actionContainer}>
+                        <span className={classes.actionHint}>Sie können diese Anfrage annehmen oder ablehnen.</span>
+                        <div className={classes.actionButtonContainer}>
+                            <Button
+                                onClick={() => console.log("ABLEHNEN")}
+                                disableElevation
+                                className={classes.button}
+                                variant="contained"
+                                size="small">
+                                Anfrage ablehnen
+                            </Button>
+                            <Button
+                                onClick={() => console.log("ANNEHMEN")}
+                                disableElevation
+                                className={classes.button}
+                                variant="contained"
+                                size="small">
+                                Anfrage annehmen
+                            </Button>
+                        </div>
+                    </div>
+                )}
 
                 <div className={classes.footer}>
                     <TextArea
