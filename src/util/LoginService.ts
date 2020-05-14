@@ -1,6 +1,6 @@
 import Keycloak from "keycloak-js";
 
-const _kc = Keycloak('keycloak.json');
+const _kc = Keycloak(process.env.PUBLIC_URL + '/keycloak.json');
 
 /**
  * Initializes Keycloak instance and calls the provided callback function if successfully authenticated.
@@ -36,7 +36,7 @@ const getRealmAccess = () => _kc.realmAccess;
 
 const hasRole =  (role: string) => {
     const realmAccess = getRealmAccess();
-    return realmAccess?.roles.find((value) => value === role) ? true : false;
+    return !!realmAccess?.roles.find((value) => value === role);
 }
 
 const hasRoleEmpfaenger =  () => {
@@ -47,11 +47,21 @@ const hasRoleFreigeber =  () => {
    return hasRole("FREIGEBER");
 }
 
-const updateToken = (successCallback: () => void) => {
+const updateToken = (successCallback: (refreshed: boolean) => void) => {
     return _kc.updateToken(5)
-        .success(successCallback)
-        .error(() => doLogin())
+        .then(successCallback)
+        .catch(() => doLogin());
 };
+
+// TODO: Remove logging
+console.log("Checking token validity every 60 seconds");
+setInterval(() => {
+    console.log("Checking token validity");
+    _kc.updateToken(90)
+        .then(refreshed => console.log(refreshed ? "Token was refreshed" : "Token still valid"))
+        .catch(e => console.log("Token refresh failed", e))
+        .finally(() => console.log("Token refresh routine finished"));
+}, 60 * 1000);
 
 export default {
     initKeycloak,

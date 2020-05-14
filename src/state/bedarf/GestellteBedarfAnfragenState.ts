@@ -1,5 +1,5 @@
 import {GestellteBedarfAnfrage} from "../../domain/bedarf/GestellteBedarfAnfrage";
-import createApiState from "../ApiState";
+import createApiState from "../util/ApiState";
 
 const name = "Bedarf/GestellteAnfrage";
 const url = "/bedarf/anfrage/gestellt";

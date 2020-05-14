@@ -1,5 +1,5 @@
 import {Match} from "../../domain/match/Match";
-import createApiState from "../ApiState";
+import createApiState from "../util/ApiState";
 
 const name = "Match/Matches";
 const url = "/match";

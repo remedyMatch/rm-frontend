@@ -6,18 +6,18 @@ import React from "react";
 
 interface Props {
     title: string;
-    showPlaceholder: boolean;
-    placeholder: React.ReactNode;
-    actionDisabled: boolean;
-    action: string;
-    onActionClicked: () => void;
+    showPlaceholder?: boolean;
+    placeholder?: React.ReactNode;
+    className?: string;
+    actionDisabled?: boolean;
+    action?: string;
+    onActionClicked?: () => void;
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
     card: {
-        width: "calc((100% - 1em) / 2)",
         borderRadius: "8px",
-        border: "1px solid #CCC",
+        border: "2px solid #CCC",
         display: "flex",
         flexDirection: "column"
     },
@@ -34,8 +34,10 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
     cardPlaceholder: {
         width: "100%",
-        display: "block",
+        display: "flex",
         textAlign: "center",
+        flexDirection: "column",
+        justifyContent: "center",
         padding: "36px",
         flexGrow: 1,
         fontFamily: "Montserrat, sans-serif",
@@ -64,30 +66,32 @@ const ContentCard: React.FC<Props> = props => {
     const classes = useStyles();
 
     return (
-        <div className={classes.card}>
+        <div className={clsx(classes.card, props.className)}>
 
             <Typography className={classes.cardHeader}>{props.title}</Typography>
 
-            {!props.showPlaceholder && (
+            {(!props.showPlaceholder || !props.placeholder) && (
                 <div className={classes.cardContent}>
                     {props.children}
                 </div>
             )}
 
-            {props.showPlaceholder && (
+            {props.showPlaceholder && props.placeholder && (
                 <div className={classes.cardPlaceholder}>
                     {props.placeholder}
                 </div>
             )}
 
-            <Button
-                onClick={props.onActionClicked}
-                disabled={props.actionDisabled}
-                startIcon={<ArrowForward/>}
-                variant="text"
-                className={clsx(classes.cardLink, classes.cardFooterLink)}>
-                {props.action}
-            </Button>
+            {props.action && (
+                <Button
+                    onClick={props.onActionClicked}
+                    disabled={props.actionDisabled}
+                    startIcon={<ArrowForward/>}
+                    variant="text"
+                    className={clsx(classes.cardLink, classes.cardFooterLink)}>
+                    {props.action}
+                </Button>
+            )}
 
         </div>
     );

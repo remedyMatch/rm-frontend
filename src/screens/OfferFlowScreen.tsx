@@ -1,9 +1,18 @@
 import React, {useCallback} from "react";
-import PPEFlow from "./PPEFlow/PPEFlow";
+import {useRouteMatch} from "react-router-dom";
 import {Artikel} from "../domain/artikel/Artikel";
 import {ArtikelVariante} from "../domain/artikel/ArtikelVariante";
+import PPEFlow from "./PPEFlow/PPEFlow";
+
+interface RouteParams {
+    categoryId?: string;
+    articleId?: string;
+    variantId?: string;
+}
 
 const OfferFlowScreen: React.FC = () => {
+    const match = useRouteMatch<RouteParams>();
+
     const getArticleName = useCallback((article?: Artikel, variant?: ArtikelVariante) => {
         const name = article?.name || "";
         return variant ? `${name} in Größe ${variant.variante}` : name;
@@ -29,14 +38,17 @@ const OfferFlowScreen: React.FC = () => {
     return (
         <PPEFlow
             flowType="offer"
+            initialCategoryId={match.params.categoryId}
+            initialArticleId={match.params.articleId}
+            initialVariantId={match.params.variantId}
             articleCategoryPageTitle="Über welches Material verfügen Sie?"
             articlePageTitle="Um was handelt es sich genau?"
             articleVariantPageTitle="Um welche Größe handelt es sich?"
-            getLoadArticleCountsUrl={categoryId => "/remedy/bedarf/suche/filter/artikel?artikelKategorieId=" + categoryId}
-            getLoadCategoryCountsUrl={() => "/remedy/bedarf/suche/filter/artikelkategorie"}
+            getLoadArticleCountsUrl={categoryId => "/remedy/bedarf/suche/filter/artikel?ohneEigene=true&artikelKategorieId=" + categoryId}
+            getLoadCategoryCountsUrl={() => "/remedy/bedarf/suche/filter/artikelkategorie?ohneEigene=true"}
             getLoadingPageTitle={getLoadingPageTitle}
-            getLoadResultsUrl={variantId => "/remedy/bedarf/suche?artikelVarianteId=" + variantId}
-            getLoadVariantCountsUrl={articleId => "/remedy/bedarf/suche/filter/artikelvariante?artikelId=" + articleId}
+            getLoadResultsUrl={variantId => "/remedy/bedarf/suche?ohneEigene=true&artikelVarianteId=" + variantId}
+            getLoadVariantCountsUrl={articleId => "/remedy/bedarf/suche/filter/artikelvariante?ohneEigene=true&artikelId=" + articleId}
             getResultsPageSubtitle={getResultsSubtitle}
             getResultsPageTitle={getResultsTitle}/>
     );

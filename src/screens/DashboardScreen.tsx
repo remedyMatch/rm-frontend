@@ -4,9 +4,9 @@ import clsx from "clsx";
 import React, {Component} from "react";
 import {connect, ConnectedProps} from "react-redux";
 import {RouteComponentProps, withRouter} from "react-router-dom";
-import {FormButton} from "../components/Form/old/FormButton";
 import ContentCard from "../components/Content/ContentCard";
 import LinkCard from "../components/Content/LinkCard";
+import {FormButton} from "../components/Form/old/FormButton";
 import {InstitutionAngebot} from "../domain/angebot/InstitutionAngebot";
 import {InstitutionBedarf} from "../domain/bedarf/InstitutionBedarf";
 import home from "../resources/home.svg";
@@ -14,6 +14,9 @@ import {loadGestellteAngebotAnfragen} from "../state/angebot/GestellteAngebotAnf
 import {loadInstitutionAngebote} from "../state/angebot/InstitutionAngeboteState";
 import {loadGestellteBedarfAnfragen} from "../state/bedarf/GestellteBedarfAnfragenState";
 import {loadInstitutionBedarfe} from "../state/bedarf/InstitutionBedarfeState";
+import {loadKonversationAngebotAnfragen} from "../state/nachricht/KonversationAngebotAnfragenState";
+import {loadKonversationBedarfAnfragen} from "../state/nachricht/KonversationBedarfAnfragenState";
+import {loadKonversationen} from "../state/nachricht/KonversationenState";
 import {RootDispatch, RootState} from "../state/Store";
 
 interface Props extends WithStyles<typeof styles>, PropsFromRedux, RouteComponentProps {
@@ -48,13 +51,15 @@ const styles = (theme: Theme) =>
             fontFamily: "Montserrat, sans-serif",
             fontSize: "60px",
             fontWeight: 600,
-            color: "#007c92"
+            color: "#007c92",
+            lineHeight: 1.1
         },
         welcomeSubtitle: {
             fontFamily: "Montserrat, sans-serif",
             fontSize: "16px",
             lineHeight: "24px",
-            marginBottom: "4em"
+            marginBottom: "4em",
+            marginTop: "1em"
         },
         mainImage: {
             height: "auto",
@@ -81,6 +86,9 @@ const styles = (theme: Theme) =>
             flexWrap: "wrap",
             justifyContent: "space-between"
         },
+        contentCard: {
+            width: "calc((100% - 1em) / 2)"
+        },
         cardPlaceholderAction: {
             fontWeight: 600
         },
@@ -89,11 +97,15 @@ const styles = (theme: Theme) =>
             display: "flex",
             flexWrap: "wrap"
         },
+        linkCard: {
+            width: "calc((100% - 3em) / 4)"
+        },
         adEntry: {
-            padding: "4px 24px",
             cursor: "pointer",
+            padding: "4px 24px",
+            transition: theme.transitions.create("background-color"),
             "&:hover": {
-                backgroundColor: "rgba(0,0,0,0.04)"
+                backgroundColor: "rbga(0, 0, 0, 0.04)"
             }
         },
         adEntryTitle: {
@@ -106,7 +118,10 @@ const styles = (theme: Theme) =>
             borderRadius: "8px",
             fontFamily: "Montserrat, sans-serif",
             fontWeight: 600,
-            fontSize: "12px"
+            fontSize: "12px",
+            marginRight: "8px",
+            color: "white",
+            padding: "2px 8px"
         }
     });
 
@@ -117,7 +132,7 @@ class DashboardScreen extends Component<Props, State> {
         const classes = this.props.classes;
 
         const ownCount = (this.props.institutionAngebote?.length || 0) + (this.props.institutionBedarfe?.length || 0);
-        const requestCount = (this.props.gestellteAngebotAnfragen?.length || 0) + (this.props.gestellteBedarfAnfragen?.length || 0);
+        const conversationCount = this.props.konversationen?.length || 0;
 
         return (
             <>
@@ -165,10 +180,11 @@ class DashboardScreen extends Component<Props, State> {
                 <div className={classes.cards}>
 
                     <ContentCard
+                        className={classes.contentCard}
                         title="Meine Inserate"
                         showPlaceholder={ownCount === 0}
                         actionDisabled={ownCount === 0}
-                        onActionClicked={() => console.log("Inserate anzeigen")}
+                        onActionClicked={this.onShowAdsClicked}
                         action={ownCount ? `Alle ${ownCount} Inserate anzeigen` : "Keine Inserate gefunden"}
                         placeholder={(
                             <>
@@ -182,26 +198,30 @@ class DashboardScreen extends Component<Props, State> {
                         )}>
                         {
                             this.mapAds().slice(0, 5).map(entry => (
-                                <div className={classes.adEntry}>
-                                    <span className={classes.adEntryTitle}>{entry.message}</span>
+                                <div className={classes.adEntry}
+                                     onClick={() => this.props.history.push("/inserate/" + entry.id)}>
                                     {entry.requests > 0 && (
-                                        <span className={classes.adEntryRequests}>{entry.requests} Anfragen</span>
+                                        <span className={classes.adEntryRequests}>
+                                            {entry.requests} Anfrage{entry.requests > 1 ? "n" : ""}
+                                        </span>
                                     )}
+                                    <span className={classes.adEntryTitle}>{entry.message}</span>
                                 </div>
                             ))
                         }
                     </ContentCard>
 
                     <ContentCard
-                        title="Meine offenen Anfragen"
-                        showPlaceholder={requestCount === 0}
-                        actionDisabled={requestCount === 0}
-                        onActionClicked={() => console.log("Offene Anfragen anzeigen")}
-                        action={ownCount ? `Alle ${requestCount} Anfragen anzeigen` : "Keine Anfragen gefunden"}
+                        className={classes.contentCard}
+                        title="Mein Postfach"
+                        showPlaceholder={conversationCount === 0}
+                        actionDisabled={conversationCount === 0}
+                        onActionClicked={() => console.log("Konversationen anzeigen")}
+                        action={conversationCount ? `Alle ${conversationCount} Konversationen anzeigen` : "Keine Konversationen gefunden"}
                         placeholder={(
                             <>
                                 <span>
-                                    Ihre Institution hat noch keine Anfragen gestellt.<br/>
+                                    Ihre Institution hat noch keine Konversationen gestartet.<br/>
                                 </span>
                                 <span className={classes.cardPlaceholderAction}>
                                     Klicken Sie oben, um ein Inserat anzufragen!
@@ -209,8 +229,12 @@ class DashboardScreen extends Component<Props, State> {
                             </>
                         )}>
                         {
-                            this.props.gestellteAngebotAnfragen?.map(anfrage => (
-                                <span>{anfrage.anzahl} {anfrage.angebot?.artikel.name}</span>
+                            this.mapConversations().map(entry => (
+                                <div className={classes.adEntry}>
+                                    <span className={classes.adEntryTitle}>
+                                        {entry.title}
+                                    </span>
+                                </div>
                             ))
                         }
                     </ContentCard>
@@ -218,8 +242,14 @@ class DashboardScreen extends Component<Props, State> {
                 </div>
 
                 <div className={classes.linkCards}>
-                    <LinkCard title="Meine Matches anzeigen" onClick={() => console.log("Matches anzeigen")}/>
-                    <LinkCard title="Mein Konto anzeigen" onClick={() => console.log("Konto anzeigen")}/>
+                    <LinkCard
+                        title="Meine Matches anzeigen"
+                        onClick={() => console.log("Matches anzeigen")}
+                        className={classes.linkCard}/>
+                    <LinkCard
+                        title="Mein Konto anzeigen"
+                        onClick={this.onMyAccountClicked}
+                        className={classes.linkCard}/>
                 </div>
             </>
         )
@@ -230,7 +260,18 @@ class DashboardScreen extends Component<Props, State> {
         this.props.loadGestellteBedarfAnfragen();
         this.props.loadInstitutionAngebote();
         this.props.loadInstitutionBedarfe();
+        this.props.loadKonversationen();
     };
+
+    componentDidUpdate(prevProps: Readonly<Props>) {
+        if (prevProps.konversationen !== this.props.konversationen) {
+            const angebotAnfrageIdsToLoad = this.props.konversationen?.filter(k => k.referenzTyp === "ANGEBOT_ANFRAGE").map(k => k.referenzId);
+            const bedarfAnfrageIdsToLoad = this.props.konversationen?.filter(k => k.referenzTyp === "BEDARF_ANFRAGE").map(k => k.referenzId);
+
+            this.props.loadKonversationAngebotAnfragen(...angebotAnfrageIdsToLoad);
+            this.props.loadKonversationBedarfAnfragen(...bedarfAnfrageIdsToLoad);
+        }
+    }
 
     private onCreateOfferClicked = () => {
         this.props.history.push("/angebot");
@@ -238,6 +279,14 @@ class DashboardScreen extends Component<Props, State> {
 
     private onCreateDemandClicked = () => {
         this.props.history.push("/bedarf");
+    };
+
+    private onMyAccountClicked = () => {
+        this.props.history.push("/konto");
+    };
+
+    private onShowAdsClicked = () => {
+        this.props.history.push("/inserate");
     };
 
     private mapAds = () => {
@@ -260,7 +309,37 @@ class DashboardScreen extends Component<Props, State> {
             message: `${bedarf ? "Bedarf: " : "Angebot: "} ${count}x ${name}` + (variante ? ` (${variante})` : ""),
             requests: entry.anfragen.length
         };
-    }
+    };
+
+    private mapConversations = () => {
+        return (this.props.konversationen || [])
+            .filter(k => k.referenzTyp === "ANGEBOT_ANFRAGE" || k.referenzTyp === "BEDARF_ANFRAGE")
+            .map(k => {
+                if (k.referenzTyp === "ANGEBOT_ANFRAGE") {
+                    const details = this.props.konversationAngebotAnfragen[k.referenzId]?.value;
+                    const variantId = details?.angebot.artikelVarianteId;
+                    const variants = details?.angebot.artikel.varianten;
+                    const variant = variants?.find(v => v.id === variantId);
+                    const articleName = details?.angebot.artikel.name + ((variants?.length || 0) > 1 ? " (" + variant?.variante + ")" : "");
+                    return {
+                        title: details?.institution.name + " zu Angebot: " + details?.angebot.verfuegbareAnzahl + " " + articleName,
+                        id: k.referenzId,
+                        type: "offer"
+                    };
+                } else {
+                    const details = this.props.konversationBedarfAnfragen[k.referenzId]?.value;
+                    const variantId = details?.bedarf.artikelVarianteId;
+                    const variants = details?.bedarf.artikel.varianten;
+                    const variant = variants?.find(v => v.id === variantId);
+                    const articleName = details?.bedarf.artikel.name + ((variants?.length || 0) > 1 ? " (" + variant?.variante + ")" : "");
+                    return {
+                        title: details?.institution.name + " zu Bedarf: " + details?.bedarf.verfuegbareAnzahl + " " + articleName,
+                        id: k.referenzId,
+                        type: "demand"
+                    };
+                }
+            });
+    };
 }
 
 const mapStateToProps = (state: RootState) => ({
@@ -268,6 +347,9 @@ const mapStateToProps = (state: RootState) => ({
     gestellteBedarfAnfragen: state.gestellteBedarfAnfragen.value,
     institutionAngebote: state.institutionAngebote.value,
     institutionBedarfe: state.institutionBedarfe.value,
+    konversationAngebotAnfragen: state.konversationAngebotAnfragen.value,
+    konversationBedarfAnfragen: state.konversationBedarfAnfragen.value,
+    konversationen: state.konversationen.value,
     person: state.person.value // Wird im Menü geladen
 });
 
@@ -275,7 +357,10 @@ const mapDispatchToProps = (dispatch: RootDispatch) => ({
     loadGestellteAngebotAnfragen: () => dispatch(loadGestellteAngebotAnfragen()),
     loadGestellteBedarfAnfragen: () => dispatch(loadGestellteBedarfAnfragen()),
     loadInstitutionAngebote: () => dispatch(loadInstitutionAngebote()),
-    loadInstitutionBedarfe: () => dispatch(loadInstitutionBedarfe())
+    loadInstitutionBedarfe: () => dispatch(loadInstitutionBedarfe()),
+    loadKonversationAngebotAnfragen: (...ids: string[]) => dispatch(loadKonversationAngebotAnfragen(...ids)),
+    loadKonversationBedarfAnfragen: (...ids: string[]) => dispatch(loadKonversationBedarfAnfragen(...ids)),
+    loadKonversationen: () => dispatch(loadKonversationen())
 });
 
 const connector = connect(mapStateToProps, mapDispatchToProps);

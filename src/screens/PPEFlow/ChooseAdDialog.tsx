@@ -25,7 +25,6 @@ const useStyles = makeStyles((theme: Theme) => ({
         color: "#333",
         textAlign: "center",
         lineHeight: 1.2,
-        marginTop: "-12px",
         padding: "0px 24px 12px 24px"
     },
     entries: {

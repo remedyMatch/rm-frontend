@@ -63,13 +63,13 @@ const ContactEntryDialog: React.FC<Props> = props => {
         if (type === "offer") {
             result = await apiPost("/remedy/bedarf/" + selectedEntry!.id + "/anfrage", {
                 anzahl: amount,
-                kommentar: comment,
+                nachricht: comment,
                 angebotId: selectedAd!.id
             });
         } else {
             result = await apiPost("/remedy/angebot/" + selectedEntry!.id + "/anfrage", {
                 anzahl: amount,
-                kommentar: comment,
+                nachricht: comment,
                 bedarfId: selectedAd!.id
             });
         }

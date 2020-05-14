@@ -3,9 +3,10 @@ import {createStyles, Theme, withStyles} from "@material-ui/core/styles";
 import clsx from "clsx";
 import React, {Component} from "react";
 import {connect, ConnectedProps} from "react-redux";
+import {RouteComponentProps, withRouter} from "react-router-dom";
 import CountBadge from "../../components/Content/CountBadge";
 import Flow from "../../components/Flow/Flow";
-import ResultList from "../../components/List/ResultList";
+import ResultList, {ResultListDataRow} from "../../components/List/ResultList";
 import {Angebot} from "../../domain/angebot/Angebot";
 import {InstitutionAngebot} from "../../domain/angebot/InstitutionAngebot";
 import {Artikel} from "../../domain/artikel/Artikel";
@@ -35,8 +36,12 @@ interface CountEntry {
     anzahl: number;
 }
 
-interface Props extends WithStyles<typeof styles>, PropsFromRedux {
+interface Props extends WithStyles<typeof styles>, PropsFromRedux, RouteComponentProps {
     flowType: "offer" | "demand";
+
+    initialCategoryId?: string;
+    initialArticleId?: string;
+    initialVariantId?: string;
 
     articleCategoryPageTitle: string;
     articlePageTitle: string;
@@ -54,6 +59,8 @@ interface Props extends WithStyles<typeof styles>, PropsFromRedux {
 
 interface State {
     currentPage: number;
+    initialCategoryProcessed: boolean;
+    initialArticleAndVariantProcessed: boolean;
 
     selectedAd?: InstitutionAngebot | InstitutionBedarf;
     selectedEntry?: Angebot | Bedarf;
@@ -155,6 +162,8 @@ const styles = (theme: Theme) =>
 class PPEFlow extends Component<Props, State> {
     state: State = {
         currentPage: 0,
+        initialCategoryProcessed: false,
+        initialArticleAndVariantProcessed: false,
 
         chooseAdDialogOpen: false,
         createAdDialogOpen: false,
@@ -228,7 +237,71 @@ class PPEFlow extends Component<Props, State> {
         } else {
             this.props.loadInstitutionBedarfe();
         }
+
+        if (this.props.initialCategoryId && this.props.initialArticleId && this.props.initialVariantId) {
+            this.setState({
+                currentPage: 3
+            });
+            this.loadResults(this.props.initialVariantId);
+        } else if (this.props.initialCategoryId && this.props.initialArticleId) {
+            this.setState({
+                currentPage: 2
+            });
+        } else if (this.props.initialCategoryId) {
+            this.setState({
+                currentPage: 1
+            });
+        }
     };
+
+    componentDidUpdate() {
+        if (this.props.initialCategoryId && this.props.artikelKategorien && !this.state.initialCategoryProcessed) {
+            const category = this.props.artikelKategorien.find(k => k.id === this.props.initialCategoryId);
+            if (category) {
+                this.setState({
+                    selectedCategory: category,
+                    initialCategoryProcessed: true
+                });
+            } else {
+                this.setState({
+                    currentPage: 0,
+                    initialCategoryProcessed: true
+                });
+            }
+        }
+
+        if (this.props.initialArticleId && this.props.artikel && !this.state.initialArticleAndVariantProcessed) {
+            const article = this.props.artikel.find(a => a.id === this.props.initialArticleId);
+            if (article) {
+                if (this.props.initialVariantId) {
+                    const variant = article.varianten.find(v => v.id === this.props.initialVariantId);
+                    if (variant) {
+                        this.setState({
+                            selectedArticle: article,
+                            selectedVariant: variant,
+                            variantSkipped: article.varianten.length === 1,
+                            initialArticleAndVariantProcessed: true
+                        });
+                    } else {
+                        this.setState({
+                            currentPage: 0,
+                            initialArticleAndVariantProcessed: true
+                        });
+                    }
+                } else {
+                    this.setState({
+                        selectedArticle: article,
+                        initialArticleAndVariantProcessed: true
+                    });
+                }
+            } else {
+                this.setState({
+                    currentPage: 0,
+                    initialArticleAndVariantProcessed: true
+                });
+            }
+        }
+    }
 
     private getArticleCategoryPage = () => {
         return {
@@ -337,22 +410,21 @@ class PPEFlow extends Component<Props, State> {
             iconAlt: iconAlt,
             content: (
                 <ResultList
-                    onContactClicked={this.onContactClicked}
-                    results={this.mapResults()}
-                    resultsType={this.props.flowType === "offer" ? "demands" : "offers"}/>
+                    onButtonClicked={this.onContactClicked}
+                    results={this.mapResults()}/>
             )
         };
     };
 
-    private onContactClicked = (entry: Angebot | Bedarf) => {
+    private onContactClicked = (entry: ResultListDataRow) => {
         if (!this.state.selectedAd) {
             this.setState({
-                selectedEntry: entry,
+                selectedEntry: entry.original,
                 chooseAdDialogOpen: true
             });
         } else {
             this.setState({
-                selectedEntry: entry,
+                selectedEntry: entry.original,
                 contactEntryDialogOpen: true
             });
         }
@@ -408,7 +480,8 @@ class PPEFlow extends Component<Props, State> {
     private onCreateAdDialogCreated = (ad: InstitutionAngebot | InstitutionBedarf) => {
         this.setState({
             selectedAd: ad,
-            createAdDialogOpen: false
+            createAdDialogOpen: false,
+            contactEntryDialogOpen: !!this.state.selectedEntry
         });
     };
 
@@ -425,8 +498,10 @@ class PPEFlow extends Component<Props, State> {
             sealed: ("originalverpackt" in result && result.originalverpackt) || undefined,
             sterile: result.steril,
             medical: result.medizinisch,
-            useBefore: ("haltbarkeit" in result && new Date(result.haltbarkeit)) || undefined,
-            original: result
+            useBefore: ("haltbarkeit" in result && !!result.haltbarkeit && new Date(result.haltbarkeit)) || undefined,
+            original: result,
+            type: this.props.flowType === "offer" ? "demand" as const : "offer" as const,
+            buttonText: this.props.flowType === "offer" ? "Empfänger kontaktieren" : "Spender kontaktieren"
         }));
     };
 
@@ -489,7 +564,7 @@ class PPEFlow extends Component<Props, State> {
             selectedCategory: selectedCategory,
             currentPage: 1,
             results: []
-        });
+        }, this.updateRoute);
         this.loadArticleCounts(selectedCategory.id);
     };
 
@@ -499,7 +574,7 @@ class PPEFlow extends Component<Props, State> {
                 selectedArticle: selectedArticle,
                 currentPage: 2,
                 results: []
-            });
+            }, this.updateRoute);
             this.loadVariantCounts(selectedArticle.id);
         } else {
             this.setState({
@@ -508,7 +583,8 @@ class PPEFlow extends Component<Props, State> {
                 variantSkipped: true,
                 currentPage: 3,
                 results: []
-            });
+            }, this.updateRoute);
+
             this.loadResults(selectedArticle.varianten[0].id);
         }
     };
@@ -519,7 +595,7 @@ class PPEFlow extends Component<Props, State> {
             variantSkipped: false,
             currentPage: 3,
             results: []
-        });
+        }, this.updateRoute);
         this.loadResults(selectedVariant.id);
     };
 
@@ -558,7 +634,7 @@ class PPEFlow extends Component<Props, State> {
                     selectedArticle: undefined,
                     selectedVariant: undefined,
                     variantSkipped: undefined
-                });
+                }, this.updateRoute);
                 this.loadCategoryCounts();
                 break;
             }
@@ -568,7 +644,7 @@ class PPEFlow extends Component<Props, State> {
                     selectedArticle: undefined,
                     selectedVariant: undefined,
                     variantSkipped: undefined
-                });
+                }, this.updateRoute);
                 this.loadArticleCounts(this.state.selectedCategory?.id);
                 break;
             }
@@ -577,12 +653,25 @@ class PPEFlow extends Component<Props, State> {
                     currentPage: 2,
                     selectedVariant: undefined,
                     variantSkipped: undefined
-                });
+                }, this.updateRoute);
                 this.loadVariantCounts(this.state.selectedArticle?.id);
                 break;
             }
         }
     };
+
+    private updateRoute = () => {
+        const prefix = "/" + this.props.flowType === "offer" ? "/angebot" : "/bedarf";
+        if (this.state.currentPage === 0) {
+            this.props.history.push(`${prefix}`);
+        } else if (this.state.currentPage === 1) {
+            this.props.history.push(`${prefix}/${this.state.selectedCategory?.id}`);
+        } else if (this.state.currentPage === 2) {
+            this.props.history.push(`${prefix}/${this.state.selectedCategory?.id}/${this.state.selectedArticle?.id}`);
+        } else if (this.state.currentPage === 3) {
+            this.props.history.push(`${prefix}/${this.state.selectedCategory?.id}/${this.state.selectedArticle?.id}/${this.state.selectedVariant?.id}`);
+        }
+    }
 }
 
 const mapStateToProps = (state: RootState) => ({
@@ -602,4 +691,4 @@ const mapDispatchToProps = (dispatch: RootDispatch) => ({
 const connector = connect(mapStateToProps, mapDispatchToProps);
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
-export default connector(withStyles(styles)(PPEFlow));
+export default connector(withRouter((withStyles(styles)(PPEFlow))));

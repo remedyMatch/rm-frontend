@@ -94,7 +94,7 @@ const NumberInput: React.FC<Props> = props => {
                 value={displayValue}
                 className={clsx(classes.root, focussed && classes.focussed)}
                 onChange={setValueSafe}
-                disabled={disabled || false}
+                disabled={disabled}
                 InputProps={{
                     startAdornment: (
                         <IconButton

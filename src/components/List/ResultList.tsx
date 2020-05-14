@@ -6,7 +6,7 @@ import {Angebot} from "../../domain/angebot/Angebot";
 import {Bedarf} from "../../domain/bedarf/Bedarf";
 import distance from "../../resources/distance.svg";
 
-declare type DataRow = {
+export type ResultListDataRow = {
     id: string;
     icon: string;
     articleName: string;
@@ -19,7 +19,9 @@ declare type DataRow = {
     sterile: boolean;
     sealed?: boolean;
     useBefore?: Date;
+    type: "demand" | "offer";
     original: Angebot | Bedarf;
+    buttonText?: string;
 };
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -48,9 +50,11 @@ const useStyles = makeStyles((theme: Theme) => ({
         }
     },
     article: {
+        width: "200px",
         display: "flex",
         flexDirection: "column",
-        justifyContent: "center"
+        justifyContent: "center",
+        flexShrink: 0
     },
     articleIcon: {
         height: "4em",
@@ -62,16 +66,14 @@ const useStyles = makeStyles((theme: Theme) => ({
         fontFamily: "Montserrat, sans-serif",
         fontSize: "16px",
         fontWeight: 600,
-        color: "#666",
-        whiteSpace: "nowrap"
+        color: "#666"
     },
     variantName: {
         textAlign: "center",
         fontFamily: "Montserrat, sans-serif",
         fontSize: "16px",
         fontWeight: 600,
-        color: "#666",
-        whiteSpace: "nowrap"
+        color: "#666"
     },
     details: {
         display: "flex",
@@ -161,9 +163,8 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 interface Props {
     className?: string;
-    results: DataRow[];
-    resultsType: "demands" | "offers";
-    onContactClicked: (entry: Angebot | Bedarf) => void;
+    results: ResultListDataRow[];
+    onButtonClicked: (entry: ResultListDataRow) => void;
 }
 
 const PAGE_SIZE = 5;
@@ -178,7 +179,6 @@ const ResultList: React.FC<Props> = props => {
     }
 
     const items = props.results.slice(pageIndex * PAGE_SIZE, pageIndex * PAGE_SIZE + PAGE_SIZE);
-    const contact = props.resultsType === "demands" ? "Empfänger kontaktieren" : "Spender kontaktieren";
 
     return (
         <div className={props.className}>
@@ -223,15 +223,17 @@ const ResultList: React.FC<Props> = props => {
                             ))}
                         </span>
                     </div>
-                    <div className={classes.contactContainer}>
-                        <Button
-                            onClick={() => props.onContactClicked(item.original)}
-                            disableElevation
-                            className={classes.button}
-                            variant="contained">
-                            {contact}
-                        </Button>
-                    </div>
+                    {item.buttonText && (
+                        <div className={classes.contactContainer}>
+                            <Button
+                                onClick={() => props.onButtonClicked(item)}
+                                disableElevation
+                                className={classes.button}
+                                variant="contained">
+                                {item.buttonText}
+                            </Button>
+                        </div>
+                    )}
                 </div>
             ))}
             <Pagination
