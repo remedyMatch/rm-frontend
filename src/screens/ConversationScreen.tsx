@@ -96,7 +96,19 @@ const useStyles = makeStyles(() => ({
     },
     footer: {
         display: "flex",
-        flexDirection: "row"
+        flexDirection: "row",
+        flexGrow: 0,
+        flexShrink: 0,
+        backgroundColor: "#aabec6"
+    },
+    footerInput: {
+        margin: "8px 0px 4px 8px",
+        flexGrow: 1
+    },
+    footerSend: {
+        width: "48px",
+        height: "48px",
+        margin: "auto 8px"
     }
 }));
 
@@ -291,12 +303,13 @@ const ConversationScreen: React.FC = () => {
                 </div>))}
                 <div className={classes.footer}>
                     <TextArea
+                        className={classes.footerInput}
                         placeholder="Ihre Nachricht..."
                         onChange={setInputText}
                         value={inputText}
                         minLines={1}
                         maxLines={5} />
-                    <IconButton><Send /></IconButton>
+                    <IconButton className={classes.footerSend}><Send /></IconButton>
                 </div>
             </div>
         </>

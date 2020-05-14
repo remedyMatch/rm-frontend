@@ -16,7 +16,6 @@ interface Props {
 
 const useStyles = makeStyles((theme: Theme) => ({
     root: {
-        height: "calc(100% - 40px) !important",
         fontFamily: "Montserrat, sans-serif",
         fontSize: "16px",
         fontWeight: 600,
