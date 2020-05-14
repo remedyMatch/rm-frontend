@@ -1,5 +1,6 @@
 import {Benachrichtigung} from "../../domain/benachrichtigung/Benachrichtigung";
-import createApiState, {Url} from "../ApiState";
+import createApiState from "../util/ApiState";
+import {Url} from "../util/Url";
 
 const name = "Benachrichtigung/Benachrichtigungen";
 const url: Url = {

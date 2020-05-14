@@ -58,9 +58,9 @@ class Layout extends Component<Props, State> {
                     <Menu/>
                     <Switch>
                         <Route path="/konto" component={AccountScreen}/>
-                        <Route path="/angebot" component={OfferFlowScreen}/>
-                        <Route path="/bedarf" component={DemandFlowScreen}/>
-                        <Route path="/inserate" component={AdScreen}/>
+                        <Route path="/angebot/:categoryId?/:articleId?/:variantId?" component={OfferFlowScreen}/>
+                        <Route path="/bedarf/:categoryId?/:articleId?/:variantId?" component={DemandFlowScreen}/>
+                        <Route path="/inserate/:adId?" component={AdScreen}/>
                         <Route path="/" exact component={DashboardScreen}/>
                         <Redirect to="/"/>
                     </Switch>

@@ -43,7 +43,7 @@ const EditAdDialog: React.FC<Props> = props => {
             fullWidth={false}
             open={open}
             title="Inserat bearbeiten"
-            subtitle="Sie können die Anzahl des Insersats verändern oder es komplett stornieren. Dabei werden auch sämtliche offenen Anfragen abgebrochen.">
+            subtitle="Sie können die Anzahl des Inserats verändern oder es komplett stornieren. Dabei werden auch sämtliche offenen Anfragen abgebrochen.">
 
             <div className={classes.buttonContainer}>
 

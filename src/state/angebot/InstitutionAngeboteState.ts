@@ -1,5 +1,5 @@
 import {InstitutionAngebot} from "../../domain/angebot/InstitutionAngebot";
-import createApiState from "../ApiState";
+import createApiState from "../util/ApiState";
 
 const name = "Angebot/InstitutionAngebote";
 const url = "/angebot";

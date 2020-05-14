@@ -1,5 +1,5 @@
 import {ArtikelKategorie} from "../../domain/artikel/ArtikelKategorie";
-import createApiState from "../ApiState";
+import createApiState from "../util/ApiState";
 
 const name = "Artikel/Kategorien";
 const url = "/artikel/kategorie";

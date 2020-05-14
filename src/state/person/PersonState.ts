@@ -1,5 +1,5 @@
 import {Person} from "../../domain/person/Person";
-import createApiState from "../ApiState";
+import createApiState from "../util/ApiState";
 
 const name = "Person/Person";
 const url = "/person";

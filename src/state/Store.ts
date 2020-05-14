@@ -10,6 +10,9 @@ import {institutionBedarfeSlice} from "./bedarf/InstitutionBedarfeState";
 import {benachrichtigungenSlice} from "./benachrichtigung/BenachrichtigungenState";
 import {institutionAntraegeSlice} from "./institution/InstitutionAntraegeState";
 import {matchesSlice} from "./match/MatchesState";
+import {konversationAngebotAnfragenSlice} from "./nachricht/KonversationAngebotAnfragenState";
+import {konversationBedarfAnfragenSlice} from "./nachricht/KonversationBedarfAnfragenState";
+import {konversationenSlice} from "./nachricht/KonversationenState";
 import {personSlice} from "./person/PersonState";
 
 const rootReducer = combineReducers({
@@ -23,6 +26,9 @@ const rootReducer = combineReducers({
     institutionAngebote: institutionAngeboteSlice.reducer,
     institutionAntraege: institutionAntraegeSlice.reducer,
     institutionBedarfe: institutionBedarfeSlice.reducer,
+    konversationAngebotAnfragen: konversationAngebotAnfragenSlice.reducer,
+    konversationBedarfAnfragen: konversationBedarfAnfragenSlice.reducer,
+    konversationen: konversationenSlice.reducer,
     matches: matchesSlice.reducer,
     person: personSlice.reducer
 });

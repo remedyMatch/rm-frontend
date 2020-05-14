@@ -1,52 +1,7 @@
 import {ActionCreatorWithoutPayload, ActionCreatorWithPayload, createSlice, PayloadAction} from "@reduxjs/toolkit";
-import {apiGet} from "../util/ApiUtils";
-
-/**
- * Base api url to use.
- */
-const baseUrl = "/remedy";
-
-/**
- * Prepends a slash to the passed path parameter, if not existing.
- *
- * @param path The path to prepend with a slash
- */
-const prependSlash = (path: string) => {
-    return path.startsWith("/") ? path : ("/" + path);
-}
-
-/**
- * Creates the absolute url of the request. Adds the base url if necessary.
- *
- * @param url The relative or absolute url
- * @returns The absolute url to use
- */
-const constructUrl = (url: string | Url) => {
-    if(typeof url === "string") {
-        if (url.startsWith("http")) {
-            return url;
-        }
-
-        return baseUrl + prependSlash(url);
-    }
-
-    return prependSlash(url.baseUrl) + prependSlash(url.url);
-};
-
-/**
- * The representation of an url, that does not use the default base url.
- */
-export interface Url {
-    /**
-     * The base url to use.
-     */
-    baseUrl: string;
-
-    /**
-     * The url to use.
-     */
-    url: string;
-}
+import {apiGet} from "../../util/ApiUtils";
+import {Url} from "./Url";
+import {constructUrl} from "./UrlUtils";
 
 /**
  * The representation of a redux store state.

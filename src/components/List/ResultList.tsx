@@ -49,12 +49,6 @@ const useStyles = makeStyles((theme: Theme) => ({
             backgroundColor: "#006374"
         }
     },
-    adType: {
-        fontFamily: "Montserrat, sans-serif",
-        fontSize: "20px",
-        fontWeight: 600,
-        color: "rgba(0, 0, 0, 0.87)"
-    },
     article: {
         width: "200px",
         display: "flex",
@@ -91,12 +85,6 @@ const useStyles = makeStyles((theme: Theme) => ({
         fontFamily: "Montserrat, sans-serif",
         fontSize: "18px",
         fontWeight: 600,
-        whiteSpace: "nowrap"
-    },
-    locationSmall: {
-        marginTop: "4px",
-        fontFamily: "Montserrat, sans-serif",
-        fontSize: "16px",
         whiteSpace: "nowrap"
     },
     distance: {
@@ -177,7 +165,6 @@ interface Props {
     className?: string;
     results: ResultListDataRow[];
     onButtonClicked: (entry: ResultListDataRow) => void;
-    showAdType?: boolean;
 }
 
 const PAGE_SIZE = 5;
@@ -205,10 +192,7 @@ const ResultList: React.FC<Props> = props => {
                         )}
                     </div>
                     <div className={classes.details}>
-                        {props.showAdType && (
-                            <span className={classes.adType}>{item.type === "offer" ? "Angebot" : "Bedarf"}</span>
-                        )}
-                        <span className={props.showAdType ? classes.locationSmall : classes.location}>
+                        <span className={classes.location}>
                             {item.location}
                         </span>
                         <span className={classes.distance}>
