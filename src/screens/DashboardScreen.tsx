@@ -105,7 +105,7 @@ const styles = (theme: Theme) =>
             padding: "4px 24px",
             transition: theme.transitions.create("background-color"),
             "&:hover": {
-                backgroundColor: "rbga(0, 0, 0, 0.04)"
+                backgroundColor: "rgba(0, 0, 0, 0.1)"
             }
         },
         adEntryTitle: {
@@ -216,7 +216,7 @@ class DashboardScreen extends Component<Props, State> {
                         title="Mein Postfach"
                         showPlaceholder={conversationCount === 0}
                         actionDisabled={conversationCount === 0}
-                        onActionClicked={() => console.log("Konversationen anzeigen")}
+                        onActionClicked={this.onShowConversationsClicked}
                         action={conversationCount ? `Alle ${conversationCount} Konversationen anzeigen` : "Keine Konversationen gefunden"}
                         placeholder={(
                             <>
@@ -244,7 +244,7 @@ class DashboardScreen extends Component<Props, State> {
                 <div className={classes.linkCards}>
                     <LinkCard
                         title="Meine Matches anzeigen"
-                        onClick={() => console.log("Matches anzeigen")}
+                        onClick={this.onMyMatchesClicked}
                         className={classes.linkCard}/>
                     <LinkCard
                         title="Mein Konto anzeigen"
@@ -289,6 +289,14 @@ class DashboardScreen extends Component<Props, State> {
         this.props.history.push("/inserate");
     };
 
+    private onShowConversationsClicked = () => {
+        this.props.history.push("/konversation");
+    };
+
+    private onMyMatchesClicked = () => {
+        this.props.history.push("/matches");
+    };
+
     private mapAds = () => {
         const bedarfe = this.props.institutionBedarfe || [];
         const angebote = this.props.institutionAngebote || [];
@@ -320,9 +328,9 @@ class DashboardScreen extends Component<Props, State> {
                     const variantId = details?.angebot.artikelVarianteId;
                     const variants = details?.angebot.artikel.varianten;
                     const variant = variants?.find(v => v.id === variantId);
-                    const articleName = details?.angebot.artikel.name + ((variants?.length || 0) > 1 ? " (" + variant?.variante + ")" : "");
+                    const articleName = details ? details.angebot.artikel.name + ((variants?.length || 0) > 1 ? " (" + variant?.variante + ")" : "") : "";
                     return {
-                        title: details?.institution.name + " zu Angebot: " + details?.angebot.verfuegbareAnzahl + " " + articleName,
+                        title: (details?.institution.name || "???") + " zu Angebot: " + (details?.angebot.verfuegbareAnzahl || "???") + " " + (articleName || ""),
                         id: k.referenzId,
                         type: "offer"
                     };
@@ -331,9 +339,9 @@ class DashboardScreen extends Component<Props, State> {
                     const variantId = details?.bedarf.artikelVarianteId;
                     const variants = details?.bedarf.artikel.varianten;
                     const variant = variants?.find(v => v.id === variantId);
-                    const articleName = details?.bedarf.artikel.name + ((variants?.length || 0) > 1 ? " (" + variant?.variante + ")" : "");
+                    const articleName = details ? details.bedarf.artikel.name + ((variants?.length || 0) > 1 ? " (" + variant?.variante + ")" : "") : "";
                     return {
-                        title: details?.institution.name + " zu Bedarf: " + details?.bedarf.verfuegbareAnzahl + " " + articleName,
+                        title: (details?.institution.name || "???") + " zu Bedarf: " + (details?.bedarf.verfuegbareAnzahl || "???") + " " + (articleName || ""),
                         id: k.referenzId,
                         type: "demand"
                     };

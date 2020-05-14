@@ -1,18 +1,19 @@
+import {Artikel} from "../artikel/Artikel";
 import {Institution} from "../institution/Institution";
 import {InstitutionStandort} from "../institution/InstitutionStandort";
 
+export type InseratTyp = "BEDARF" | "ANGEBOT";
+
 export interface Match {
-    id: string;
     institutionVon: Institution;
     standortVon: InstitutionStandort;
     institutionAn: Institution;
     standortAn: InstitutionStandort;
-    kommentarAnfrage: string;
-    kommentarAntwort: string;
+    anfrageId: string;
+    inseratId: string;
     entfernung: number;
-    artikelKategorieId: string;
-    artikelId: string;
+    artikel: Artikel;
     artikelVarianteId: string;
     anzahl: number;
-    anfrageTyp: string;
+    inseratTyp: InseratTyp;
 }

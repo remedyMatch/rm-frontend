@@ -661,7 +661,7 @@ class PPEFlow extends Component<Props, State> {
     };
 
     private updateRoute = () => {
-        const prefix = "/" + this.props.flowType === "offer" ? "/angebot" : "/bedarf";
+        const prefix = this.props.flowType === "offer" ? "/angebot" : "/bedarf";
         if (this.state.currentPage === 0) {
             this.props.history.push(`${prefix}`);
         } else if (this.state.currentPage === 1) {
