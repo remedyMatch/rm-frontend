@@ -3,6 +3,7 @@ import {makeStyles, Theme} from '@material-ui/core/styles';
 import {Pagination} from "@material-ui/lab";
 import clsx from "clsx";
 import React, {useState} from 'react';
+import {useHistory} from "react-router-dom";
 import {Angebot} from "../../domain/angebot/Angebot";
 import {AngebotAnfrageStatus} from "../../domain/angebot/AngebotAnfrage";
 import {Bedarf} from "../../domain/bedarf/Bedarf";
@@ -33,6 +34,7 @@ export type AdListDataRow = {
         institution: string;
         location: string;
         status: BedarfAnfrageStatus | AngebotAnfrageStatus;
+        conversationId?: string;
     }[];
 };
 
@@ -76,7 +78,8 @@ const useStyles = makeStyles((theme: Theme) => ({
         fontFamily: "Montserrat, sans-serif",
         fontSize: "20px",
         fontWeight: 600,
-        color: "rgba(0, 0, 0, 0.87)"
+        color: "rgba(0, 0, 0, 0.87)",
+        textAlign: "center"
     },
     article: {
         width: "200px",
@@ -114,7 +117,8 @@ const useStyles = makeStyles((theme: Theme) => ({
         marginTop: "4px",
         fontFamily: "Montserrat, sans-serif",
         fontSize: "16px",
-        whiteSpace: "nowrap"
+        whiteSpace: "nowrap",
+        textAlign: "center"
     },
     amount: {
         marginTop: "4px",
@@ -226,6 +230,7 @@ const PAGE_SIZE = 5;
 
 const AdList: React.FC<Props> = props => {
     const classes = useStyles();
+    const history = useHistory();
 
     const [pageIndex, setPageIndex] = useState(0);
 
@@ -305,8 +310,9 @@ const AdList: React.FC<Props> = props => {
                                 </span>
                             </div>
                             {item.requests.map(request => (
-                                <div className={classes.requestItem}>
-                                    <RequestStatusBadge status={request.status} />
+                                <div className={classes.requestItem}
+                                     onClick={() => history.push("/konversation/" + request.conversationId || "")}>
+                                    <RequestStatusBadge status={request.status}/>
                                     <span className={classes.requestSender}>
                                         {request.institution}, {request.location}
                                     </span>
