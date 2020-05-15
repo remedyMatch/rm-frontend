@@ -380,6 +380,7 @@ const ConversationScreen: React.FC = () => {
                             {request?.status === "ANGENOMMEN" && "Diese Anfrage wurde angenommen."}
                             {request?.status === "ABGELEHNT" && "Diese Anfrage wurde abgelehnt."}
                             {request?.status === "STORNIERT" && "Diese Anfrage wurde storniert."}
+                            {request?.status === "MATCHED" && "Diese Anfrage wurde gematcht."}
                         </span>
                     </div>
                 )}

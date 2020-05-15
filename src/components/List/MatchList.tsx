@@ -7,7 +7,8 @@ import countries from "../../resources/countries.json";
 
 export type MatchListDataRow = {
     icon: string;
-    original: Match
+    original: Match;
+    conversationId?: string;
 };
 
 const useStyles = makeStyles((theme: Theme) => ({

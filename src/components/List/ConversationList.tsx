@@ -9,6 +9,7 @@ import {GestellteBedarfAnfrage} from "../../domain/bedarf/GestellteBedarfAnfrage
 import {Konversation} from "../../domain/nachricht/Konversation";
 import {Person} from "../../domain/person/Person";
 import {IdMap, mapConversations} from "../../util/mappers/ConversationMapper";
+import RequestStatusBadge from "../Badge/RequestStatusBadge";
 
 const useStyles = makeStyles((theme: Theme) => ({
     list: {
@@ -24,7 +25,7 @@ const useStyles = makeStyles((theme: Theme) => ({
         borderTop: "2px solid #aabec6",
         display: "flex",
         flexDirection: "row",
-        padding: "8px 8px 8px 16px",
+        padding: "16px 8px 16px 16px",
         cursor: "pointer"
     },
     left: {
@@ -119,11 +120,11 @@ const ConversationList: React.FC<Props> = props => {
     }
 
     const items = mapConversations(
-        props.conversations.slice(pageIndex * PAGE_SIZE, pageIndex * PAGE_SIZE + PAGE_SIZE),
+        props.conversations,
         props.offerDetails,
         props.demandDetails,
         props.person
-    );
+    ).slice(pageIndex * PAGE_SIZE, pageIndex * PAGE_SIZE + PAGE_SIZE);
 
     return (
         <div className={props.className}>
@@ -133,7 +134,10 @@ const ConversationList: React.FC<Props> = props => {
                         className={classes.resultItem}
                         onClick={() => props.onOpenConversationClicked(item.id)}>
                         <div className={classes.left}>
-                            <span className={classes.title}>{item.title}</span>
+                            <span className={classes.title}>
+                                <RequestStatusBadge status={item.status}/>
+                                {item.title}
+                            </span>
                             <span className={classes.message}>
                                 {!item.message ? undefined : (item.message.erstellerName + ": " + item.message.nachricht)}
                             </span>
