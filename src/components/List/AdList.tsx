@@ -1,4 +1,4 @@
-import {Button, capitalize} from "@material-ui/core";
+import {Button} from "@material-ui/core";
 import {makeStyles, Theme} from '@material-ui/core/styles';
 import {Pagination} from "@material-ui/lab";
 import clsx from "clsx";
@@ -7,6 +7,7 @@ import {Angebot} from "../../domain/angebot/Angebot";
 import {AngebotAnfrageStatus} from "../../domain/angebot/AngebotAnfrage";
 import {Bedarf} from "../../domain/bedarf/Bedarf";
 import {BedarfAnfrageStatus} from "../../domain/bedarf/BedarfAnfrage";
+import RequestStatusBadge from "../Badge/RequestStatusBadge";
 
 export type AdListDataRow = {
     id: string;
@@ -204,27 +205,6 @@ const useStyles = makeStyles((theme: Theme) => ({
             backgroundColor: "rgba(0, 0, 0, 0.04)"
         }
     },
-    requestItemStatus: {
-        fontFamily: "Montserrat, sans-serif",
-        fontSize: "12px",
-        fontWeight: 600,
-        color: "white",
-        padding: "2px 8px",
-        borderRadius: "16px",
-        marginRight: "8px"
-    },
-    requestItemStatusOpen: {
-        backgroundColor: "darkorange"
-    },
-    requestItemStatusDismissed: {
-        backgroundColor: "red"
-    },
-    requestItemStatusAccepted: {
-        backgroundColor: "green"
-    },
-    requestItemStatusCancelled: {
-        backgroundColor: "blue"
-    },
     requestSender: {
         fontWeight: 600
     },
@@ -318,7 +298,7 @@ const AdList: React.FC<Props> = props => {
                         <div className={classes.requestList}>
                             <div className={classes.requestListHeader}>
                                 <span className={classes.requestListHeaderMain}>
-                                    {item.requests.length} Anfrage{item.requests.length > 1 ? "n" : ""}
+                                    {item.requests.length} offene Anfrage{item.requests.length > 1 ? "n" : ""}
                                 </span>
                                 <span className={classes.requestListHeaderHint}>
                                     Auf Anfrage klicken, um zur Konversation zu springen
@@ -326,14 +306,7 @@ const AdList: React.FC<Props> = props => {
                             </div>
                             {item.requests.map(request => (
                                 <div className={classes.requestItem}>
-                                    <span className={clsx(classes.requestItemStatus, {
-                                        [classes.requestItemStatusAccepted]: request.status === "ANGENOMMEN",
-                                        [classes.requestItemStatusCancelled]: request.status === "STORNIERT",
-                                        [classes.requestItemStatusDismissed]: request.status === "ABGELEHNT",
-                                        [classes.requestItemStatusOpen]: request.status === "OFFEN",
-                                    })}>
-                                        {capitalize(request.status.toLowerCase())}
-                                    </span>
+                                    <RequestStatusBadge status={request.status} />
                                     <span className={classes.requestSender}>
                                         {request.institution}, {request.location}
                                     </span>

@@ -8,7 +8,7 @@ import {GestellteAngebotAnfrage} from "../../domain/angebot/GestellteAngebotAnfr
 import {GestellteBedarfAnfrage} from "../../domain/bedarf/GestellteBedarfAnfrage";
 import {Konversation} from "../../domain/nachricht/Konversation";
 import {Person} from "../../domain/person/Person";
-import {ApiState} from "../../state/util/ApiState";
+import {IdMap, mapConversations} from "../../util/mappers/ConversationMapper";
 
 const useStyles = makeStyles((theme: Theme) => ({
     list: {
@@ -31,7 +31,6 @@ const useStyles = makeStyles((theme: Theme) => ({
         display: "flex",
         flexDirection: "column",
         flex: 1,
-        maxWidth: "80%",
         overflow: "hidden"
     },
     right: {
@@ -51,35 +50,20 @@ const useStyles = makeStyles((theme: Theme) => ({
         marginBottom: "4px"
     },
     message: {
-        display: "flex",
-        flexDirection: "row"
-    },
-    messageSender: {
-        fontFamily: "Montserrat, sans-serif",
-        fontSize: "14px",
-        fontWeight: 600,
-        whiteSpace: "nowrap",
-        flexGrow: 0,
-        flexShrink: 0,
-        color: "rgba(0, 0, 0, 0.54)"
-    },
-    messageText: {
         fontFamily: "Montserrat, sans-serif",
         fontSize: "14px",
         whiteSpace: "nowrap",
+        color: "rgba(0, 0, 0, 0.87)",
         textOverflow: "ellipsis",
-        color: "rgba(0, 0, 0, 0.54)",
-        marginLeft: "4px",
+        marginRight: "16px",
         overflow: "hidden",
-        flexGrow: 1,
-        flexShrink: 1
     },
     time: {
         fontFamily: "Montserrat, sans-serif",
         fontSize: "14px",
         fontWeight: 600,
         color: "rgba(0, 0, 0, 0.54)",
-        marginRight: "4px"
+        marginRight: "16px"
     },
     iconRight: {
         color: "rgba(0, 0, 0, 0.38)"
@@ -96,48 +80,15 @@ interface Props {
     conversations: Konversation[];
     offerDetails: IdMap<GestellteAngebotAnfrage>;
     demandDetails: IdMap<GestellteBedarfAnfrage>;
+    person?: Person;
     onOpenConversationClicked: (conversationId: string) => void;
 }
 
-declare type IdMap<T> = { [key: string]: ApiState<T> };
-
 const PAGE_SIZE = 10;
 
-const mapConversations = (conversations: Konversation[], offerDetails: IdMap<GestellteAngebotAnfrage>, demandDetails: IdMap<GestellteBedarfAnfrage>, person?: Person) => {
-    return conversations.filter(k => k.referenzTyp === "ANGEBOT_ANFRAGE" || k.referenzTyp === "BEDARF_ANFRAGE")
-        .map(k => {
-            if (k.referenzTyp === "ANGEBOT_ANFRAGE") {
-                const details = offerDetails[k.referenzId]?.value;
-                const mine = details?.institution.id === person?.aktuellerStandort.institution.id;
-                const variantId = details?.angebot.artikelVarianteId;
-                const variants = details?.angebot.artikel.varianten;
-                const variant = variants?.find(v => v.id === variantId);
-                const articleName = details ? details.angebot.artikel.name + ((variants?.length || 0) > 1 ? " (" + variant?.variante + ")" : "") : "";
-                const message = k.nachrichten.map(m => ({ ...m, timestamp: new Date(m.erstelltAm).getTime() })).sort((a, b) => a.timestamp - b.timestamp).slice(-1)[0];
-                return {
-                    title: (mine ? "Ihre Anfrage" : "Anfrage von " + (details?.institution.name || "???")) + " zu Angebot: " + (details?.angebot.verfuegbareAnzahl || "???") + " " + (articleName || ""),
-                    message: message,
-                    id: k.id
-                };
-            } else {
-                const details = demandDetails[k.referenzId]?.value;
-                const mine = details?.institution.id === person?.aktuellerStandort.institution.id;
-                const variantId = details?.bedarf.artikelVarianteId;
-                const variants = details?.bedarf.artikel.varianten;
-                const variant = variants?.find(v => v.id === variantId);
-                const articleName = details ? details.bedarf.artikel.name + ((variants?.length || 0) > 1 ? " (" + variant?.variante + ")" : "") : "";
-                const message = k.nachrichten.map(m => ({ ...m, timestamp: new Date(m.erstelltAm).getTime() })).sort((a, b) => a.timestamp - b.timestamp).slice(-1)[0];
-                return {
-                    title: (mine ? "Ihre Anfrage" : "Anfrage von " + (details?.institution.name || "???")) + " zu Bedarf: " + (details?.bedarf.verfuegbareAnzahl || "???") + " " + (articleName || ""),
-                    message: message,
-                    id: k.id
-                };
-            }
-        });
-};
 
 const formatDate = (dateString?: string) => {
-    if(!dateString) {
+    if (!dateString) {
         return "";
     }
 
@@ -170,7 +121,8 @@ const ConversationList: React.FC<Props> = props => {
     const items = mapConversations(
         props.conversations.slice(pageIndex * PAGE_SIZE, pageIndex * PAGE_SIZE + PAGE_SIZE),
         props.offerDetails,
-        props.demandDetails
+        props.demandDetails,
+        props.person
     );
 
     return (
@@ -183,9 +135,8 @@ const ConversationList: React.FC<Props> = props => {
                         <div className={classes.left}>
                             <span className={classes.title}>{item.title}</span>
                             <span className={classes.message}>
-                            <span className={classes.messageSender}>{item.message ? item.message?.erstellerName + ":" : undefined}</span>
-                            <span className={classes.messageText}>{item.message?.nachricht || "Keine Nachricht gefunden"}</span>
-                        </span>
+                                {!item.message ? undefined : (item.message.erstellerName + ": " + item.message.nachricht)}
+                            </span>
                         </div>
                         <div className={classes.right}>
                             <span className={classes.time}>{formatDate(item.message?.erstelltAm)}</span>

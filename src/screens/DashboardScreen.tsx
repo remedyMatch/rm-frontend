@@ -1,12 +1,12 @@
-import {Hidden, Typography, WithStyles} from "@material-ui/core";
+import {Button, Hidden, Typography, WithStyles} from "@material-ui/core";
 import {createStyles, Theme, withStyles} from "@material-ui/core/styles";
 import clsx from "clsx";
 import React, {Component} from "react";
 import {connect, ConnectedProps} from "react-redux";
 import {RouteComponentProps, withRouter} from "react-router-dom";
+import RequestStatusBadge from "../components/Badge/RequestStatusBadge";
 import ContentCard from "../components/Content/ContentCard";
 import LinkCard from "../components/Content/LinkCard";
-import {FormButton} from "../components/Form/old/FormButton";
 import {InstitutionAngebot} from "../domain/angebot/InstitutionAngebot";
 import {InstitutionBedarf} from "../domain/bedarf/InstitutionBedarf";
 import home from "../resources/home.svg";
@@ -18,6 +18,7 @@ import {loadKonversationAngebotAnfragen} from "../state/nachricht/KonversationAn
 import {loadKonversationBedarfAnfragen} from "../state/nachricht/KonversationBedarfAnfragenState";
 import {loadKonversationen} from "../state/nachricht/KonversationenState";
 import {RootDispatch, RootState} from "../state/Store";
+import {getDemandRequestIds, getOfferRequestIds, mapConversations} from "../util/mappers/ConversationMapper";
 
 interface Props extends WithStyles<typeof styles>, PropsFromRedux, RouteComponentProps {
 }
@@ -33,7 +34,11 @@ const styles = (theme: Theme) =>
             maxWidth: "350px",
             width: "100%",
             fontWeight: 600,
-            marginTop: "16px"
+            marginTop: "16px",
+            textTransform: "none",
+            fontSize: "16px",
+            borderRadius: "8px",
+            color: "white"
         },
         buttonOffer: {
             backgroundColor: "#007c92",
@@ -104,6 +109,9 @@ const styles = (theme: Theme) =>
             cursor: "pointer",
             padding: "4px 24px",
             transition: theme.transitions.create("background-color"),
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
             "&:hover": {
                 backgroundColor: "rgba(0, 0, 0, 0.1)"
             }
@@ -150,19 +158,25 @@ class DashboardScreen extends Component<Props, State> {
                             Willkommen zurück bei RemedyMatch.
                         </Typography>
 
-                        <FormButton
+                        <Button
+                            size="medium"
+                            color="secondary"
+                            disableElevation
                             onClick={this.onCreateOfferClicked}
                             className={clsx(classes.button, classes.buttonOffer)}
                             variant="contained">
                             Material spenden
-                        </FormButton>
+                        </Button>
 
-                        <FormButton
+                        <Button
+                            size="medium"
+                            color="secondary"
+                            disableElevation
                             onClick={this.onCreateDemandClicked}
                             className={clsx(classes.button, classes.buttonDemand)}
                             variant="contained">
                             Material suchen
-                        </FormButton>
+                        </Button>
 
                     </div>
 
@@ -213,7 +227,7 @@ class DashboardScreen extends Component<Props, State> {
 
                     <ContentCard
                         className={classes.contentCard}
-                        title="Mein Postfach"
+                        title="Meine Konversationen"
                         showPlaceholder={conversationCount === 0}
                         actionDisabled={conversationCount === 0}
                         onActionClicked={this.onShowConversationsClicked}
@@ -229,9 +243,19 @@ class DashboardScreen extends Component<Props, State> {
                             </>
                         )}>
                         {
-                            this.mapConversations().map(entry => (
-                                <div className={classes.adEntry}>
+                            mapConversations(
+                                this.props.konversationen || [],
+                                this.props.konversationAngebotAnfragen || [],
+                                this.props.konversationBedarfAnfragen || [],
+                                this.props.person,
+                                {
+                                    withPrefix: false
+                                }
+                            ).slice(0, 5).map(entry => (
+                                <div className={classes.adEntry}
+                                     onClick={() => this.props.history.push("/konversation/" + entry.id)}>
                                     <span className={classes.adEntryTitle}>
+                                        <RequestStatusBadge status={entry.status}/>
                                         {entry.title}
                                     </span>
                                 </div>
@@ -265,11 +289,8 @@ class DashboardScreen extends Component<Props, State> {
 
     componentDidUpdate(prevProps: Readonly<Props>) {
         if (prevProps.konversationen !== this.props.konversationen) {
-            const angebotAnfrageIdsToLoad = this.props.konversationen?.filter(k => k.referenzTyp === "ANGEBOT_ANFRAGE").map(k => k.referenzId);
-            const bedarfAnfrageIdsToLoad = this.props.konversationen?.filter(k => k.referenzTyp === "BEDARF_ANFRAGE").map(k => k.referenzId);
-
-            this.props.loadKonversationAngebotAnfragen(...angebotAnfrageIdsToLoad);
-            this.props.loadKonversationBedarfAnfragen(...bedarfAnfrageIdsToLoad);
+            this.props.loadKonversationAngebotAnfragen(...getOfferRequestIds(this.props.konversationen || []));
+            this.props.loadKonversationBedarfAnfragen(...getDemandRequestIds(this.props.konversationen || []));
         }
     }
 
@@ -317,38 +338,6 @@ class DashboardScreen extends Component<Props, State> {
             message: `${bedarf ? "Bedarf: " : "Angebot: "} ${count}x ${name}` + (variante ? ` (${variante})` : ""),
             requests: entry.anfragen.length
         };
-    };
-
-    private mapConversations = () => {
-        return (this.props.konversationen || [])
-            .filter(k => k.referenzTyp === "ANGEBOT_ANFRAGE" || k.referenzTyp === "BEDARF_ANFRAGE")
-            .map(k => {
-                if (k.referenzTyp === "ANGEBOT_ANFRAGE") {
-                    const details = this.props.konversationAngebotAnfragen[k.referenzId]?.value;
-                    const mine = details?.institution.id === this.props.person?.aktuellerStandort.institution.id;
-                    const variantId = details?.angebot.artikelVarianteId;
-                    const variants = details?.angebot.artikel.varianten;
-                    const variant = variants?.find(v => v.id === variantId);
-                    const articleName = details ? details.angebot.artikel.name + ((variants?.length || 0) > 1 ? " (" + variant?.variante + ")" : "") : "";
-                    return {
-                        title: (mine ? "Ihre Anfrage" : (details?.institution.name || "???")) + " zu Angebot: " + (details?.angebot.verfuegbareAnzahl || "???") + " " + (articleName || ""),
-                        id: k.referenzId,
-                        type: "offer"
-                    };
-                } else {
-                    const details = this.props.konversationBedarfAnfragen[k.referenzId]?.value;
-                    const mine = details?.institution.id === this.props.person?.aktuellerStandort.institution.id;
-                    const variantId = details?.bedarf.artikelVarianteId;
-                    const variants = details?.bedarf.artikel.varianten;
-                    const variant = variants?.find(v => v.id === variantId);
-                    const articleName = details ? details.bedarf.artikel.name + ((variants?.length || 0) > 1 ? " (" + variant?.variante + ")" : "") : "";
-                    return {
-                        title: (mine ? "Ihre Anfrage" : (details?.institution.name || "???")) + " zu Bedarf: " + (details?.bedarf.verfuegbareAnzahl || "???") + " " + (articleName || ""),
-                        id: k.referenzId,
-                        type: "demand"
-                    };
-                }
-            });
     };
 }
 
