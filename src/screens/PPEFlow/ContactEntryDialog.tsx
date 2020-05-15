@@ -100,6 +100,7 @@ const ContactEntryDialog: React.FC<Props> = props => {
                 onFirst={onCancel}
                 secondTitle="Anfrage absenden"
                 onSecond={onContact}
+                disabled={disabled}
                 title="Inserat anfragen"
                 subtitle={"Bitte geben Sie die Anzahl, die Sie " + (type === "offer" ? "anbieten" : "anfragen") + " wollen, sowie Ihre Nachricht unten ein und klicken Sie auf 'Anfrage absenden'."}>
 

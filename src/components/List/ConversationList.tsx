@@ -8,7 +8,8 @@ import {GestellteAngebotAnfrage} from "../../domain/angebot/GestellteAngebotAnfr
 import {GestellteBedarfAnfrage} from "../../domain/bedarf/GestellteBedarfAnfrage";
 import {Konversation} from "../../domain/nachricht/Konversation";
 import {Person} from "../../domain/person/Person";
-import {ApiState} from "../../state/util/ApiState";
+import {IdMap, mapConversations} from "../../util/mappers/ConversationMapper";
+import RequestStatusBadge from "../Badge/RequestStatusBadge";
 
 const useStyles = makeStyles((theme: Theme) => ({
     list: {
@@ -24,20 +25,21 @@ const useStyles = makeStyles((theme: Theme) => ({
         borderTop: "2px solid #aabec6",
         display: "flex",
         flexDirection: "row",
-        padding: "8px 8px 8px 16px",
+        padding: "16px 8px 16px 16px",
         cursor: "pointer"
     },
     left: {
         display: "flex",
         flexDirection: "column",
-        flexGrow: 1,
-        flexShrink: 1
+        flex: 1,
+        overflow: "hidden"
     },
     right: {
         display: "flex",
         flexDirection: "row",
         flexShrink: 0,
         flexGrow: 0,
+        marginLeft: "auto",
         alignItems: "center"
     },
     title: {
@@ -49,30 +51,20 @@ const useStyles = makeStyles((theme: Theme) => ({
         marginBottom: "4px"
     },
     message: {
-        display: "flex",
-        flexDirection: "row"
-    },
-    messageSender: {
-        fontFamily: "Montserrat, sans-serif",
-        fontSize: "14px",
-        fontWeight: 600,
-        whiteSpace: "nowrap",
-        color: "rgba(0, 0, 0, 0.54)"
-    },
-    messageText: {
         fontFamily: "Montserrat, sans-serif",
         fontSize: "14px",
         whiteSpace: "nowrap",
+        color: "rgba(0, 0, 0, 0.87)",
         textOverflow: "ellipsis",
-        color: "rgba(0, 0, 0, 0.54)",
-        marginLeft: "4px"
+        marginRight: "16px",
+        overflow: "hidden",
     },
     time: {
         fontFamily: "Montserrat, sans-serif",
         fontSize: "14px",
         fontWeight: 600,
         color: "rgba(0, 0, 0, 0.54)",
-        marginRight: "4px"
+        marginRight: "16px"
     },
     iconRight: {
         color: "rgba(0, 0, 0, 0.38)"
@@ -89,45 +81,15 @@ interface Props {
     conversations: Konversation[];
     offerDetails: IdMap<GestellteAngebotAnfrage>;
     demandDetails: IdMap<GestellteBedarfAnfrage>;
+    person?: Person;
     onOpenConversationClicked: (conversationId: string) => void;
 }
 
-declare type IdMap<T> = { [key: string]: ApiState<T> };
-
 const PAGE_SIZE = 10;
 
-const mapConversations = (conversations: Konversation[], offerDetails: IdMap<GestellteAngebotAnfrage>, demandDetails: IdMap<GestellteBedarfAnfrage>, person?: Person) => {
-    return conversations.filter(k => k.referenzTyp === "ANGEBOT_ANFRAGE" || k.referenzTyp === "BEDARF_ANFRAGE")
-        .map(k => {
-            if (k.referenzTyp === "ANGEBOT_ANFRAGE") {
-                const details = offerDetails[k.referenzId]?.value;
-                const mine = details?.institution.id === person?.aktuellerStandort.institution.id; // TODO: Woher bekomme ich die andere Institution? Im Angebot/Bedarf steht keine!
-                const variantId = details?.angebot.artikelVarianteId;
-                const variants = details?.angebot.artikel.varianten;
-                const variant = variants?.find(v => v.id === variantId);
-                const articleName = details ? details.angebot.artikel.name + ((variants?.length || 0) > 1 ? " (" + variant?.variante + ")" : "") : "";
-                return {
-                    title: (details?.institution.name || "???") + " zu Angebot: " + (details?.angebot.verfuegbareAnzahl || "???") + " " + (articleName || ""),
-                    message: k.nachrichten.length > 0 ? k.nachrichten[k.nachrichten.length - 1] : undefined,
-                    id: k.id
-                };
-            } else {
-                const details = demandDetails[k.referenzId]?.value;
-                const variantId = details?.bedarf.artikelVarianteId;
-                const variants = details?.bedarf.artikel.varianten;
-                const variant = variants?.find(v => v.id === variantId);
-                const articleName = details ? details.bedarf.artikel.name + ((variants?.length || 0) > 1 ? " (" + variant?.variante + ")" : "") : "";
-                return {
-                    title: (details?.institution.name || "???") + " zu Bedarf: " + (details?.bedarf.verfuegbareAnzahl || "???") + " " + (articleName || ""),
-                    message: k.nachrichten.length > 0 ? k.nachrichten[k.nachrichten.length - 1] : undefined,
-                    id: k.id
-                };
-            }
-        });
-};
 
 const formatDate = (dateString?: string) => {
-    if(!dateString) {
+    if (!dateString) {
         return "";
     }
 
@@ -158,10 +120,11 @@ const ConversationList: React.FC<Props> = props => {
     }
 
     const items = mapConversations(
-        props.conversations.slice(pageIndex * PAGE_SIZE, pageIndex * PAGE_SIZE + PAGE_SIZE),
+        props.conversations,
         props.offerDetails,
-        props.demandDetails
-    );
+        props.demandDetails,
+        props.person
+    ).slice(pageIndex * PAGE_SIZE, pageIndex * PAGE_SIZE + PAGE_SIZE);
 
     return (
         <div className={props.className}>
@@ -171,11 +134,13 @@ const ConversationList: React.FC<Props> = props => {
                         className={classes.resultItem}
                         onClick={() => props.onOpenConversationClicked(item.id)}>
                         <div className={classes.left}>
-                            <span className={classes.title}>{item.title}</span>
+                            <span className={classes.title}>
+                                <RequestStatusBadge status={item.status}/>
+                                {item.title}
+                            </span>
                             <span className={classes.message}>
-                            <span className={classes.messageSender}>{item.message ? item.message?.erstellerName + ":" : undefined}</span>
-                            <span className={classes.messageText}>{item.message?.nachricht || "Keine Nachricht gefunden"}</span>
-                        </span>
+                                {!item.message ? undefined : (item.message.erstellerName + ": " + item.message.nachricht)}
+                            </span>
                         </div>
                         <div className={classes.right}>
                             <span className={classes.time}>{formatDate(item.message?.erstelltAm)}</span>

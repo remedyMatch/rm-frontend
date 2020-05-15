@@ -1,6 +1,5 @@
 import {Button, capitalize} from "@material-ui/core";
 import {makeStyles, Theme} from '@material-ui/core/styles';
-import {CallMade, CallReceived, LocationOn} from "@material-ui/icons";
 import {Pagination} from "@material-ui/lab";
 import React, {useState} from 'react';
 import {Match} from "../../domain/match/Match";
@@ -8,7 +7,8 @@ import countries from "../../resources/countries.json";
 
 export type MatchListDataRow = {
     icon: string;
-    original: Match
+    original: Match;
+    conversationId?: string;
 };
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -46,14 +46,17 @@ const useStyles = makeStyles((theme: Theme) => ({
         fontFamily: "Montserrat, sans-serif",
         fontSize: "20px",
         fontWeight: 600,
-        color: "rgba(0, 0, 0, 0.87)"
+        color: "rgba(0, 0, 0, 0.87)",
+        textAlign: "center",
+        marginBottom: "8px"
     },
     article: {
         width: "200px",
         display: "flex",
         flexDirection: "column",
         justifyContent: "center",
-        flexShrink: 0
+        flexShrink: 0,
+        marginRight: "auto"
     },
     articleIcon: {
         height: "4em",
@@ -83,18 +86,13 @@ const useStyles = makeStyles((theme: Theme) => ({
     buttonContainer: {
         display: "flex",
         flexDirection: "column",
-        justifyContent: "center"
+        justifyContent: "center",
+        marginLeft: "auto"
     },
     pagination: {
         justifyContent: "center",
         display: "flex",
         margin: "2em"
-    },
-    locationTextBlock: {
-        display: "flex",
-        flexDirection: "column",
-        flexGrow: 1,
-        justifyContent: "center"
     },
     locationDetails: {
         fontFamily: "Montserrat, sans-serif",
@@ -105,11 +103,8 @@ const useStyles = makeStyles((theme: Theme) => ({
     locationHeading: {
         fontFamily: "Montserrat, sans-serif",
         fontSize: "16px",
-        fontWeight: 600
-    },
-    locationLeft: {
-        display: "flex",
-        flexDirection: "column"
+        fontWeight: 600,
+        textAlign: "center"
     }
 }));
 
@@ -148,46 +143,34 @@ const MatchList: React.FC<Props> = props => {
                             )}
                         </div>
                         <div className={classes.locationColumn}>
-                            <span className={classes.locationLeft}>
                             <span className={classes.locationHeading}>Von</span>
-                                <LocationOn fontSize="large"/>
-                                <CallMade fontSize="large"/>
-                            </span>
-                            <div className={classes.locationTextBlock}>
-                                <span className={classes.locationDetails}>
+                            <span className={classes.locationDetails}>
                                     {item.original.standortVon.name}
                                 </span>
-                                <span className={classes.locationDetails}>
+                            <span className={classes.locationDetails}>
                                     {item.original.standortVon.strasse} {item.original.standortVon.hausnummer}
                                 </span>
-                                <span className={classes.locationDetails}>
+                            <span className={classes.locationDetails}>
                                     {item.original.standortVon.plz} {item.original.standortVon.ort}
                                 </span>
-                                <span className={classes.locationDetails}>
+                            <span className={classes.locationDetails}>
                                     {countries.DE[item.original.standortVon.land as keyof typeof countries.DE]}
                                 </span>
-                            </div>
                         </div>
                         <div className={classes.locationColumn}>
-                            <span className={classes.locationLeft}>
                             <span className={classes.locationHeading}>An</span>
-                                <LocationOn fontSize="large"/>
-                                <CallReceived fontSize="large"/>
-                            </span>
-                            <div className={classes.locationTextBlock}>
-                                <span className={classes.locationDetails}>
+                            <span className={classes.locationDetails}>
                                     {item.original.standortAn.name}
                                 </span>
-                                <span className={classes.locationDetails}>
+                            <span className={classes.locationDetails}>
                                     {item.original.standortAn.strasse} {item.original.standortAn.hausnummer}
                                 </span>
-                                <span className={classes.locationDetails}>
+                            <span className={classes.locationDetails}>
                                     {item.original.standortAn.plz} {item.original.standortAn.ort}
                                 </span>
-                                <span className={classes.locationDetails}>
+                            <span className={classes.locationDetails}>
                                     {countries.DE[item.original.standortAn.land as keyof typeof countries.DE]}
                                 </span>
-                            </div>
                         </div>
                         <div className={classes.buttonContainer}>
                             <Button

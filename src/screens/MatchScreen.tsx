@@ -1,7 +1,8 @@
 import {Typography} from "@material-ui/core";
 import {makeStyles} from "@material-ui/core/styles";
-import React, {useEffect} from "react";
+import React, {useEffect, useMemo} from "react";
 import {useDispatch, useSelector} from "react-redux";
+import {useHistory} from "react-router-dom";
 import MatchList from "../components/List/MatchList";
 import kategorie_behelfsmaske from "../resources/kategorie_behelfsmaske.svg";
 import kategorie_desinfektion from "../resources/kategorie_desinfektion.svg";
@@ -11,6 +12,7 @@ import kategorie_schutzmaske from "../resources/kategorie_schutzmaske.svg";
 import kategorie_sonstiges from "../resources/kategorie_sonstiges.svg";
 import {loadArtikelKategorien} from "../state/artikel/ArtikelKategorienState";
 import {loadMatches} from "../state/match/MatchesState";
+import {loadKonversationen} from "../state/nachricht/KonversationenState";
 import {RootState} from "../state/Store";
 
 const useStyles = makeStyles(() => ({
@@ -64,19 +66,23 @@ const getIcon = (name: string) => {
 const MatchScreen: React.FC = () => {
     const classes = useStyles();
     const dispatch = useDispatch();
+    const history = useHistory();
 
     useEffect(() => {
         dispatch(loadMatches());
         dispatch(loadArtikelKategorien());
+        dispatch(loadKonversationen());
     }, [dispatch]);
 
     const matches = useSelector((state: RootState) => state.matches.value);
     const kategorien = useSelector((state: RootState) => state.artikelKategorien.value);
+    const conversations = useSelector((state: RootState) => state.konversationen.value);
 
-    const entries = matches?.map(match => ({
+    const entries = useMemo(() => matches?.map(match => ({
         original: match,
-        icon: getIcon(kategorien?.find(k => k.id === match.artikel.artikelKategorieId)?.name || "")
-    })) || [];
+        icon: getIcon(kategorien?.find(k => k.id === match.artikel.artikelKategorieId)?.name || ""),
+        conversationId: conversations?.find(c => c.referenzId === match.anfrageId)?.id
+    })) || [], [matches, kategorien, conversations]);
 
     return (
         <>
@@ -87,7 +93,7 @@ const MatchScreen: React.FC = () => {
 
                 <MatchList
                     results={entries}
-                    onOpenConversationClicked={console.log}/>
+                    onOpenConversationClicked={item => history.push("/konversation/" + item.conversationId || "")}/>
             </div>
         </>
     );

@@ -9,6 +9,7 @@ import {InstitutionAngebot} from "../domain/angebot/InstitutionAngebot";
 import {ArtikelKategorie} from "../domain/artikel/ArtikelKategorie";
 import {Bedarf} from "../domain/bedarf/Bedarf";
 import {InstitutionBedarf} from "../domain/bedarf/InstitutionBedarf";
+import {Konversation} from "../domain/nachricht/Konversation";
 import kategorie_behelfsmaske from "../resources/kategorie_behelfsmaske.svg";
 import kategorie_desinfektion from "../resources/kategorie_desinfektion.svg";
 import kategorie_probenentnahme from "../resources/kategorie_probenentnahme.svg";
@@ -18,6 +19,7 @@ import kategorie_sonstiges from "../resources/kategorie_sonstiges.svg";
 import {loadInstitutionAngebote} from "../state/angebot/InstitutionAngeboteState";
 import {loadArtikelKategorien} from "../state/artikel/ArtikelKategorienState";
 import {loadInstitutionBedarfe} from "../state/bedarf/InstitutionBedarfeState";
+import {loadKonversationen} from "../state/nachricht/KonversationenState";
 import {RootState} from "../state/Store";
 import CancelAdDialog from "./AccountScreen/CancelAdDialog";
 import EditAdDialog from "./AccountScreen/EditAdDialog";
@@ -64,7 +66,11 @@ const useStyles = makeStyles(() => ({
     }
 }));
 
-const mapToAd = (entry: InstitutionBedarf | InstitutionAngebot, bedarf: boolean, kategorien?: ArtikelKategorie[]) => {
+const mapToAd = (
+    entry: InstitutionBedarf | InstitutionAngebot,
+    bedarf: boolean,
+    kategorien: ArtikelKategorie[] | undefined,
+    konversationen: Konversation[] | undefined) => {
     return {
         id: entry.id,
         icon: getIcon(kategorien?.find(ak => ak.id === entry.artikel.artikelKategorieId)?.name || ""),
@@ -88,7 +94,8 @@ const mapToAd = (entry: InstitutionBedarf | InstitutionAngebot, bedarf: boolean,
             distance: request.entfernung,
             institution: request.institution.name,
             location: request.standort.ort,
-            status: request.status
+            status: request.status,
+            conversationId: konversationen?.find(k => k.referenzId === request.id)?.id
         }))
     };
 };
@@ -126,6 +133,7 @@ const AdScreen: React.FC = () => {
     const match = useRouteMatch<{ adId?: string }>();
 
     useEffect(() => {
+        dispatch(loadKonversationen());
         dispatch(loadInstitutionAngebote());
         dispatch(loadInstitutionBedarfe());
         dispatch(loadArtikelKategorien());
@@ -200,13 +208,14 @@ const AdScreen: React.FC = () => {
     const angebote = useSelector((state: RootState) => state.institutionAngebote.value);
     const bedarfe = useSelector((state: RootState) => state.institutionBedarfe.value);
     const kategorien = useSelector((state: RootState) => state.artikelKategorien.value);
+    const konversationen = useSelector((state: RootState) => state.konversationen.value);
 
     const ads = useMemo(
         () => (angebote || [])
-            .map(x => mapToAd(x, false, kategorien))
-            .concat(bedarfe?.map(x => mapToAd(x, true, kategorien)) || [])
+            .map(x => mapToAd(x, false, kategorien, konversationen))
+            .concat(bedarfe?.map(x => mapToAd(x, true, kategorien, konversationen)) || [])
             .filter(x => !match.params.adId || match.params.adId === x.id),
-        [match, angebote, bedarfe, kategorien]
+        [konversationen, match, angebote, bedarfe, kategorien]
     );
 
     return (

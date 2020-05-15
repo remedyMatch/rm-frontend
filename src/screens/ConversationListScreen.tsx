@@ -39,6 +39,7 @@ const ConversationListScreen: React.FC = () => {
     const dispatch = useDispatch();
     const history = useHistory();
 
+    const person = useSelector((state: RootState) => state.person.value);
     const conversations = useSelector((state: RootState) => state.konversationen.value) || [];
     const conversationDemandDetails = useSelector((state: RootState) => state.konversationBedarfAnfragen.value);
     const conversationOfferDetails = useSelector((state: RootState) => state.konversationAngebotAnfragen.value);
@@ -73,6 +74,7 @@ const ConversationListScreen: React.FC = () => {
                 <ConversationList
                     className={classes.list}
                     onOpenConversationClicked={onOpenConversationClicked}
+                    person={person}
                     conversations={conversations}
                     demandDetails={conversationDemandDetails}
                     offerDetails={conversationOfferDetails}/>
