@@ -8,6 +8,10 @@ import React, {useCallback, useEffect, useState} from "react";
 import {useDispatch, useSelector} from "react-redux";
 import {useRouteMatch} from "react-router-dom";
 import TextArea from "../components/Form/TextArea";
+import {Angebot} from "../domain/angebot/Angebot";
+import {GestellteAngebotAnfrage} from "../domain/angebot/GestellteAngebotAnfrage";
+import {Bedarf} from "../domain/bedarf/Bedarf";
+import {GestellteBedarfAnfrage} from "../domain/bedarf/GestellteBedarfAnfrage";
 import {Konversation} from "../domain/nachricht/Konversation";
 import {loadKonversationAngebotAnfragen} from "../state/nachricht/KonversationAngebotAnfragenState";
 import {loadKonversationBedarfAnfragen} from "../state/nachricht/KonversationBedarfAnfragenState";
@@ -143,6 +147,7 @@ const useStyles = makeStyles((theme: Theme) => ({
         whiteSpace: "nowrap",
         margin: "8px 8px 0px 8px",
         border: "2px solid #666",
+        borderRadius: "8px",
         "&:hover": {
             backgroundColor: "#CCC"
         }
@@ -159,12 +164,14 @@ const useStyles = makeStyles((theme: Theme) => ({
         fontFamily: "Montserrat, sans-serif",
         fontWeight: 600,
         fontSize: "14px",
-        flexGrow: 1
+        flexGrow: 1,
+        alignSelf: "center"
     },
     dismissErrorButton: {
         height: "36px",
         width: "36px",
-        placeSelf: "center"
+        placeSelf: "center",
+        color: "rgba(255, 255, 255, 0.87)"
     }
 }));
 
@@ -213,32 +220,26 @@ const ConversationScreen: React.FC = () => {
         }
     }, [dispatch, conversation]);
 
-    const loadConversation = useCallback(() => {
-        const load = async (id: string) => {
-            const result = await apiGet<Konversation>("/remedy/konversation/" + id);
-            if (!result.error) {
-                setConversation(result.result);
-            }
-        };
-        load(match.params.conversationId);
+    const loadConversation = useCallback(async () => {
+        const result = await apiGet<Konversation>("/remedy/konversation/" + match.params.conversationId);
+        if (!result.error) {
+            setConversation(result.result);
+        }
     }, [match]);
 
-    const onSendClicked = useCallback(() => {
-        const send = async () => {
-            setInputDisabled(true);
-            const result = await apiPost("/remedy/konversation/" + match.params.conversationId + "/nachricht", {
-                nachricht: inputText.trim()
-            });
-            if (!result.error) {
-                loadConversation();
-                setInputText("");
-                setInputDisabled(false);
-            } else {
-                setInputDisabled(false);
-                setError(result.error);
-            }
-        };
-        send();
+    const onSendClicked = useCallback(async () => {
+        setInputDisabled(true);
+        const result = await apiPost("/remedy/konversation/" + match.params.conversationId + "/nachricht", {
+            nachricht: inputText.trim()
+        });
+        if (!result.error) {
+            loadConversation();
+            setInputText("");
+            setInputDisabled(false);
+        } else {
+            setInputDisabled(false);
+            setError(result.error);
+        }
     }, [match, inputText, loadConversation]);
 
     const onDismissErrorClicked = useCallback(() => setError(undefined), []);
@@ -249,20 +250,43 @@ const ConversationScreen: React.FC = () => {
         return () => clearInterval(interval);
     }, [dispatch, loadConversation]);
 
-    let ad, details;
+    let ad: Angebot | Bedarf | undefined;
+    let request: GestellteBedarfAnfrage | GestellteAngebotAnfrage | undefined;
     if (conversation?.referenzTyp === "ANGEBOT_ANFRAGE") {
-        details = conversationOfferDetails[conversation?.referenzId || ""]?.value;
-        ad = details?.angebot;
+        request = conversationOfferDetails[conversation?.referenzId || ""]?.value;
+        ad = request?.angebot;
     } else if (conversation?.referenzTyp === "BEDARF_ANFRAGE") {
-        details = conversationDemandDetails[conversation?.referenzId || ""]?.value;
-        ad = details?.bedarf;
+        request = conversationDemandDetails[conversation?.referenzId || ""]?.value;
+        ad = request?.bedarf;
     }
     const variantId = ad?.artikelVarianteId;
     const variants = ad?.artikel.varianten;
     const variant = variants?.find(v => v.id === variantId);
-    const articleName = details ? ad?.artikel.name + ((variants?.length || 0) > 1 ? " (" + variant?.variante + ")" : "") : "";
-    const title = "Anfrage von " + (details?.institution.name || "???") + " zu " + (conversation?.referenzTyp === "ANGEBOT_ANFRAGE" ? "Angebot" : "Bedarf") + ": " + (ad?.verfuegbareAnzahl || "???") + " " + (articleName || "");
-    const mine = details?.institution.id === person?.aktuellerStandort.institution.id;
+    const articleName = request ? ad?.artikel.name + ((variants?.length || 0) > 1 ? " (" + variant?.variante + ")" : "") : "";
+    const title = "Anfrage von " + (request?.institution.name || "???") + " zu " + (conversation?.referenzTyp === "ANGEBOT_ANFRAGE" ? "Angebot" : "Bedarf") + ": " + (ad?.verfuegbareAnzahl || "???") + " " + (articleName || "");
+    const mine = request?.institution.id === person?.aktuellerStandort.institution.id;
+
+    const requestAction = useCallback(async (action: "accept" | "dismiss" | "cancel") => {
+        setInputDisabled(true);
+        const type = conversation?.referenzTyp === "ANGEBOT_ANFRAGE" ? "angebot" : "bedarf";
+        const result = await apiPost(`/remedy/${type}/${request?.id}/anfrage/${conversation?.referenzId}/${action === "cancel" ? "stornieren" : "beantworten"}`, action !== "cancel" ? {
+            entscheidung: action === "accept"
+        } : undefined);
+        if(result.error) {
+            setError(result.error);
+            setInputDisabled(false);
+        } else {
+            if (conversation?.referenzTyp === "ANGEBOT_ANFRAGE") {
+                dispatch(loadKonversationAngebotAnfragen(conversation.referenzId));
+            } else if (conversation?.referenzTyp === "BEDARF_ANFRAGE") {
+                dispatch(loadKonversationBedarfAnfragen(conversation.referenzId));
+            }
+        }
+    }, [dispatch, conversation, request]);
+
+    const onCancelRequestClicked = useCallback(() => requestAction("cancel"), [requestAction]);
+    const onAcceptRequestClicked = useCallback(() => requestAction("accept"), [requestAction]);
+    const onDismissRequestClicked = useCallback(() => requestAction("dismiss"), [requestAction]);
 
     return (
         <>
@@ -303,26 +327,47 @@ const ConversationScreen: React.FC = () => {
                     </div>
                 )}
 
-                {!mine && details?.status === "OFFEN" && (
+                {request?.status === "OFFEN" && (
                     <div className={classes.actionContainer}>
-                        <span className={classes.actionHint}>Sie können diese Anfrage annehmen oder ablehnen.</span>
+                        <span className={classes.actionHint}>
+                            {mine
+                                ? "Diese Anfrage wurde noch nicht beantwortet."
+                                : "Sie haben diese Anfrage noch nicht beantwortet."}
+                        </span>
                         <div className={classes.actionButtonContainer}>
-                            <Button
-                                onClick={() => console.log("ABLEHNEN")}
-                                disableElevation
-                                className={classes.button}
-                                variant="contained"
-                                size="small">
-                                Anfrage ablehnen
-                            </Button>
-                            <Button
-                                onClick={() => console.log("ANNEHMEN")}
-                                disableElevation
-                                className={classes.button}
-                                variant="contained"
-                                size="small">
-                                Anfrage annehmen
-                            </Button>
+                            {!mine && (
+                                <>
+                                    <Button
+                                        onClick={onAcceptRequestClicked}
+                                        disableElevation
+                                        disabled={inputDisabled}
+                                        className={classes.button}
+                                        variant="contained"
+                                        size="small">
+                                        Anfrage ablehnen
+                                    </Button>
+                                    <Button
+                                        onClick={onDismissRequestClicked}
+                                        disableElevation
+                                        disabled={inputDisabled}
+                                        className={classes.button}
+                                        variant="contained"
+                                        size="small">
+                                        Anfrage annehmen
+                                    </Button>
+                                </>
+                            )}
+                            {mine && (
+                                <Button
+                                    onClick={onCancelRequestClicked}
+                                    disableElevation
+                                    disabled={inputDisabled}
+                                    className={classes.button}
+                                    variant="contained"
+                                    size="small">
+                                    Anfrage stornieren
+                                </Button>
+                            )}
                         </div>
                     </div>
                 )}
