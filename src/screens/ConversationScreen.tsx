@@ -212,26 +212,18 @@ const ConversationScreen: React.FC = () => {
     const [inputDisabled, setInputDisabled] = useState(false);
     const [error, setError] = useState<string | undefined>(undefined);
 
-    useEffect(() => {
-        if (conversation?.referenzTyp === "ANGEBOT_ANFRAGE") {
-            dispatch(loadKonversationAngebotAnfragen(conversation.referenzId));
-        } else if (conversation?.referenzTyp === "BEDARF_ANFRAGE") {
-            dispatch(loadKonversationBedarfAnfragen(conversation.referenzId));
-        }
-    }, [dispatch, conversation]);
-
     const refreshData = useCallback(async () => {
-        if (conversation?.referenzTyp === "ANGEBOT_ANFRAGE") {
-            dispatch(loadKonversationAngebotAnfragen(conversation.referenzId));
-        } else if (conversation?.referenzTyp === "BEDARF_ANFRAGE") {
-            dispatch(loadKonversationBedarfAnfragen(conversation.referenzId));
-        }
-
         const result = await apiGet<Konversation>("/remedy/konversation/" + match.params.conversationId);
         if (!result.error) {
             setConversation(result.result);
         }
-    }, [conversation, dispatch, match]);
+
+        if (result.result?.referenzTyp === "ANGEBOT_ANFRAGE") {
+            dispatch(loadKonversationAngebotAnfragen(result.result.referenzId));
+        } else if (result.result?.referenzTyp === "BEDARF_ANFRAGE") {
+            dispatch(loadKonversationBedarfAnfragen(result.result.referenzId));
+        }
+    }, [dispatch, match]);
 
     const onSendClicked = useCallback(async () => {
         setInputDisabled(true);
@@ -251,9 +243,10 @@ const ConversationScreen: React.FC = () => {
     const onDismissErrorClicked = useCallback(() => setError(undefined), []);
 
     useEffect(() => {
+        console.log("Setting interval and refreshing");
         refreshData();
         const interval = setInterval(refreshData, 10 * 1000);
-        return () => clearInterval(interval);
+        return () => {console.log("Clearing interval"); clearInterval(interval)};
     }, [dispatch, refreshData]);
 
     let ad: Angebot | Bedarf | undefined;
