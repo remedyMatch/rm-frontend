@@ -12,6 +12,7 @@ import MatchScreen from "../../screens/MatchScreen";
 import OfferFlowScreen from "../../screens/OfferFlowScreen";
 import Footer from "./Footer";
 import Menu from "./Menu";
+import MapScreen from "../../screens/MapScreen";
 
 interface Props extends WithStyles<typeof styles> {
 }
@@ -65,6 +66,7 @@ class Layout extends Component<Props, State> {
                         <Route path="/bedarf/:categoryId?/:articleId?/:variantId?" component={DemandFlowScreen}/>
                         <Route path="/inserate/:adId?" component={AdScreen}/>
                         <Route path="/matches" component={MatchScreen}/>
+                        <Route path="/map" component={MapScreen}/>
                         <Route path="/konversation" exact component={ConversationListScreen} />
                         <Route path="/konversation/:conversationId" component={ConversationScreen} />
                         <Route path="/" exact component={DashboardScreen}/>
