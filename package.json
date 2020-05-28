@@ -6,7 +6,7 @@
   "homepage": "app",
   "private": true,
   "scripts": {
-    "start": "WDS_SOCKET_PATH=/app/sockjs-node BROWSER=none react-scripts start",
+    "start": "cross-env WDS_SOCKET_PATH=/app/sockjs-node BROWSER=none react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
@@ -48,6 +48,7 @@
   },
   "devDependencies": {
     "@types/jest": "^25.2.2",
+    "cross-env": "^7.0.2",
     "react-scripts": "^3.4.1",
     "typescript": "^3.9.2"
   }
