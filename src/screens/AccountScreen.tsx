@@ -12,7 +12,9 @@ const useStyles = makeStyles((theme: Theme) => ({
     root: {
         display: "flex",
         flexDirection: "row",
-        marginTop: "6em"
+        flexWrap: "wrap",
+        marginTop: "3rem",
+        justifyContent: "space-between"
     },
     navigation: {
         backgroundColor: "#53284f",
@@ -20,8 +22,9 @@ const useStyles = makeStyles((theme: Theme) => ({
         minWidth: "250px",
         display: "flex",
         flexDirection: "column",
-        margin: "0em 4em auto 0em",
-        flexShrink: 0,
+        marginBottom: "0.5rem",
+        marginRight: "0.5rem",
+        flexGrow: 1,
         "&>a:first-child": {
             borderTopLeftRadius: "8px",
             borderTopRightRadius: "8px"
@@ -50,7 +53,8 @@ const useStyles = makeStyles((theme: Theme) => ({
         backgroundColor: "#42203f"
     },
     content: {
-        flexGrow: 1
+        flexGrow: 1,
+        minWidth: "250px",
     },
     institutionIcon: {
         height: "0.8em",

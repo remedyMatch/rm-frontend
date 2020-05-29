@@ -13,12 +13,16 @@ import RequestInstitutionDialog from "./RequestInstitutionDialog";
 const useStyles = makeStyles((theme: Theme) => ({
     cardColumnContainer: {
         display: "flex",
+        flexWrap: "wrap",
         justifyContent: "space-between"
     },
     cardColumn: {
         display: "flex",
         flexDirection: "column",
-        width: "calc((100% - 1em) / 2)",
+        flexGrow: 1,
+        minWidth: "250px",
+        marginBottom: "0.5rem",
+        marginRight: "0.5rem",
     },
     contentCard: {
         width: "100%"
