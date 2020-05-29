@@ -1,7 +1,12 @@
-import {ActionCreatorWithoutPayload, ActionCreatorWithPayload, createSlice, PayloadAction} from "@reduxjs/toolkit";
-import {apiGet} from "../../util/ApiUtils";
-import {Url} from "./Url";
-import {constructUrl} from "./UrlUtils";
+import {
+  ActionCreatorWithoutPayload,
+  ActionCreatorWithPayload,
+  createSlice,
+  PayloadAction,
+} from "@reduxjs/toolkit";
+import { apiGet } from "../../util/ApiUtils";
+import { Url } from "./Url";
+import { constructUrl } from "./UrlUtils";
 
 /**
  * The representation of a redux store state.
@@ -9,45 +14,45 @@ import {constructUrl} from "./UrlUtils";
  * @template T The type of the value in this state
  */
 export interface ApiState<T> {
-    /**
-     * The actual value of the state.
-     */
-    value?: T;
+  /**
+   * The actual value of the state.
+   */
+  value?: T;
 
-    /**
-     * The error that occurred during the most recently completed request. Will be reset on the next successful request.
-     */
-    error?: string;
+  /**
+   * The error that occurred during the most recently completed request. Will be reset on the next successful request.
+   */
+  error?: string;
 
-    /**
-     * The current loading state.
-     */
-    loading: boolean;
+  /**
+   * The current loading state.
+   */
+  loading: boolean;
 
-    /**
-     * The time the most recent successful request completed.
-     */
-    loadTime?: number;
+  /**
+   * The time the most recent successful request completed.
+   */
+  loadTime?: number;
 
-    /**
-     * The status code of the most recently completed request.
-     */
-    statusCode?: number;
+  /**
+   * The status code of the most recently completed request.
+   */
+  statusCode?: number;
 }
 
 /**
  * The representation of the payload of a "load failed" action.
  */
 export interface LoadFailedPayload {
-    /**
-     * The error that occurred.
-     */
-    error: string;
+  /**
+   * The error that occurred.
+   */
+  error: string;
 
-    /**
-     * The status code of the request.
-     */
-    statusCode: number;
+  /**
+   * The status code of the request.
+   */
+  statusCode: number;
 }
 
 /**
@@ -56,15 +61,15 @@ export interface LoadFailedPayload {
  * @template T The type of the actual result
  */
 export interface LoadSuccessfulPayload<T> {
-    /**
-     * The actual result of the request.
-     */
-    value: T;
+  /**
+   * The actual result of the request.
+   */
+  value: T;
 
-    /**
-     * The status code of the request.
-     */
-    statusCode: number;
+  /**
+   * The status code of the request.
+   */
+  statusCode: number;
 }
 
 /**
@@ -78,7 +83,7 @@ const LoadFailed = "LoadFailed";
  * Initial state for every api state.
  */
 const InitialApiState = {
-    loading: false
+  loading: false,
 };
 
 /**
@@ -87,7 +92,7 @@ const InitialApiState = {
  * @param state The current state
  */
 const reduceLoadStarted = <T>(state: ApiState<T>) => {
-    state.loading = true;
+  state.loading = true;
 };
 
 /**
@@ -96,10 +101,13 @@ const reduceLoadStarted = <T>(state: ApiState<T>) => {
  * @param state The current state
  * @param action The "load failed" action
  */
-const reduceLoadFailed = <T>(state: ApiState<T>, action: PayloadAction<LoadFailedPayload>) => {
-    state.loading = false;
-    state.error = action.payload.error;
-    state.statusCode = action.payload.statusCode;
+const reduceLoadFailed = <T>(
+  state: ApiState<T>,
+  action: PayloadAction<LoadFailedPayload>
+) => {
+  state.loading = false;
+  state.error = action.payload.error;
+  state.statusCode = action.payload.statusCode;
 };
 
 /**
@@ -108,11 +116,14 @@ const reduceLoadFailed = <T>(state: ApiState<T>, action: PayloadAction<LoadFaile
  * @param state The current state
  * @param action The "load succeeded" action
  */
-const reduceLoadSucceeded = <T>(state: ApiState<T>, action: PayloadAction<LoadSuccessfulPayload<T>>) => {
-    state.loading = false;
-    state.value = action.payload.value;
-    state.statusCode = action.payload.statusCode;
-    state.loadTime = new Date().getTime();
+const reduceLoadSucceeded = <T>(
+  state: ApiState<T>,
+  action: PayloadAction<LoadSuccessfulPayload<T>>
+) => {
+  state.loading = false;
+  state.value = action.payload.value;
+  state.statusCode = action.payload.statusCode;
+  state.loadTime = new Date().getTime();
 };
 
 /**
@@ -127,42 +138,58 @@ const reduceLoadSucceeded = <T>(state: ApiState<T>, action: PayloadAction<LoadSu
  *
  * @return A tuple containing the redux slice and the action to trigger an api request
  */
-const createApiState = <T, R = T>(name: string, url: string | Url, extractor?: (response: R) => T) => {
-    const loadStartedAction = name + LoadStarted;
-    const loadFailedAction = name + LoadFailed;
-    const loadSucceededAction = name + LoadSucceeded;
+const createApiState = <T, R = T>(
+  name: string,
+  url: string | Url,
+  extractor?: (response: R) => T
+) => {
+  const loadStartedAction = name + LoadStarted;
+  const loadFailedAction = name + LoadFailed;
+  const loadSucceededAction = name + LoadSucceeded;
 
-    const slice = createSlice({
-        name: name,
-        initialState: InitialApiState as ApiState<T>,
-        reducers: {
-            [loadStartedAction]: reduceLoadStarted,
-            [loadFailedAction]: reduceLoadFailed,
-            [loadSucceededAction]: reduceLoadSucceeded
-        }
-    });
+  const slice = createSlice({
+    name: name,
+    initialState: InitialApiState as ApiState<T>,
+    reducers: {
+      [loadStartedAction]: reduceLoadStarted,
+      [loadFailedAction]: reduceLoadFailed,
+      [loadSucceededAction]: reduceLoadSucceeded,
+    },
+  });
 
-    const loadStarted = slice.actions[loadStartedAction] as unknown as ActionCreatorWithoutPayload; // TODO
-    const loadFailed = slice.actions[loadFailedAction] as ActionCreatorWithPayload<LoadFailedPayload>;
-    const loadSucceeded = slice.actions[loadSucceededAction] as ActionCreatorWithPayload<LoadSuccessfulPayload<T>>;
+  const loadStarted = (slice.actions[
+    loadStartedAction
+  ] as unknown) as ActionCreatorWithoutPayload; // TODO
+  const loadFailed = slice.actions[
+    loadFailedAction
+  ] as ActionCreatorWithPayload<LoadFailedPayload>;
+  const loadSucceeded = slice.actions[
+    loadSucceededAction
+  ] as ActionCreatorWithPayload<LoadSuccessfulPayload<T>>;
 
-    const load = () => async (dispatch: (arg: any) => void) => {
-        dispatch(loadStarted());
-        const result = await apiGet<R>(constructUrl(url));
-        if (result.error) {
-            dispatch(loadFailed({
-                error: result.error,
-                statusCode: result.status
-            }));
-        } else {
-            dispatch(loadSucceeded({
-                value: extractor ? extractor(result.result!) : result.result as unknown as T, // TODO
-                statusCode: result.status
-            }));
-        }
-    };
+  const load = () => async (dispatch: (arg: any) => void) => {
+    dispatch(loadStarted());
+    const result = await apiGet<R>(constructUrl(url));
+    if (result.error) {
+      dispatch(
+        loadFailed({
+          error: result.error,
+          statusCode: result.status,
+        })
+      );
+    } else {
+      dispatch(
+        loadSucceeded({
+          value: extractor
+            ? extractor(result.result!)
+            : ((result.result as unknown) as T), // TODO
+          statusCode: result.status,
+        })
+      );
+    }
+  };
 
-    return [slice, load] as [typeof slice, typeof load];
+  return [slice, load] as [typeof slice, typeof load];
 };
 
 export default createApiState;

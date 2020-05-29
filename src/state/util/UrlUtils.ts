@@ -1,7 +1,7 @@
 /**
  * Base api url to use.
  */
-import {Url} from "./Url";
+import { Url } from "./Url";
 
 const baseUrl = "/remedy";
 
@@ -11,8 +11,8 @@ const baseUrl = "/remedy";
  * @param path The path to prepend with a slash
  */
 const prependSlash = (path: string) => {
-    return path.startsWith("/") ? path : ("/" + path);
-}
+  return path.startsWith("/") ? path : "/" + path;
+};
 
 /**
  * Creates the absolute url of the request. Adds the base url if necessary.
@@ -21,18 +21,15 @@ const prependSlash = (path: string) => {
  * @returns The absolute url to use
  */
 const constructUrl = (url: string | Url) => {
-    if(typeof url === "string") {
-        if (url.startsWith("http")) {
-            return url;
-        }
-
-        return baseUrl + prependSlash(url);
+  if (typeof url === "string") {
+    if (url.startsWith("http")) {
+      return url;
     }
 
-    return prependSlash(url.baseUrl) + prependSlash(url.url);
+    return baseUrl + prependSlash(url);
+  }
+
+  return prependSlash(url.baseUrl) + prependSlash(url.url);
 };
 
-export {
-    prependSlash,
-    constructUrl
-};
+export { prependSlash, constructUrl };
