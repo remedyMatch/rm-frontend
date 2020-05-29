@@ -132,7 +132,8 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
     actionButtonContainer: {
         display: "flex",
-        flexDirection: "row"
+        flexDirection: "row",
+        flexWrap: "wrap",
     },
     button: {
         fontFamily: "Montserrat, sans-serif",
