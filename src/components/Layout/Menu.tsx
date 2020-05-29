@@ -1,7 +1,7 @@
 import { makeStyles } from "@material-ui/core/styles";
 import MenuIcon from "@material-ui/icons/Menu";
 import CloseIcon from "@material-ui/icons/Close";
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import logo from "../../resources/logo.svg";
 import AccountMenu from "./AccountMenu";
@@ -17,9 +17,9 @@ import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
 import LoginService from "../../util/LoginService";
 import InstitutionLocationDialog from "./InstitutionLocationDialog";
-import {loadPerson} from "../../state/person/PersonState";
-import {useDispatch, useSelector} from "react-redux";
-import {RootState} from "../../state/Store";
+import { loadPerson } from "../../state/person/PersonState";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../../state/Store";
 
 const useStyles = makeStyles(() => ({
   header: {
@@ -70,7 +70,10 @@ const Menu: React.FC = () => {
           className={classes.logo}
           src={logo}
         />
-        <IconButton style={{padding: "0.2rem"}} onClick={() => setDrawerVisible(true)}>
+        <IconButton
+          style={{ padding: "0.2rem" }}
+          onClick={() => setDrawerVisible(true)}
+        >
           <MenuIcon style={{ color: "#53284f", fontSize: "2rem" }} />
         </IconButton>
         <Drawer
@@ -80,7 +83,10 @@ const Menu: React.FC = () => {
         >
           <Box padding="16px">
             <Box display="flex" justifyContent="flex-end">
-              <IconButton style={{padding: "0.2rem"}} onClick={() => setDrawerVisible(false)}>
+              <IconButton
+                style={{ padding: "0.2rem" }}
+                onClick={() => setDrawerVisible(false)}
+              >
                 <CloseIcon style={{ color: "#53284f", fontSize: "2rem" }} />
               </IconButton>
             </Box>
@@ -113,10 +119,11 @@ const Menu: React.FC = () => {
           </Box>
         </Drawer>
         <InstitutionLocationDialog
-            open={locationDialogVisible}
-            onCancelled={() => setLocationDialogVisible(false)}
-            onSaved={() => dispatch(loadPerson())}
-            person={person}/>
+          open={locationDialogVisible}
+          onCancelled={() => setLocationDialogVisible(false)}
+          onSaved={() => dispatch(loadPerson())}
+          person={person}
+        />
       </Box>
     );
   };
@@ -131,8 +138,10 @@ const Menu: React.FC = () => {
           className={classes.logo}
           src={logo}
         />
-        <NotificationMenu />
-        <AccountMenu />
+        <Box display="flex" justifyContent="flex-end" width="100%" alignItems="center">
+          <NotificationMenu />
+          <AccountMenu />
+        </Box>
       </div>
     );
   };
