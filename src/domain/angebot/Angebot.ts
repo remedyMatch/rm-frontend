@@ -1,11 +1,12 @@
 import {Artikel} from "../artikel/Artikel";
+import { InstitutionStandort } from "../institution/InstitutionStandort";
 
 export interface Angebot {
     id: string;
     artikel: Artikel;
     artikelVarianteId: string;
     verfuegbareAnzahl: number;
-    ort: string;
+    standort: InstitutionStandort;
     haltbarkeit: string;
     steril: boolean;
     originalverpackt: boolean;

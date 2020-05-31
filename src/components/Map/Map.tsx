@@ -1,15 +1,22 @@
 import React, { useState } from "react";
 import { makeStyles, Theme } from "@material-ui/core/styles";
 import {
-    GoogleMap,
-    InfoWindow,
-    LoadScript,
-    Marker, useLoadScript
+  GoogleMap,
+  InfoWindow,
+  LoadScript,
+  Marker
 } from "@react-google-maps/api";
 
-type GeoCoords = { lat: number; lng: number };
-type Meta = { title: string; comment: string; count: number; icon: any };
-type Poi = GeoCoords & Meta;
+type GeoCoords = { lat: number | undefined; lng: number | undefined };
+type Meta = {
+  standortId: string;
+  type: "offer" | "need";
+  title: string;
+  comment: string;
+  count: number;
+  icon: any;
+};
+export type Poi = GeoCoords & Meta;
 
 interface Props {
   center: GeoCoords;
@@ -44,10 +51,17 @@ const Map: React.FC<Props> = ({ center, pois }) => {
             onClick={() => setWhichInfoOpen(index)}
           >
             {index === whichInfoOpen && (
-              <InfoWindow position={poi} onCloseClick={() => setWhichInfoOpen(-1)}>
+              <InfoWindow
+                position={poi}
+                onCloseClick={() => setWhichInfoOpen(-1)}
+              >
                 <div>
-                  <div>{poi.title}</div>
-                  <div>{poi.comment}</div>
+                  {poi.comment.split("\n").map((line, index) => (
+                    <span key={index}>
+                      {line}
+                      <br />
+                    </span>
+                  ))}
                 </div>
               </InfoWindow>
             )}

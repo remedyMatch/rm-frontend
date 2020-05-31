@@ -1,12 +1,99 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootDispatch, RootState } from "../state/Store";
-import Map from "../components/Map/Map";
+import Map, { Poi } from "../components/Map/Map";
 import { loadPerson } from "../state/person/PersonState";
 import katSonstiges from "../resources/kategorie_sonstiges.svg";
 import katDesinfektion from "../resources/kategorie_desinfektion.svg";
+import katSchutzkleidung from "../resources/kategorie_schutzkleidung.svg";
 import { loadAngebote } from "../state/angebot/AngeboteState";
 import { loadBedarfe } from "../state/bedarf/BedarfeState";
+import { Angebot } from "../domain/angebot/Angebot";
+import { Bedarf } from "../domain/bedarf/Bedarf";
+import { InstitutionStandort } from "../domain/institution/InstitutionStandort";
+
+const fallbackCenter = { lat: 52.52, lng: 13.405 }; // Berlin
+
+const filterOwnOffersOrNeeds = (
+  offerOrNeed: Angebot | Bedarf,
+  standort: InstitutionStandort | undefined
+) => standort && standort.id !== offerOrNeed.standort.id;
+
+const mapToPoi = (
+  offerOrNeed: Angebot | Bedarf,
+  isOffer: boolean = false
+): Poi => ({
+  standortId: offerOrNeed.standort.id,
+  type: isOffer ? "offer" : "need",
+  lat: offerOrNeed.standort.latitude,
+  lng: offerOrNeed.standort.longitude,
+  title: offerOrNeed.artikel.name,
+  count: offerOrNeed.verfuegbareAnzahl,
+  comment: offerOrNeed.kommentar,
+  icon: isOffer ? katDesinfektion : katSonstiges
+});
+
+const reduceToStandortIdDict = (
+  offersOrNeeds: { [id: string]: Array<Poi> },
+  current: Poi
+) => {
+  if (offersOrNeeds[current.standortId]) {
+    offersOrNeeds[current.standortId].push(current);
+  } else {
+    offersOrNeeds[current.standortId] = [current];
+  }
+  return offersOrNeeds;
+};
+
+const reduceToStandortIdPois = (
+  offersOrNeeds: Array<Poi>,
+  current: Array<Poi>
+) => {
+  return [
+    ...offersOrNeeds,
+    current.length === 1
+      ? current[0]
+      : {
+          ...current[0],
+          title: "Collection",
+          count: current.length,
+          comment: current.reduce(
+            (str, poi, currentIndex) =>
+              str +
+              `${poi.count}x${poi.title} (${poi.type})\n${poi.comment}${
+                currentIndex === current.length - 1 ? "" : "\n\n"
+              }`,
+            ""
+          ),
+          icon: katSchutzkleidung
+        }
+  ];
+};
+
+const mapToPois = (
+  angebote: Angebot[] | undefined,
+  bedarfe: Bedarf[] | undefined,
+  standort: InstitutionStandort | undefined
+) => {
+  const pois: Array<Poi> = [];
+  if (angebote) {
+    pois.push(
+      ...angebote
+        .filter(angebot => filterOwnOffersOrNeeds(angebot, standort))
+        .map(angebot => mapToPoi(angebot, true))
+    );
+  }
+  if (bedarfe) {
+    pois.push(
+      ...bedarfe
+        .filter(bedarf => filterOwnOffersOrNeeds(bedarf, standort))
+        .map(bedarf => mapToPoi(bedarf))
+    );
+  }
+  return (Object.values(
+    pois.reduce(reduceToStandortIdDict, {})
+  ) as Poi[][]).reduce(reduceToStandortIdPois, []);
+};
 
 const MapScreen: React.FC = () => {
   const dispatch: RootDispatch = useDispatch();
@@ -22,7 +109,6 @@ const MapScreen: React.FC = () => {
   const angebote = useSelector((state: RootState) => state.angebote.value);
 
   const curInst = person?.aktuellerStandort.standort;
-  const fallbackCenter = { lat: 52.52, lng: 13.405 }; // Berlin
   const center =
     (curInst && {
       lat: curInst.latitude || fallbackCenter.lat,
@@ -30,46 +116,11 @@ const MapScreen: React.FC = () => {
     }) ||
     fallbackCenter;
 
-  const rndCoordsAroundCenter = () => ({
-    lat: center.lat + Math.random() - 0.5,
-    lng: center.lng + Math.random() - 0.5
-  });
-  const createEntity = (
-    title: string,
-    count: number,
-    isRequest: boolean = false
-  ) => ({
-    ...rndCoordsAroundCenter(),
-    title,
-    count,
-    comment: `${title} (${count})`,
-    icon: isRequest ? katSonstiges : katDesinfektion
-  });
-
-  const pois = [
-    // ...angebote?.map(angebot => ({
-    //   lat: angebot.standort.latitude,
-    //   lng: angebot.standort.longitude,
-    //   title: angebot.artikel.name,
-    //   count: angebot.verfuegbareAnzahl,
-    //   comment: angebot.kommentar,
-    //   icon: katDesinfektion
-    // })),
-    createEntity("Wasser 1l", 10),
-    createEntity("Wasser 1l", 5),
-    createEntity("Wasser 1l", 1),
-    // ...bedarfe?.map(bedarf => ({
-    //   lat: bedarf.standort.latitude,
-    //   lng: bedarf.standort.longitude,
-    //   title: bedarf.artikel.name,
-    //   count: bedarf.verfuegbareAnzahl,
-    //   comment: bedarf.kommentar,
-    //   icon: katSonstiges
-    // })),
-    createEntity("Brot 1kg", 10, true),
-    createEntity("Brot 1kg", 5, true),
-    createEntity("Brot 1kg", 1, true)
-  ];
+  const pois = mapToPois(
+    angebote,
+    bedarfe,
+    person?.institutionen[0].standorte[0]
+  );
 
   return (
     <>

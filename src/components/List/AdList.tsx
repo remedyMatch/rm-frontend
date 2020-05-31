@@ -9,6 +9,7 @@ import {AngebotAnfrageStatus} from "../../domain/angebot/AngebotAnfrage";
 import {Bedarf} from "../../domain/bedarf/Bedarf";
 import {BedarfAnfrageStatus} from "../../domain/bedarf/BedarfAnfrage";
 import RequestStatusBadge from "../Badge/RequestStatusBadge";
+import { InstitutionStandort } from "../../domain/institution/InstitutionStandort";
 
 export type AdListDataRow = {
     id: string;
@@ -18,7 +19,7 @@ export type AdListDataRow = {
     categoryId: string;
     articleId: string;
     variantId: string;
-    location: string;
+    location: InstitutionStandort;
     amount: number;
     comment: string;
     medical: boolean;
@@ -256,7 +257,7 @@ const AdList: React.FC<Props> = props => {
                         <div className={classes.details}>
                             <span className={classes.adType}>{item.type === "offer" ? "Angebot" : "Bedarf"}</span>
                             <span className={classes.location}>
-                            {item.location}
+                            {item.location.ort}
                         </span>
                             <span className={classes.amount}>
                             <span className={classes.amountCount}>{item.amount}</span>

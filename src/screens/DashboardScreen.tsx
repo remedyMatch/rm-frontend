@@ -19,7 +19,6 @@ import {loadKonversationBedarfAnfragen} from "../state/nachricht/KonversationBed
 import {loadKonversationen} from "../state/nachricht/KonversationenState";
 import {RootDispatch, RootState} from "../state/Store";
 import {getDemandRequestIds, getOfferRequestIds, mapConversations} from "../util/mappers/ConversationMapper";
-import Map from "../components/Map/Map";
 
 interface Props extends WithStyles<typeof styles>, PropsFromRedux, RouteComponentProps {
 }

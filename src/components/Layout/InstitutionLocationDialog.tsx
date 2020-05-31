@@ -165,6 +165,7 @@ const InstitutionLocationDialog: React.FC<Props> = props => {
                 <div className={classes.entries}>
                     {person?.institutionen.map(entry => (
                         <div
+                            key={entry.institution.id}
                             onClick={disabled ? undefined : () => setSelectedInstitution(entry.institution)}
                             className={clsx(classes.entry, entry.institution.id === selectedInstitution?.id && classes.entrySelected)}>
                             {entry.institution.typ === "PRIVAT"
@@ -182,6 +183,7 @@ const InstitutionLocationDialog: React.FC<Props> = props => {
                 <div className={classes.entries}>
                     {person?.institutionen.find(i => i.institution.id === selectedInstitution?.id)?.standorte.map(entry => (
                         <div
+                          key={entry.id}
                             onClick={disabled ? undefined : () => setSelectedLocation(entry)}
                             className={clsx(classes.entry, entry.id === selectedLocation?.id && classes.entrySelected)}>
                             <LocationOn fontSize="large"/>
