@@ -1,12 +1,12 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import App from "./container/App/App";
+import App from "./components/App";
 import "./index.css";
 import * as serviceWorker from "./serviceWorker";
 import {BrowserRouter as Router} from "react-router-dom";
 import LoginService from "./util/LoginService";
 import {Provider} from "react-redux";
-import {store} from "./State/Store";
+import {store} from "./state/Store";
 
 LoginService.initKeycloak(() => ReactDOM.render(
     (

@@ -4,6 +4,7 @@ import LoginService from "./LoginService";
 export interface ApiResponse<T> {
     result?: T;
     error?: string;
+    errorDetails?: any;
     status: number;
 }
 
@@ -84,8 +85,13 @@ const handleResult = <T>(result: AxiosResponse<T>) => {
 const handleError = <T>(error: AxiosError<T>) => {
     return {
         status: error.response?.status || -1,
-        error: error.message || error.response?.statusText || ""
+        error: error.message || error.response?.statusText || "",
+        errorDetails: error.response?.data
     };
+};
+
+const logApiError = (response: ApiResponse<any>, message: string) => {
+    console.error(`${message}\n${response.error}\n` + JSON.stringify(response.errorDetails, undefined, 2));
 };
 
 export {
@@ -93,5 +99,6 @@ export {
     apiGet,
     apiPatch,
     apiPost,
-    apiPut
+    apiPut,
+    logApiError
 };
