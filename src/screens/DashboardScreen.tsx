@@ -138,8 +138,6 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 const DashboardScreen: React.FC = props => {
   const classes = useStyles();
-  const theme = useTheme();
-  const matches = useMediaQuery(theme.breakpoints.down("xs"));
   const history = useHistory();
   const dispatch = useDispatch();
 

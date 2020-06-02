@@ -9,24 +9,9 @@ import LinkCard from "../../components/Content/LinkCard";
 import {loadInstitutionAntraege} from "../../state/institution/InstitutionAntraegeState";
 import {RootState} from "../../state/Store";
 import RequestInstitutionDialog from "./RequestInstitutionDialog";
+import Grid from "@material-ui/core/Grid";
 
 const useStyles = makeStyles((theme: Theme) => ({
-    cardColumnContainer: {
-        display: "flex",
-        flexWrap: "wrap",
-        justifyContent: "space-between"
-    },
-    cardColumn: {
-        display: "flex",
-        flexDirection: "column",
-        flexGrow: 1,
-        minWidth: "250px",
-        marginBottom: "0.5rem",
-        marginRight: "0.5rem",
-    },
-    contentCard: {
-        width: "100%"
-    },
     linkCard: {
         marginTop: "1em",
         width: "100%",
@@ -51,7 +36,6 @@ const useStyles = makeStyles((theme: Theme) => ({
         display: "flex"
     },
     entry: {
-        padding: "24px",
         display: "flex",
         flexDirection: "row",
         borderTop: "1px solid #CCC",
@@ -104,11 +88,10 @@ const InstitutionOverview: React.FC = () => {
     }, [dispatch]);
 
     return (
-        <div className={classes.cardColumnContainer}>
-            <div className={classes.cardColumn}>
+        <Grid container spacing={1}>
+            <Grid item xs={12} md={6}>
 
                 <ContentCard
-                    className={classes.contentCard}
                     title="Meine Institutionen"
                     showPlaceholder={!person}
                     placeholder={(
@@ -129,12 +112,11 @@ const InstitutionOverview: React.FC = () => {
                     </div>
                 </ContentCard>
 
-            </div>
+            </Grid>
 
-            <div className={classes.cardColumn}>
+            <Grid item xs={12} md={6}>
 
                 <ContentCard
-                    className={classes.contentCard}
                     title="Meine Anträge"
                     showPlaceholder={requests?.length === 0}
                     placeholder={(
@@ -164,14 +146,14 @@ const InstitutionOverview: React.FC = () => {
                     title="Institution beantragen"
                     onClick={onRequestInstitutionClicked}/>
 
-            </div>
+            </Grid>
 
             <RequestInstitutionDialog
                 open={requestInstitutionDialogOpen}
                 onCancelled={onRequestInstitutionDialogCancelled}
                 onSaved={onRequestInstitutionDialogSaved}/>
 
-        </div>
+        </Grid>
     )
 };
 

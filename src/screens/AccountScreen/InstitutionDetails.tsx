@@ -9,28 +9,12 @@ import LinkCard from "../../components/Content/LinkCard";
 import {loadInstitutionAntraege} from "../../state/institution/InstitutionAntraegeState";
 import {RootState} from "../../state/Store";
 import RequestLocationDialog from "./RequestLocationDialog";
+import Grid from "@material-ui/core/Grid";
 
 const useStyles = makeStyles((theme: Theme) => ({
-    cardColumnContainer: {
-        display: "flex",
-        flexWrap: "wrap",
-        justifyContent: "space-between"
-    },
-    cardColumn: {
-        display: "flex",
-        flexDirection: "column",
-        flexGrow: 1,
-        minWidth: "250px",
-        marginBottom: "0.5rem",
-        marginRight: "0.5rem",
-    },
-    contentCard: {
-        width: "100%"
-    },
     linkCard: {
         marginTop: "1em",
-        width: "100%",
-        marginRight: "0px"
+        width: "100%"
     },
     contentCardContent: {
         display: "flex",
@@ -108,11 +92,10 @@ const InstitutionDetails: React.FC = () => {
 
     return (
         <>
-            <div className={classes.cardColumnContainer}>
-                <div className={classes.cardColumn}>
+            <Grid container spacing={1}>
+                <Grid item xs={12} md={6}>
 
                     <ContentCard
-                        className={classes.contentCard}
                         title="Details der Institution"
                         showPlaceholder={!person || !institution}
                         placeholder={(
@@ -130,12 +113,11 @@ const InstitutionDetails: React.FC = () => {
                         </div>
                     </ContentCard>
 
-                </div>
+                </Grid>
 
-                <div className={classes.cardColumn}>
+                <Grid item xs={12} md={6}>
 
                     <ContentCard
-                        className={classes.contentCard}
                         title="Zugewiesene Standorte"
                         showPlaceholder={!person || !institution}
                         placeholder={(
@@ -165,8 +147,8 @@ const InstitutionDetails: React.FC = () => {
                         title="Standort beantragen"
                         onClick={onRequestLocationClicked}/>
 
-                </div>
-            </div>
+                </Grid>
+            </Grid>
 
             <RequestLocationDialog
                 open={requestLocationDialogOpen}
