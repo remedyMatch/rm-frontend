@@ -79,7 +79,7 @@ const mapToAd = (
         categoryId: entry.artikel.artikelKategorieId,
         articleId: entry.artikel.id,
         variantId: entry.artikelVarianteId,
-        location: entry.ort,
+        location: entry.standort,
         amount: entry.verfuegbareAnzahl,
         comment: entry.kommentar,
         sealed: ("originalverpackt" in entry && entry.originalverpackt) || undefined,

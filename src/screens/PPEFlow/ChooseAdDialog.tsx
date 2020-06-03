@@ -170,7 +170,7 @@ const ChooseAdDialog: React.FC<Props> = props => {
                             )}
                             <span className={classes.location}>
                                 <img src={distance} alt="Entfernung" className={classes.locationIcon}/>
-                                {entry.ort}
+                                {entry.standort.ort}
                             </span>
                             {(entry.medizinisch || entry.steril) && (
                                 <span className={classes.attributes}>

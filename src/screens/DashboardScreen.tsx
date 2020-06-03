@@ -249,6 +249,13 @@ const DashboardScreen: React.FC = props => {
           >
             Material suchen
           </Button>
+          
+          <Button
+            onClick={() => history.push("/map")}
+            className={clsx(classes.button, classes.buttonDemand)}
+            variant="contained">
+            Karte ansehen
+          </Button>
         </div>
         <Hidden xsDown>
           <div className={classes.welcomeAreaRight}>
