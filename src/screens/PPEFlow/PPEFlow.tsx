@@ -491,7 +491,7 @@ class PPEFlow extends Component<Props, State> {
             icon: this.getIcon(this.state.selectedCategory?.name || ""),
             articleName: result.artikel.name,
             variantName: this.state.variantSkipped ? undefined : this.state.selectedVariant?.variante,
-            location: result.ort,
+            location: result.standort,
             distance: result.entfernung,
             amount: result.verfuegbareAnzahl,
             comment: result.kommentar,

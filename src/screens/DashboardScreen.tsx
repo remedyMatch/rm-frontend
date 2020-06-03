@@ -178,6 +178,13 @@ class DashboardScreen extends Component<Props, State> {
                             Material suchen
                         </Button>
 
+                        <Button
+                            onClick={this.onMapOpenClicked}
+                            className={clsx(classes.button, classes.buttonDemand)}
+                            variant="contained">
+                            Karte ansehen
+                        </Button>
+
                     </div>
 
                     <Hidden smDown>
@@ -304,6 +311,10 @@ class DashboardScreen extends Component<Props, State> {
 
     private onMyAccountClicked = () => {
         this.props.history.push("/konto");
+    };
+
+    private onMapOpenClicked = () => {
+        this.props.history.push("/map");
     };
 
     private onShowAdsClicked = () => {

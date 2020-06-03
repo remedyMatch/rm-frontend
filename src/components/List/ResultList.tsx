@@ -5,13 +5,14 @@ import React, {useState} from 'react';
 import {Angebot} from "../../domain/angebot/Angebot";
 import {Bedarf} from "../../domain/bedarf/Bedarf";
 import distance from "../../resources/distance.svg";
+import { InstitutionStandort } from "../../domain/institution/InstitutionStandort";
 
 export type ResultListDataRow = {
     id: string;
     icon: string;
     articleName: string;
     variantName?: string;
-    location: string;
+    location: InstitutionStandort;
     distance: number;
     amount: number;
     comment: string;
@@ -193,7 +194,7 @@ const ResultList: React.FC<Props> = props => {
                     </div>
                     <div className={classes.details}>
                         <span className={classes.location}>
-                            {item.location}
+                            {item.location.ort}
                         </span>
                         <span className={classes.distance}>
                             <img src={distance} alt="Entfernung" className={classes.distanceIcon}/>
