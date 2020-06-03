@@ -33,6 +33,7 @@ const useStyles = makeStyles((theme: Theme) => ({
         marginTop: "2em",
         display: "flex",
         flexDirection: "row",
+        flexWrap: "wrap",
         padding: "16px 24px"
     },
     button: {

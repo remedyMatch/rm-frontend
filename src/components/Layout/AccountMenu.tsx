@@ -18,13 +18,13 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
     accountMenu: {
         backgroundColor: "white",
-        minWidth: "320px",
+        minWidth: "290px",
         minHeight: "51px",
         cursor: "pointer",
         border: "2px solid #CCC",
         borderRadius: "8px",
         padding: "4px 8px",
-        marginLeft: "24px",
+        marginLeft: "0.8rem",
         display: "inline-table", // Required to prevent fractional pixel widths which destroys the clean look of the popup
         transition: theme.transitions.create("background-color, border-radius"),
         "&:hover": {

@@ -28,7 +28,7 @@ const styles = (theme: Theme) =>
             flexDirection: "column",
             minHeight: "100vh",
             width: "100vw",
-            minWidth: "600px",
+            // minWidth: "600px",
             maxWidth: "1200px",
             padding: "16px",
             alignSelf: "center"

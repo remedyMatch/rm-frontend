@@ -26,12 +26,15 @@ const useStyles = makeStyles((theme: Theme) => ({
         fontFamily: "Montserrat, sans-serif",
         fontSize: "16px",
         color: "rgba(0, 0, 0, 0.54)",
-        flexGrow: 1
+        flexGrow: 1,
+        marginBottom: "0.5rem"
     },
     titleContainer: {
         display: "flex",
         flexDirection: "row",
-        alignItems: "center"
+        flexWrap: "wrap",
+        alignItems: "center",
+        wordBreak: "break-word",
     },
     titleImageContainer: {
         backgroundColor: "rgba(0, 0, 0, 0.04)",
@@ -47,7 +50,8 @@ const useStyles = makeStyles((theme: Theme) => ({
     subtitleActionContainer: {
         paddingTop: "12px",
         display: "flex",
-        flexDirection: "row"
+        flexDirection: "row",
+        flexWrap: "wrap",
     },
     titleImage: {
         height: "5em",

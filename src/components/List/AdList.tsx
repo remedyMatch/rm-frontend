@@ -51,6 +51,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     resultItem: {
         borderRadius: "8px",
         display: "flex",
+        flexWrap: "wrap",
         flexDirection: "row",
         padding: "16px 24px"
     },

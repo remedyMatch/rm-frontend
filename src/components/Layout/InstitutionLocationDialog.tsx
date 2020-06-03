@@ -55,7 +55,8 @@ const useStyles = makeStyles((theme: Theme) => ({
         border: "2px solid #CCC",
         borderRadius: "8px",
         padding: "1em",
-        transition: theme.transitions.create(["border", "background-color"])
+        transition: theme.transitions.create(["border", "background-color"]),
+        minWidth: "250px"
     },
     entrySelected: {
         backgroundColor: "rgba(0, 0, 0, 0.07)",

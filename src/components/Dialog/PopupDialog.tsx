@@ -49,9 +49,11 @@ const useStyles = makeStyles((theme: Theme) => ({
         backdropFilter: "blur(3px)"
     },
     paper: {
+        margin: "-0.5rem",
         boxShadow: "0 0 10px 0 rgba(0, 0, 0, 0.1)",
         borderRadius: "8px",
-        minWidth: "600px"
+        maxWidth: "600px",
+        width: "calc(100vw - 0.2rem)"
     },
     title: {
         fontFamily: "Montserrat, sans-serif",
@@ -130,10 +132,10 @@ const PopupDialog: React.FC<Props> = props => {
                 {props.subtitle && (
                     <Typography className={classes.subtitle}>{props.subtitle}</Typography>
                 )}
+                <ErrorToast error={props.error} onClose={props.onCloseError} className={clsx(classes.error, props.errorClassName)}/>
             </DialogTitle>
 
             <DialogContent className={classes.childrenWrapper}>
-                <ErrorToast error={props.error} onClose={props.onCloseError} className={clsx(classes.error, props.errorClassName)}/>
                 <div className={classes.children}>
                     {props.children}
                 </div>
