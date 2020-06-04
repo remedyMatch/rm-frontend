@@ -62,30 +62,39 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-const ContentCard: React.FC<Props> = (props) => {
+const ContentCard: React.FC<Props> = ({
+  className,
+  title,
+  placeholder,
+  showPlaceholder,
+  onActionClicked,
+  actionDisabled,
+  action,
+  children,
+}) => {
   const classes = useStyles();
 
   return (
-    <div className={clsx(classes.card, props.className)}>
-      <Typography className={classes.cardHeader}>{props.title}</Typography>
+    <div className={clsx(classes.card, className)}>
+      <Typography className={classes.cardHeader}>{title}</Typography>
 
-      {(!props.showPlaceholder || !props.placeholder) && (
-        <div className={classes.cardContent}>{props.children}</div>
+      {(!showPlaceholder || !placeholder) && (
+        <div className={classes.cardContent}>{children}</div>
       )}
 
-      {props.showPlaceholder && props.placeholder && (
-        <div className={classes.cardPlaceholder}>{props.placeholder}</div>
+      {showPlaceholder && placeholder && (
+        <div className={classes.cardPlaceholder}>{placeholder}</div>
       )}
 
-      {props.action && (
+      {action && (
         <Button
-          onClick={props.onActionClicked}
-          disabled={props.actionDisabled}
+          onClick={onActionClicked}
+          disabled={actionDisabled}
           startIcon={<ArrowForward />}
           variant="text"
           className={clsx(classes.cardLink, classes.cardFooterLink)}
         >
-          {props.action}
+          {action}
         </Button>
       )}
     </div>

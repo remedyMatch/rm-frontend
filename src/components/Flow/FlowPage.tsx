@@ -27,11 +27,14 @@ const useStyles = makeStyles((theme: Theme) => ({
     fontSize: "16px",
     color: "rgba(0, 0, 0, 0.54)",
     flexGrow: 1,
+    marginBottom: "0.5rem",
   },
   titleContainer: {
     display: "flex",
     flexDirection: "row",
+    flexWrap: "wrap",
     alignItems: "center",
+    wordBreak: "break-word",
   },
   titleImageContainer: {
     backgroundColor: "rgba(0, 0, 0, 0.04)",
@@ -48,6 +51,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     paddingTop: "12px",
     display: "flex",
     flexDirection: "row",
+    flexWrap: "wrap",
   },
   titleImage: {
     height: "5em",

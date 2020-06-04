@@ -13,21 +13,16 @@ import { RootState } from "../state/Store";
 import AccountDetails from "./AccountScreen/AccountDetails";
 import InstitutionDetails from "./AccountScreen/InstitutionDetails";
 import InstitutionOverview from "./AccountScreen/InstitutionOverview";
+import Grid from "@material-ui/core/Grid";
+import Paper from "@material-ui/core/Paper";
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
-    display: "flex",
-    flexDirection: "row",
-    marginTop: "6em",
+    marginTop: "3rem",
   },
   navigation: {
     backgroundColor: "#53284f",
     borderRadius: "8px",
-    minWidth: "250px",
-    display: "flex",
-    flexDirection: "column",
-    margin: "0em 4em auto 0em",
-    flexShrink: 0,
     "&>a:first-child": {
       borderTopLeftRadius: "8px",
       borderTopRightRadius: "8px",
@@ -55,9 +50,6 @@ const useStyles = makeStyles((theme: Theme) => ({
   navigationButtonActive: {
     backgroundColor: "#42203f",
   },
-  content: {
-    flexGrow: 1,
-  },
   institutionIcon: {
     height: "0.8em",
     width: "0.8em",
@@ -74,9 +66,9 @@ const AccountScreen: React.FC = (props) => {
   const location = useLocation();
 
   return (
-    <>
-      <div className={classes.root}>
-        <div className={classes.navigation}>
+    <Grid container spacing={1} className={classes.root}>
+      <Grid item xs={12} sm={4} spacing={2}>
+        <Paper className={classes.navigation}>
           <NavLink
             exact
             to="/konto"
@@ -108,25 +100,25 @@ const AccountScreen: React.FC = (props) => {
                 {institution.institution.name}
               </NavLink>
             ))}
-        </div>
+        </Paper>
+      </Grid>
 
-        <div className={classes.content}>
-          <Switch>
-            <Route path="/konto" exact component={AccountDetails} />
-            <Route
-              path="/konto/institutionen"
-              exact
-              component={InstitutionOverview}
-            />
-            <Route
-              path="/konto/institutionen/:id"
-              component={InstitutionDetails}
-            />
-            <Redirect to="/konto" />
-          </Switch>
-        </div>
-      </div>
-    </>
+      <Grid item xs={12} sm={8}>
+        <Switch>
+          <Route path="/konto" exact component={AccountDetails} />
+          <Route
+            path="/konto/institutionen"
+            exact
+            component={InstitutionOverview}
+          />
+          <Route
+            path="/konto/institutionen/:id"
+            component={InstitutionDetails}
+          />
+          <Redirect to="/konto" />
+        </Switch>
+      </Grid>
+    </Grid>
   );
 };
 

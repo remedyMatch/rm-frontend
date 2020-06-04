@@ -30,13 +30,17 @@ const useStyles = makeStyles((theme: Theme) => ({
   row: {
     display: "flex",
     flexDirection: "row",
-    margin: "1.5em -1em",
+    flexWrap: "wrap",
   },
   rowEntry: {
+    minWidth: "260px",
+    flexGrow: 1,
     width: "calc((100% - 4.5em) / 2)",
     margin: "0px auto",
   },
   formRow: {
+    minWidth: "260px",
+    flexGrow: 1,
     margin: "1.5em 0em",
   },
 }));

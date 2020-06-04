@@ -28,7 +28,7 @@ const useStyles = makeStyles(() => ({
     backdropFilter: "blur(3px)",
   },
   notifications: {
-    marginLeft: "auto",
+    margin: "auto 0",
     backgroundColor: "white",
     borderTopLeftRadius: "50%",
     borderTopRightRadius: "50%",
@@ -49,7 +49,7 @@ const useStyles = makeStyles(() => ({
   },
   notificationsContainer: {
     paddingTop: "24px",
-    width: "400px",
+    maxWidth: "400px",
   },
   notificationsList: {
     maxHeight: "600px",
@@ -199,7 +199,11 @@ const NotificationMenu: React.FC = () => {
           open && classes.notificationsActive
         )}
       >
-        <IconButton ref={menuRef} onClick={openMenu}>
+        <IconButton
+          ref={menuRef}
+          onClick={openMenu}
+          style={{ padding: "0.2rem" }}
+        >
           <Badge
             anchorOrigin={{
               horizontal: "right",
@@ -210,7 +214,7 @@ const NotificationMenu: React.FC = () => {
             color="error"
           >
             <Notifications
-              fontSize="large"
+              style={{ fontSize: "2rem" }}
               className={classes.notificationsIcon}
             />
           </Badge>

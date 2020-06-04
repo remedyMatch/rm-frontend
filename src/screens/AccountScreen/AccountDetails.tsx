@@ -11,7 +11,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     flexDirection: "row",
   },
   contentCard: {
-    width: "calc((100% - 1em) / 2)",
+    width: "100%",
   },
   container: {
     flexGrow: 1,
@@ -38,6 +38,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     display: "flex",
     fontSize: "16px",
     marginTop: "8px",
+    overflowX: "auto",
   },
   icon: {
     color: "rgba(0, 0, 0, 0.54)",

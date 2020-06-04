@@ -60,6 +60,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     borderRadius: "8px",
     padding: "1em",
     transition: theme.transitions.create(["border", "background-color"]),
+    minWidth: "250px",
   },
   entrySelected: {
     backgroundColor: "rgba(0, 0, 0, 0.07)",
@@ -177,6 +178,7 @@ const InstitutionLocationDialog: React.FC<Props> = (props) => {
         <div className={classes.entries}>
           {person?.institutionen.map((entry) => (
             <div
+              key={entry.institution.id}
               onClick={
                 disabled
                   ? undefined
@@ -209,6 +211,7 @@ const InstitutionLocationDialog: React.FC<Props> = (props) => {
             .find((i) => i.institution.id === selectedInstitution?.id)
             ?.standorte.map((entry) => (
               <div
+                key={entry.id}
                 onClick={
                   disabled ? undefined : () => setSelectedLocation(entry)
                 }

@@ -12,6 +12,7 @@ import MatchScreen from "../../screens/MatchScreen";
 import OfferFlowScreen from "../../screens/OfferFlowScreen";
 import Footer from "./Footer";
 import Menu from "./Menu";
+import MapScreen from "../../screens/MapScreen";
 
 interface Props extends WithStyles<typeof styles> {}
 
@@ -25,7 +26,7 @@ const styles = (theme: Theme) =>
       flexDirection: "column",
       minHeight: "100vh",
       width: "100vw",
-      minWidth: "600px",
+      // minWidth: "600px",
       maxWidth: "1200px",
       padding: "16px",
       alignSelf: "center",
@@ -69,6 +70,7 @@ class Layout extends Component<Props, State> {
             />
             <Route path="/inserate/:adId?" component={AdScreen} />
             <Route path="/matches" component={MatchScreen} />
+            <Route path="/map" component={MapScreen} />
             <Route
               path="/konversation"
               exact

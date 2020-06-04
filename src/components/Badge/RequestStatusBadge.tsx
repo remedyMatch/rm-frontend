@@ -14,6 +14,7 @@ const useStyles = makeStyles(() => ({
     padding: "2px 8px",
     borderRadius: "16px",
     marginRight: "8px",
+    height: "fit-content",
     backgroundColor: "#53284F",
   },
 }));

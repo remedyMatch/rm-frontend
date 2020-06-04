@@ -107,8 +107,10 @@ const styles = (theme: Theme) =>
     },
     category: {
       cursor: "pointer",
-      margin: "1.5em",
-      width: "calc((100% - 9em) / 3)",
+      margin: "1rem",
+      flexGrow: 1,
+      flexShrink: 1,
+      width: "280px",
       boxShadow: "0 0 10px 0 rgba(0, 0, 0, 0.1)",
       borderRadius: "8px",
       display: "flex",
@@ -141,7 +143,7 @@ const styles = (theme: Theme) =>
     article: {
       height: "80px",
       cursor: "pointer",
-      width: "calc((100% - 6em) / 3)",
+      width: "250px",
       margin: "1em",
       color: "#666",
       border: "2px solid #666",
@@ -571,7 +573,7 @@ class PPEFlow extends Component<Props, State> {
       variantName: this.state.variantSkipped
         ? undefined
         : this.state.selectedVariant?.variante,
-      location: result.ort,
+      location: result.standort,
       distance: result.entfernung,
       amount: result.verfuegbareAnzahl,
       comment: result.kommentar,
