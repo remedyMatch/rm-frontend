@@ -12,6 +12,7 @@ import {Angebot} from "../domain/angebot/Angebot";
 import {GestellteAngebotAnfrage} from "../domain/angebot/GestellteAngebotAnfrage";
 import {Bedarf} from "../domain/bedarf/Bedarf";
 import {GestellteBedarfAnfrage} from "../domain/bedarf/GestellteBedarfAnfrage";
+import {Delivery} from "../domain/logistik/Delivery";
 import {Konversation} from "../domain/nachricht/Konversation";
 import {loadKonversationAngebotAnfragen} from "../state/nachricht/KonversationAngebotAnfragenState";
 import {loadKonversationBedarfAnfragen} from "../state/nachricht/KonversationBedarfAnfragenState";
@@ -243,10 +244,9 @@ const ConversationScreen: React.FC = () => {
     const onDismissErrorClicked = useCallback(() => setError(undefined), []);
 
     useEffect(() => {
-        console.log("Setting interval and refreshing");
         refreshData();
         const interval = setInterval(refreshData, 10 * 1000);
-        return () => {console.log("Clearing interval"); clearInterval(interval)};
+        return () => clearInterval(interval);
     }, [dispatch, refreshData]);
 
     let ad: Angebot | Bedarf | undefined;
@@ -263,7 +263,7 @@ const ConversationScreen: React.FC = () => {
     const variant = variants?.find(v => v.id === variantId);
     const articleName = request ? ad?.artikel.name + ((variants?.length || 0) > 1 ? " (" + variant?.variante + ")" : "") : "";
     const mine = request?.institution.id === person?.aktuellerStandort.institution.id;
-    const title = (mine ? "Ihre Anfrage " : ("Anfrage von " + (request?.institution.name || "???"))) + " zu " + (conversation?.referenzTyp === "ANGEBOT_ANFRAGE" ? "Angebot" : "Bedarf") + ": " + (ad?.verfuegbareAnzahl || "???") + " " + (articleName || "");
+    const title = (mine ? "Ihre Anfrage " : ("Anfrage von " + (request?.institution.name || "???"))) + " zu " + (conversation?.referenzTyp === "ANGEBOT_ANFRAGE" ? "Angebot" : "Bedarf") + ": " + (request?.anzahl || "???") + " " + (articleName || "");
 
     const requestAction = useCallback(async (action: "accept" | "dismiss" | "cancel") => {
         setInputDisabled(true);
@@ -271,17 +271,64 @@ const ConversationScreen: React.FC = () => {
         const result = await apiPost(`/remedy/${type}/${ad?.id}/anfrage/${conversation?.referenzId}/${action === "cancel" ? "stornieren" : "beantworten"}`, action !== "cancel" ? {
             entscheidung: action === "accept"
         } : undefined);
-        if(result.error) {
+        setInputDisabled(false);
+        if (result.error) {
             setError(result.error);
-            setInputDisabled(false);
         } else {
             refreshData();
         }
     }, [refreshData, conversation, ad]);
 
+    const load = useCallback(async () => {
+        setRequestingDelivery(true);
+        setLastDeliveryLoad(new Date().getTime());
+        const result = await apiGet<Delivery>("/logistic/delivery/reference/" + request?.id);
+        setRequestingDelivery(false);
+        if (!result.error) {
+            setDelivery(result.result);
+        }
+    }, [request]);
+
     const onCancelRequestClicked = useCallback(() => requestAction("cancel"), [requestAction]);
     const onAcceptRequestClicked = useCallback(() => requestAction("accept"), [requestAction]);
     const onDismissRequestClicked = useCallback(() => requestAction("dismiss"), [requestAction]);
+
+    const [requestingDelivery, setRequestingDelivery] = useState<boolean>(false);
+    const [delivery, setDelivery] = useState<Delivery | undefined>(undefined);
+    const [lastDeliveryLoad, setLastDeliveryLoad] = useState<number>(0);
+
+    const requestDeliveryAction = useCallback(async (action: "deliver" | "pickup") => {
+        setInputDisabled(true);
+        const result = await apiPost(`/logistic/delivery/${delivery?.deliveryId}/${action}`);
+        setInputDisabled(false);
+        if (result.error) {
+            setError(result.error);
+        } else {
+            load();
+        }
+    }, [delivery, load]);
+
+    const requestConfirmAction = useCallback(async (action: "deliver" | "pickup") => {
+        setInputDisabled(true);
+        const result = await apiPost(`/logistic/delivery/${delivery?.deliveryId}/${action === "deliver" ? "confirmDelivery" : "confirmPickup"}`);
+        setInputDisabled(false);
+        if (result.error) {
+            setError(result.error);
+        } else {
+            load();
+        }
+    }, [load, delivery]);
+
+    const onAcceptDeliveryClicked = useCallback(() => requestDeliveryAction("deliver"), [requestDeliveryAction]);
+    const onAcceptPickUpClicked = useCallback(() => requestDeliveryAction("pickup"), [requestDeliveryAction]);
+    const onConfirmDeliveryClicked = useCallback(() => requestConfirmAction("deliver"), [requestConfirmAction]);
+    const onConfirmPickUpClicked = useCallback(() => requestConfirmAction("pickup"), [requestConfirmAction]);
+
+    useEffect(() => {
+        if (request?.status === "MATCHED" && !requestingDelivery && !delivery && lastDeliveryLoad < new Date().getTime() - 5 * 1000) {
+            load();
+        }
+    });
 
     return (
         <>
@@ -319,6 +366,105 @@ const ConversationScreen: React.FC = () => {
                             onClick={onDismissErrorClicked}>
                             <Close/>
                         </IconButton>
+                    </div>
+                )}
+
+                {delivery && delivery.currentStateOfDelivery === "OPEN" && (
+                    <div className={classes.actionContainer}>
+                        <span className={classes.actionHint}>
+                            {conversation?.referenzTyp === "ANGEBOT_ANFRAGE" && mine && "Wollen Sie die Spende abholen?"}
+                            {conversation?.referenzTyp === "ANGEBOT_ANFRAGE" && !mine && "Wollen Sie Ihre Spende liefern?"}
+                            {conversation?.referenzTyp === "BEDARF_ANFRAGE" && mine && "Wollen Sie Ihre Spende liefern?"}
+                            {conversation?.referenzTyp === "BEDARF_ANFRAGE" && !mine && "Wollen Sie die Spende abholen?"}
+                        </span>
+                        <div className={classes.actionButtonContainer}>
+                            {conversation?.referenzTyp === "ANGEBOT_ANFRAGE" && mine && (
+                                <Button
+                                    onClick={onAcceptPickUpClicked}
+                                    disableElevation
+                                    disabled={inputDisabled}
+                                    className={classes.button}
+                                    variant="contained"
+                                    size="small">
+                                    Ja, Spende abholen
+                                </Button>
+                            )}
+                            {conversation?.referenzTyp === "ANGEBOT_ANFRAGE" && !mine && (
+                                <Button
+                                    onClick={onAcceptDeliveryClicked}
+                                    disableElevation
+                                    disabled={inputDisabled}
+                                    className={classes.button}
+                                    variant="contained"
+                                    size="small">
+                                    Ja, Spende liefern
+                                </Button>
+                            )}
+                            {conversation?.referenzTyp === "BEDARF_ANFRAGE" && mine && (
+                                <Button
+                                    onClick={onAcceptDeliveryClicked}
+                                    disableElevation
+                                    disabled={inputDisabled}
+                                    className={classes.button}
+                                    variant="contained"
+                                    size="small">
+                                    Ja, Spende liefern
+                                </Button>
+                            )}
+                            {conversation?.referenzTyp === "BEDARF_ANFRAGE" && !mine && (
+                                <Button
+                                    onClick={onAcceptPickUpClicked}
+                                    disableElevation
+                                    disabled={inputDisabled}
+                                    className={classes.button}
+                                    variant="contained"
+                                    size="small">
+                                    Ja, Spende abholen
+                                </Button>
+                            )}
+                        </div>
+                    </div>
+                )}
+
+                {delivery?.currentStateOfDelivery === "PICKUP_BY_RECIPIENT_ANNOUNCED" && (
+                    (mine && conversation?.referenzTyp === "BEDARF_ANFRAGE") ||
+                    (!mine && conversation?.referenzTyp === "ANGEBOT_ANFRAGE")) && (
+                    <div className={classes.actionContainer}>
+                        <span className={classes.actionHint}>
+                            Bitte bestätigen Sie, sobald die Spende vom Empfänger abgeholt wurde.
+                        </span>
+                        <div className={classes.actionButtonContainer}>
+                            <Button
+                                onClick={onConfirmPickUpClicked}
+                                disableElevation
+                                disabled={inputDisabled}
+                                className={classes.button}
+                                variant="contained"
+                                size="small">
+                                Abholung bestätigen
+                            </Button>
+                        </div>
+                    </div>
+                )}
+
+                {delivery?.currentStateOfDelivery === "DELIVERY_BY_DONOR_ANNOUNCED" && (
+                    (!mine && conversation?.referenzTyp === "BEDARF_ANFRAGE") ||
+                    (mine && conversation?.referenzTyp === "ANGEBOT_ANFRAGE")) && (
+                    <div className={classes.actionContainer}>
+                        <span className={classes.actionHint}>
+                            Bitte bestätigen Sie, sobald die Spende vom Spender geliefert wurde.
+                        </span>
+                        <div className={classes.actionButtonContainer}>
+                            <Button
+                                onClick={onConfirmDeliveryClicked}
+                                disableElevation
+                                disabled={inputDisabled}
+                                className={classes.button}
+                                variant="contained"
+                                size="small">
+                                Lieferung bestätigen
+                            </Button>
+                        </div>
                     </div>
                 )}
 
@@ -370,10 +516,14 @@ const ConversationScreen: React.FC = () => {
                 {request?.status !== "OFFEN" && (
                     <div className={classes.actionContainer}>
                         <span className={classes.actionHint}>
-                            {request?.status === "ANGENOMMEN" && "Diese Anfrage wurde angenommen."}
-                            {request?.status === "ABGELEHNT" && "Diese Anfrage wurde abgelehnt."}
-                            {request?.status === "STORNIERT" && "Diese Anfrage wurde storniert."}
-                            {request?.status === "MATCHED" && "Diese Anfrage wurde gematcht."}
+                            {request?.status === "ANGENOMMEN" && "Diese Anfrage wurde angenommen. "}
+                            {request?.status === "ABGELEHNT" && "Diese Anfrage wurde abgelehnt. "}
+                            {request?.status === "STORNIERT" && "Diese Anfrage wurde storniert. "}
+                            {request?.status === "MATCHED" && "Diese Anfrage wurde gematcht. "}
+                            {delivery?.currentStateOfDelivery === "DELIVERY_BY_DONOR_ANNOUNCED" && "Die Spende wird geliefert. "}
+                            {delivery?.currentStateOfDelivery === "PICKUP_BY_RECIPIENT_ANNOUNCED" && "Die Spende wird abgeholt. "}
+                            {delivery?.currentStateOfDelivery === "DELIVERY_CONFIRMED_BY_RECIPIENT" && "Die Spende wurde erfolgreich geliefert. "}
+                            {delivery?.currentStateOfDelivery === "PICKUP_CONFIRMED_BY_DONOR" && "Die Spende wurde erfolgreich abgeholt. "}
                         </span>
                     </div>
                 )}
