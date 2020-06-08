@@ -19,18 +19,18 @@ const useStyles = makeStyles((theme: Theme) => ({
     borderRadius: "8px",
     border: "2px solid #CCC",
     display: "flex",
-    flexDirection: "column"
+    flexDirection: "column",
   },
   cardHeader: {
     color: "#007c92",
     fontFamily: "Montserrat, sans-serif",
     fontSize: "16px",
     fontWeight: 600,
-    padding: "24px 24px 0px 24px"
+    padding: "24px 24px 0px 24px",
   },
   cardContent: {
     padding: "12px 0px",
-    flexGrow: 1
+    flexGrow: 1,
   },
   cardPlaceholder: {
     width: "100%",
@@ -41,7 +41,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     padding: "36px",
     flexGrow: 1,
     fontFamily: "Montserrat, sans-serif",
-    color: "rgba(0,0,0,0.54)"
+    color: "rgba(0,0,0,0.54)",
   },
   cardLink: {
     textTransform: "none",
@@ -53,13 +53,13 @@ const useStyles = makeStyles((theme: Theme) => ({
     fontWeight: 600,
     color: "#007c92",
     "&:hover": {
-      backgroundColor: "rgba(0,0,0,0.04)"
-    }
+      backgroundColor: "rgba(0,0,0,0.04)",
+    },
   },
   cardFooterLink: {
     borderTopLeftRadius: "0px",
-    borderTopRightRadius: "0px"
-  }
+    borderTopRightRadius: "0px",
+  },
 }));
 
 const ContentCard: React.FC<Props> = ({
@@ -70,7 +70,7 @@ const ContentCard: React.FC<Props> = ({
   onActionClicked,
   actionDisabled,
   action,
-  children
+  children,
 }) => {
   const classes = useStyles();
 

@@ -1,19 +1,19 @@
-import {Institution} from "../institution/Institution";
-import {InstitutionStandort} from "../institution/InstitutionStandort";
-import {Person2Institution} from "./Person2Institution";
+import { Institution } from "../institution/Institution";
+import { InstitutionStandort } from "../institution/InstitutionStandort";
+import { Person2Institution } from "./Person2Institution";
 
 interface PersonInstitutionEntry {
-    institution: Institution;
-    standorte: InstitutionStandort[];
+  institution: Institution;
+  standorte: InstitutionStandort[];
 }
 
 export interface Person {
-    id: string;
-    username: string;
-    vorname: string;
-    nachname: string;
-    email: string;
-    telefon: string;
-    institutionen: PersonInstitutionEntry[];
-    aktuellerStandort: Person2Institution;
+  id: string;
+  username: string;
+  vorname: string;
+  nachname: string;
+  email: string;
+  telefon: string;
+  institutionen: PersonInstitutionEntry[];
+  aktuellerStandort: Person2Institution;
 }

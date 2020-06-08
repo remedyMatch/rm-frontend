@@ -1,4 +1,4 @@
-import { Button, Hidden, Typography, useMediaQuery } from "@material-ui/core";
+import { Button, Hidden, Typography } from "@material-ui/core";
 import { makeStyles, Theme } from "@material-ui/core/styles";
 import clsx from "clsx";
 import React, { useEffect } from "react";
@@ -21,9 +21,8 @@ import { RootState } from "../state/Store";
 import {
   getDemandRequestIds,
   getOfferRequestIds,
-  mapConversations
+  mapConversations,
 } from "../util/mappers/ConversationMapper";
-import useTheme from "@material-ui/core/styles/useTheme";
 
 const useStyles = makeStyles((theme: Theme) => ({
   button: {
@@ -36,19 +35,19 @@ const useStyles = makeStyles((theme: Theme) => ({
     textTransform: "none",
     fontSize: "16px",
     borderRadius: "8px",
-    color: "white"
+    color: "white",
   },
   buttonOffer: {
     backgroundColor: "#007c92",
     "&:hover": {
-      backgroundColor: "#006374"
-    }
+      backgroundColor: "#006374",
+    },
   },
   buttonDemand: {
     backgroundColor: "#53284f",
     "&:hover": {
-      backgroundColor: "#42203f"
-    }
+      backgroundColor: "#42203f",
+    },
   },
   welcome: {
     fontFamily: "Montserrat, sans-serif",
@@ -56,57 +55,57 @@ const useStyles = makeStyles((theme: Theme) => ({
     fontWeight: 600,
     color: "#007c92",
     lineHeight: 1.1,
-    wordBreak: "break-word"
+    wordBreak: "break-word",
   },
   welcomeSubtitle: {
     fontFamily: "Montserrat, sans-serif",
     fontSize: "16px",
     lineHeight: "24px",
     marginBottom: "4em",
-    marginTop: "1em"
+    marginTop: "1em",
   },
   mainImage: {
     height: "auto",
     width: "100%",
-    minWidth: "200px"
+    minWidth: "200px",
   },
   welcomeArea: {
     display: "flex",
     marginTop: "3em",
-    justifyContent: "space-between"
+    justifyContent: "space-between",
   },
   welcomeAreaLeft: {
     maxWidth: "700px",
     display: "flex",
     flexDirection: "column",
     width: "100%",
-    flex: "1 1 75%"
+    flex: "1 1 75%",
   },
   welcomeAreaRight: {
-    flex: "1 1 25%"
+    flex: "1 1 25%",
   },
   cards: {
     marginTop: "4em",
     display: "flex",
     flexWrap: "wrap",
-    justifyContent: "space-around"
+    justifyContent: "space-around",
   },
   contentCard: {
     flex: "1 1 280px",
     margin: "0.2rem",
-    width: "100%"
+    width: "100%",
   },
   cardPlaceholderAction: {
-    fontWeight: 600
+    fontWeight: 600,
   },
   linkCards: {
     marginTop: "1.5em",
     display: "flex",
     flexDirection: "row",
-    flexWrap: "wrap"
+    flexWrap: "wrap",
   },
   linkCard: {
-    margin: "0.2rem"
+    margin: "0.2rem",
   },
   adEntry: {
     cursor: "pointer",
@@ -116,13 +115,13 @@ const useStyles = makeStyles((theme: Theme) => ({
     overflow: "hidden",
     textOverflow: "ellipsis",
     "&:hover": {
-      backgroundColor: "rgba(0, 0, 0, 0.1)"
-    }
+      backgroundColor: "rgba(0, 0, 0, 0.1)",
+    },
   },
   adEntryTitle: {
     fontFamily: "Montserrat, sans-serif",
     fontSize: "16px",
-    letterSpacing: "-0.02em"
+    letterSpacing: "-0.02em",
   },
   adEntryRequests: {
     backgroundColor: "#53284f",
@@ -132,11 +131,11 @@ const useStyles = makeStyles((theme: Theme) => ({
     fontSize: "12px",
     marginRight: "8px",
     color: "white",
-    padding: "2px 8px"
-  }
+    padding: "2px 8px",
+  },
 }));
 
-const DashboardScreen: React.FC = props => {
+const DashboardScreen: React.FC = (props) => {
   const classes = useStyles();
   const history = useHistory();
   const dispatch = useDispatch();
@@ -193,7 +192,7 @@ const DashboardScreen: React.FC = props => {
     const variante =
       entry.artikel.varianten.length > 1
         ? entry.artikel.varianten.find(
-            variante => variante.id === entry.artikelVarianteId
+            (variante) => variante.id === entry.artikelVarianteId
           )?.variante
         : undefined;
 
@@ -202,7 +201,7 @@ const DashboardScreen: React.FC = props => {
       message:
         `${bedarf ? "Bedarf: " : "Angebot: "} ${count}x ${name}` +
         (variante ? ` (${variante})` : ""),
-      requests: entry.anfragen.length
+      requests: entry.anfragen.length,
     };
   };
 
@@ -210,8 +209,8 @@ const DashboardScreen: React.FC = props => {
     const bedarfe = institutionBedarfe || [];
     const angebote = institutionAngebote || [];
     return bedarfe
-      .map(bedarf => mapToAd(bedarf, true))
-      .concat(angebote.map(angebot => mapToAd(angebot, false)));
+      .map((bedarf) => mapToAd(bedarf, true))
+      .concat(angebote.map((angebot) => mapToAd(angebot, false)));
   };
 
   return (
@@ -249,11 +248,12 @@ const DashboardScreen: React.FC = props => {
           >
             Material suchen
           </Button>
-          
+
           <Button
             onClick={() => history.push("/map")}
             className={clsx(classes.button, classes.buttonDemand)}
-            variant="contained">
+            variant="contained"
+          >
             Karte ansehen
           </Button>
         </div>
@@ -294,7 +294,7 @@ const DashboardScreen: React.FC = props => {
         >
           {mapAds()
             .slice(0, 5)
-            .map(entry => (
+            .map((entry) => (
               <div
                 className={classes.adEntry}
                 onClick={() => history.push("/inserate/" + entry.id)}
@@ -338,11 +338,11 @@ const DashboardScreen: React.FC = props => {
             konversationBedarfAnfragen || [],
             person,
             {
-              withPrefix: false
+              withPrefix: false,
             }
           )
             .slice(0, 5)
-            .map(entry => (
+            .map((entry) => (
               <div
                 className={classes.adEntry}
                 onClick={() => history.push("/konversation/" + entry.id)}

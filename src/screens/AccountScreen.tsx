@@ -7,7 +7,7 @@ import {
   Redirect,
   Route,
   Switch,
-  useLocation
+  useLocation,
 } from "react-router-dom";
 import { RootState } from "../state/Store";
 import AccountDetails from "./AccountScreen/AccountDetails";
@@ -25,12 +25,12 @@ const useStyles = makeStyles((theme: Theme) => ({
     borderRadius: "8px",
     "&>a:first-child": {
       borderTopLeftRadius: "8px",
-      borderTopRightRadius: "8px"
+      borderTopRightRadius: "8px",
     },
     "&>a:last-child": {
       borderBottomLeftRadius: "8px",
-      borderBottomRightRadius: "8px"
-    }
+      borderBottomRightRadius: "8px",
+    },
   },
   navigationButton: {
     display: "flex",
@@ -44,21 +44,21 @@ const useStyles = makeStyles((theme: Theme) => ({
     padding: "12px 24px",
     transition: theme.transitions.create("background-color"),
     "&:hover": {
-      backgroundColor: "#42203f"
-    }
+      backgroundColor: "#42203f",
+    },
   },
   navigationButtonActive: {
-    backgroundColor: "#42203f"
+    backgroundColor: "#42203f",
   },
   institutionIcon: {
     height: "0.8em",
     width: "0.8em",
     marginLeft: "16px",
-    marginRight: "8px"
-  }
+    marginRight: "8px",
+  },
 }));
 
-const AccountScreen: React.FC = props => {
+const AccountScreen: React.FC = (props) => {
   const classes = useStyles();
 
   // Loaded in Menu component
@@ -68,39 +68,39 @@ const AccountScreen: React.FC = props => {
   return (
     <Grid container spacing={1} className={classes.root}>
       <Grid item xs={12} sm={4} spacing={2}>
-          <Paper className={classes.navigation}>
-        <NavLink
-          exact
-          to="/konto"
-          activeClassName={classes.navigationButtonActive}
-          className={classes.navigationButton}
-        >
-          Mein Konto
-        </NavLink>
-        <NavLink
-          exact
-          to="/konto/institutionen"
-          activeClassName={classes.navigationButtonActive}
-          className={classes.navigationButton}
-        >
-          Meine Institutionen
-        </NavLink>
-        {location.pathname.startsWith("/konto/institutionen") &&
-          person?.institutionen.map(institution => (
-            <NavLink
-              to={"/konto/institutionen/" + institution.institution.id}
-              activeClassName={classes.navigationButtonActive}
-              className={classes.navigationButton}
-            >
-              {institution.institution.typ === "PRIVAT" ? (
-                <Person className={classes.institutionIcon} />
-              ) : (
-                <LocationCity className={classes.institutionIcon} />
-              )}
-              {institution.institution.name}
-            </NavLink>
-          ))}
-          </Paper>
+        <Paper className={classes.navigation}>
+          <NavLink
+            exact
+            to="/konto"
+            activeClassName={classes.navigationButtonActive}
+            className={classes.navigationButton}
+          >
+            Mein Konto
+          </NavLink>
+          <NavLink
+            exact
+            to="/konto/institutionen"
+            activeClassName={classes.navigationButtonActive}
+            className={classes.navigationButton}
+          >
+            Meine Institutionen
+          </NavLink>
+          {location.pathname.startsWith("/konto/institutionen") &&
+            person?.institutionen.map((institution) => (
+              <NavLink
+                to={"/konto/institutionen/" + institution.institution.id}
+                activeClassName={classes.navigationButtonActive}
+                className={classes.navigationButton}
+              >
+                {institution.institution.typ === "PRIVAT" ? (
+                  <Person className={classes.institutionIcon} />
+                ) : (
+                  <LocationCity className={classes.institutionIcon} />
+                )}
+                {institution.institution.name}
+              </NavLink>
+            ))}
+        </Paper>
       </Grid>
 
       <Grid item xs={12} sm={8}>

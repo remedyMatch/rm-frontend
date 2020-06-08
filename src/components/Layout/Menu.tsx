@@ -23,14 +23,14 @@ import { RootState } from "../../state/Store";
 
 const useStyles = makeStyles(() => ({
   header: {
-    display: "flex"
+    display: "flex",
   },
   logo: {
     cursor: "pointer",
     maxWidth: "300px",
     minWidth: "220px",
-    height: "59px"
-  }
+    height: "59px",
+  },
 }));
 
 const Menu: React.FC = () => {
@@ -138,7 +138,12 @@ const Menu: React.FC = () => {
           className={classes.logo}
           src={logo}
         />
-        <Box display="flex" justifyContent="flex-end" width="100%" alignItems="center">
+        <Box
+          display="flex"
+          justifyContent="flex-end"
+          width="100%"
+          alignItems="center"
+        >
           <NotificationMenu />
           <AccountMenu />
         </Box>

@@ -4,7 +4,7 @@ import {
   GoogleMap,
   InfoWindow,
   LoadScript,
-  Marker
+  Marker,
 } from "@react-google-maps/api";
 
 type GeoCoords = { lat: number | undefined; lng: number | undefined };
@@ -27,8 +27,8 @@ const useStyles = makeStyles((theme: Theme) => ({
   mapContainer: {
     width: "100%",
     height: "85vh",
-    margin: "0 auto"
-  }
+    margin: "0 auto",
+  },
 }));
 
 const Map: React.FC<Props> = ({ center, pois }) => {

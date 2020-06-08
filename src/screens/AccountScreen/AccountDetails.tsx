@@ -8,29 +8,29 @@ import { RootState } from "../../state/Store";
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
     display: "flex",
-    flexDirection: "row"
+    flexDirection: "row",
   },
   contentCard: {
-    width: "100%"
+    width: "100%",
   },
   container: {
     flexGrow: 1,
     display: "flex",
     flexDirection: "column",
-    padding: "8px 24px"
+    padding: "8px 24px",
   },
   name: {
     fontFamily: "Montserrat, sans-serif",
     fontSize: "20px",
     fontWeight: 600,
     color: "rgba(0,0,0,0.87)",
-    marginBottom: "4px"
+    marginBottom: "4px",
   },
   username: {
     fontFamily: "Montserrat, sans-serif",
     fontSize: "16px",
     color: "rgba(0,0,0,0.54)",
-    marginBottom: "16px"
+    marginBottom: "16px",
   },
   details: {
     fontFamily: "Montserrat, sans-serif",
@@ -38,15 +38,15 @@ const useStyles = makeStyles((theme: Theme) => ({
     display: "flex",
     fontSize: "16px",
     marginTop: "8px",
-    overflowX: "auto"
+    overflowX: "auto",
   },
   icon: {
     color: "rgba(0, 0, 0, 0.54)",
-    marginRight: "16px"
-  }
+    marginRight: "16px",
+  },
 }));
 
-const AccountDetails: React.FC = props => {
+const AccountDetails: React.FC = (props) => {
   const classes = useStyles();
 
   // Loaded in Menu component

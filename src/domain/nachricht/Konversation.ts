@@ -1,11 +1,14 @@
-import {Nachricht} from "./Nachricht";
+import { Nachricht } from "./Nachricht";
 
-export type NachrichtReferenzTyp = "ANGEBOT_ANFRAGE" | "BEDARF_ANFRAGE" | "LIEFERAUFTRAG";
+export type NachrichtReferenzTyp =
+  | "ANGEBOT_ANFRAGE"
+  | "BEDARF_ANFRAGE"
+  | "LIEFERAUFTRAG";
 
 export interface Konversation {
-    id: string;
-    beteiligte: string[];
-    nachrichten: Nachricht[];
-    referenzId: string;
-    referenzTyp: NachrichtReferenzTyp;
+  id: string;
+  beteiligte: string[];
+  nachrichten: Nachricht[];
+  referenzId: string;
+  referenzTyp: NachrichtReferenzTyp;
 }

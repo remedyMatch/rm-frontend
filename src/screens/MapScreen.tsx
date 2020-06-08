@@ -30,7 +30,7 @@ const mapToPoi = (
   title: offerOrNeed.artikel.name,
   count: offerOrNeed.verfuegbareAnzahl,
   comment: offerOrNeed.kommentar,
-  icon: isOffer ? katDesinfektion : katSonstiges
+  icon: isOffer ? katDesinfektion : katSonstiges,
 });
 
 const reduceToStandortIdDict = (
@@ -65,8 +65,8 @@ const reduceToStandortIdPois = (
               }`,
             ""
           ),
-          icon: katSchutzkleidung
-        }
+          icon: katSchutzkleidung,
+        },
   ];
 };
 
@@ -79,15 +79,15 @@ const mapToPois = (
   if (angebote) {
     pois.push(
       ...angebote
-        .filter(angebot => filterOwnOffersOrNeeds(angebot, standort))
-        .map(angebot => mapToPoi(angebot, true))
+        .filter((angebot) => filterOwnOffersOrNeeds(angebot, standort))
+        .map((angebot) => mapToPoi(angebot, true))
     );
   }
   if (bedarfe) {
     pois.push(
       ...bedarfe
-        .filter(bedarf => filterOwnOffersOrNeeds(bedarf, standort))
-        .map(bedarf => mapToPoi(bedarf))
+        .filter((bedarf) => filterOwnOffersOrNeeds(bedarf, standort))
+        .map((bedarf) => mapToPoi(bedarf))
     );
   }
   return (Object.values(
@@ -112,7 +112,7 @@ const MapScreen: React.FC = () => {
   const center =
     (curInst && {
       lat: curInst.latitude || fallbackCenter.lat,
-      lng: curInst.longitude || fallbackCenter.lng
+      lng: curInst.longitude || fallbackCenter.lng,
     }) ||
     fallbackCenter;
 

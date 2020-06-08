@@ -8,7 +8,7 @@ import {
   Paper,
   Popper,
   Tooltip,
-  Typography
+  Typography,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { Close, Drafts, Notifications } from "@material-ui/icons";
@@ -25,48 +25,48 @@ const useStyles = makeStyles(() => ({
   backdrop: {
     zIndex: 1001,
     backgroundColor: "rgba(0,0,0,0.25)",
-    backdropFilter: "blur(3px)"
+    backdropFilter: "blur(3px)",
   },
   notifications: {
     margin: "auto 0",
     backgroundColor: "white",
     borderTopLeftRadius: "50%",
-    borderTopRightRadius: "50%"
+    borderTopRightRadius: "50%",
   },
   notificationsActive: {
     zIndex: 1003,
     borderBottomRightRadius: "0px",
-    borderBottomLeftRadius: "0px"
+    borderBottomLeftRadius: "0px",
   },
   notificationsIcon: {
-    color: "#53284f"
+    color: "#53284f",
   },
   notificationsPopup: {
-    borderRadius: "8px"
+    borderRadius: "8px",
   },
   notificationsPopupContainer: {
-    zIndex: 1002
+    zIndex: 1002,
   },
   notificationsContainer: {
     paddingTop: "24px",
-    maxWidth: "400px"
+    maxWidth: "400px",
   },
   notificationsList: {
     maxHeight: "600px",
     overflowY: "auto",
     "&>*:first-child": {
-      borderTop: "0px"
+      borderTop: "0px",
     },
     "&::-webkit-scrollbar": {
-      width: "12px"
+      width: "12px",
     },
     "&::-webkit-scrollbar-track": {
-      backgroundColor: "rgba(0,0,0,0.1)"
+      backgroundColor: "rgba(0,0,0,0.1)",
     },
     "&::-webkit-scrollbar-thumb": {
       backgroundColor: "darkgrey",
-      borderRadius: "6px"
-    }
+      borderRadius: "6px",
+    },
   },
   notificationsTitle: {
     fontFamily: "Montserrat, sans-serif",
@@ -75,7 +75,7 @@ const useStyles = makeStyles(() => ({
     fontWeight: 600,
     color: "#007c92",
     paddingBottom: "24px",
-    borderBottom: "1px solid #CCC"
+    borderBottom: "1px solid #CCC",
   },
   notificationPlaceholder: {
     padding: "32px",
@@ -83,34 +83,34 @@ const useStyles = makeStyles(() => ({
     fontSize: "16px",
     fontWeight: 600,
     textAlign: "center",
-    color: "rgba(0, 0, 0, 0.54)"
+    color: "rgba(0, 0, 0, 0.54)",
   },
   notificationEntry: {
     borderTop: "1px solid #CCC",
     padding: "12px 16px",
     "&:hover": {
-      backgroundColor: "rgba(0, 0, 0, 0.04)"
-    }
+      backgroundColor: "rgba(0, 0, 0, 0.04)",
+    },
   },
   notificationText: {
     fontFamily: "Montserrat, sans-serif",
     letterSpacing: "-0.02em",
     fontWeight: 600,
-    fontSize: "16px"
+    fontSize: "16px",
   },
   notificationTextRead: {
-    fontWeight: "normal"
+    fontWeight: "normal",
   },
   notificationTimestamp: {
     fontFamily: "Montserrat, sans-serif",
     fontSize: "12px",
     color: "rgba(0, 0, 0, 0.54)",
     marginTop: "8px",
-    textAlign: "right"
+    textAlign: "right",
   },
   notificationButtons: {
     display: "flex",
-    borderTop: "1px solid #CCC"
+    borderTop: "1px solid #CCC",
   },
   notificationButton: {
     height: "56px",
@@ -119,15 +119,15 @@ const useStyles = makeStyles(() => ({
     color: "#007c92",
     fontWeight: 600,
     textTransform: "none",
-    borderRadius: "0px"
+    borderRadius: "0px",
   },
   tooltip: {
     fontSize: "12px",
-    backgroundColor: "rgba(0,0,0,0.87)"
+    backgroundColor: "rgba(0,0,0,0.87)",
   },
   tooltipArrow: {
-    color: "rgba(0,0,0,0.87)"
-  }
+    color: "rgba(0,0,0,0.87)",
+  },
 }));
 
 const formatDate = (createdAt: Date) => {
@@ -207,10 +207,10 @@ const NotificationMenu: React.FC = () => {
           <Badge
             anchorOrigin={{
               horizontal: "right",
-              vertical: "bottom"
+              vertical: "bottom",
             }}
             overlap="circle"
-            badgeContent={notifications.filter(b => !b.gelesen).length || 0}
+            badgeContent={notifications.filter((b) => !b.gelesen).length || 0}
             color="error"
           >
             <Notifications
@@ -245,7 +245,7 @@ const NotificationMenu: React.FC = () => {
                         Es sind keine Benachrichtigungen vorhanden.
                       </Typography>
                     )}
-                    {notifications.map(value => (
+                    {notifications.map((value) => (
                       <div className={classes.notificationEntry}>
                         <Typography
                           className={clsx(
@@ -267,7 +267,7 @@ const NotificationMenu: React.FC = () => {
                       arrow
                       classes={{
                         tooltip: classes.tooltip,
-                        arrow: classes.tooltipArrow
+                        arrow: classes.tooltipArrow,
                       }}
                       title="Alle gelesenen Benachrichtigungen löschen"
                       placement="top"
@@ -276,7 +276,7 @@ const NotificationMenu: React.FC = () => {
                       <Button
                         onClick={deleteAllReadNotifications}
                         disabled={
-                          notifications.filter(b => b.gelesen).length === 0
+                          notifications.filter((b) => b.gelesen).length === 0
                         }
                         className={classes.notificationButton}
                         startIcon={<Close />}
@@ -290,7 +290,7 @@ const NotificationMenu: React.FC = () => {
                       arrow
                       classes={{
                         tooltip: classes.tooltip,
-                        arrow: classes.tooltipArrow
+                        arrow: classes.tooltipArrow,
                       }}
                       title="Alle Benachrichtigungen als gelesen markieren"
                       placement="top"
@@ -299,7 +299,7 @@ const NotificationMenu: React.FC = () => {
                       <Button
                         onClick={markAllNotificationsRead}
                         disabled={
-                          notifications.filter(b => !b.gelesen).length === 0
+                          notifications.filter((b) => !b.gelesen).length === 0
                         }
                         className={classes.notificationButton}
                         startIcon={<Drafts />}
